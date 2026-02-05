@@ -50,7 +50,7 @@ const getDueDateStyle = (dateStr: string) => {
     return "text-gray-500"
 }
 
-import { Plus, PlayCircle } from "lucide-react"
+import { Plus, PlayCircle, Calendar } from "lucide-react"
 
 export const columns: ColumnDef<User>[] = [
     {
@@ -118,10 +118,10 @@ export const columns: ColumnDef<User>[] = [
                     }}
                 >
                     <div className={cn(
-                        "cursor-pointer hover:bg-black/5 px-2 py-1 rounded transition-colors text-[14px] font-medium inline-block",
+                        "cursor-pointer hover:bg-black/5 px-2 py-1 rounded transition-colors text-[14px] font-medium inline-block flex items-center gap-1.5",
                         getDueDateStyle(date)
                     )}>
-                        {formatDueDate(date)}
+                        {date ? formatDueDate(date) : <Calendar size={14} className="text-gray-300" />}
                     </div>
                 </DatePicker>
             )
@@ -149,7 +149,7 @@ export const columns: ColumnDef<User>[] = [
                         "cursor-pointer hover:bg-black/5 px-2 py-1 rounded transition-colors text-[14px] font-medium inline-block flex items-center gap-1.5",
                         getDueDateStyle(date)
                     )}>
-                        {date ? formatDueDate(date) : <Plus size={14} className="text-gray-300" />}
+                        {date ? formatDueDate(date) : <Calendar size={14} className="text-gray-300" />}
                     </div>
                 </DatePicker>
             )
@@ -198,6 +198,9 @@ export const columns: ColumnDef<User>[] = [
             return (
                 <TimeTracker
                     value={time}
+                    onChange={(newValue) => {
+                        (table.options.meta as any)?.updateData(row.id, "timeTracker", newValue)
+                    }}
                 />
             )
         }
