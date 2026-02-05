@@ -11,6 +11,8 @@ import { AssigneePopOver } from "./AssigneePopOver"
 import { PriorityPopOver } from "./PriorityPopOver"
 
 import { NameModule } from "./NameModule"
+import { TimeEstimation } from "./TimeEstimation"
+import { TimeTracker } from "./TimeTracker"
 
 const formatDueDate = (dateStr: string) => {
     if (!dateStr) return "Add date"
@@ -190,42 +192,29 @@ export const columns: ColumnDef<User>[] = [
     },
     {
         accessorKey: "timeTracker",
-        header: () => (
-            <div className="flex items-center gap-2">
-                <span>Time Tracker</span>
-                <Plus size={14} className="text-gray-400" />
-            </div>
-        ),
-        cell: ({ getValue }) => {
+        header: () => <HeaderMenu title="Time Tracker" />,
+        cell: ({ getValue, row, table }) => {
             const time = getValue() as string
-            const isEmpty = time === "Add time"
             return (
-                <div className="flex items-center gap-2 group/time cursor-pointer">
-                    {isEmpty ? (
-                        <>
-                            <div className="h-5 w-5 rounded-full border border-gray-200 flex items-center justify-center opacity-0 group-hover/time:opacity-100 transition-opacity">
-                                <Plus size={10} className="text-gray-400" />
-                            </div>
-                            <span className="text-gray-300 text-[13px]">{time}</span>
-                        </>
-                    ) : (
-                        <>
-                            <div className="h-6 w-6 rounded-full bg-gray-100 flex items-center justify-center text-gray-600">
-                                <div className="w-0 h-0 border-t-[4px] border-t-transparent border-l-[6px] border-l-current border-b-[4px] border-b-transparent ml-0.5" />
-                            </div>
-                            <span className="text-gray-700 text-[13px] font-medium">{time}</span>
-                        </>
-                    )}
-                </div>
+                <TimeTracker
+                    value={time}
+                />
             )
         }
     },
     {
         accessorKey: "timeEstimate",
-        header: "Time Estimate",
-        cell: ({ getValue }) => {
+        header: () => <HeaderMenu title="Time Estimate" />,
+        cell: ({ getValue, row, table }) => {
             const time = getValue() as string
-            return <div className="text-gray-400 text-[13px] font-medium">{time}</div>
+            return (
+                <TimeEstimation
+                    value={time}
+                    onChange={(newLabel) => {
+                        (table.options.meta as any)?.updateData(row.id, "timeEstimate", newLabel);
+                    }}
+                />
+            )
         }
     },
     {
@@ -234,6 +223,22 @@ export const columns: ColumnDef<User>[] = [
         cell: ({ getValue }) => {
             const taskType = getValue() as string
             return <div className="text-gray-400 text-[13px] font-medium">{taskType}</div>
+        }
+    },
+    {
+        accessorKey: "createdBy",
+        header: "Created By",
+        cell: ({ getValue }) => {
+            const createdBy = getValue() as string
+            return <div className="text-gray-400 text-[13px] font-medium">{createdBy}</div>
+        }
+    },
+    {
+        accessorKey: "comments",
+        header: "Comments",
+        cell: ({ getValue }) => {
+            const comments = getValue() as string
+            return <div className="text-gray-400 text-[13px] font-medium">{comments}</div>
         }
     },
     {

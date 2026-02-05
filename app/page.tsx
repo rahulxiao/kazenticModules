@@ -124,7 +124,7 @@ export default function Page() {
                     style={{ width: header.getSize() }}
                     className={cn(
                       "relative py-4 px-4 text-left text-[13px] font-semibold text-gray-500 bg-[#F2F9FE] border-r border-gray-50 last:border-r-0",
-                      index === 0 && "sticky left-0 z-20 bg-inherit border-r border-gray-100 shadow-[2px_0_5px_rgba(0,0,0,0.02)]"
+                      index === 0 && "sticky left-0 z-50 bg-[#F2F9FE] border-r border-gray-100 shadow-[6px_0_15px_rgba(0,0,0,0.1)]"
                     )}
                   >
                     {flexRender(
@@ -159,14 +159,19 @@ export default function Page() {
                         key={cell.id}
                         style={{ width: cell.column.getSize() }}
                         className={cn(
-                          "py-1 px-4 border-r border-gray-50 last:border-r-0",
-                          idx === 0 && "sticky left-0 z-10 bg-white group-hover:bg-[#F9FAFB] border-r border-gray-50 shadow-[2px_0_5px_rgba(0,0,0,0.02)]"
+                          "py-1 px-3 border-r border-gray-50 last:border-r-0 relative group/cell",
+                          idx === 0 && "sticky left-0 z-40 bg-white group-hover:bg-[#F9FAFB] border-r border-gray-50 shadow-[6px_0_15px_rgba(0,0,0,0.1)]"
                         )}
                       >
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
+                        {/* Cell Highlight Effect */}
+                        <div className="absolute inset-[2px] border border-transparent group-hover/cell:border-gray-300 group-hover/cell:bg-gray-400/5 rounded-md pointer-events-none transition-all duration-200 z-0" />
+
+                        <div className={cn("relative", idx === 0 ? "z-10" : "z-0")}>
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </div>
                       </TableCell>
                     ))}
                   </TableRow>
@@ -186,8 +191,11 @@ export default function Page() {
 
                   if (isLastDescendant || isLastChildOfParent) {
                     renderedRows.push(
-                      <TableRow key={`${row.id}-add`} className="bg-[#FDFDFD]">
-                        <TableCell colSpan={table.getAllColumns().length} className="p-0 border-none">
+                      <TableRow key={`${row.id}-add`} className="group/add bg-[#FDFDFD] border-b border-gray-50">
+                        <TableCell
+                          colSpan={table.getAllColumns().length}
+                          className="p-0 border-none sticky left-0 z-30 bg-[#FDFDFD]"
+                        >
                           <AddSubtaskModule
                             depth={row.id === addingSubtaskTo ? row.depth + 1 : row.depth}
                             onCancel={() => setAddingSubtaskTo(null)}
