@@ -54,6 +54,7 @@ export const columns: ColumnDef<User>[] = [
     {
         accessorKey: "name",
         header: "Name",
+        enableResizing: false,
         cell: ({ getValue, row, table }) => {
             const name = getValue() as string
             const isAddingSubtask = (table.options.meta as any)?.addingSubtaskTo === row.id
@@ -217,6 +218,22 @@ export const columns: ColumnDef<User>[] = [
                     )}
                 </div>
             )
+        }
+    },
+    {
+        accessorKey: "timeEstimate",
+        header: "Time Estimate",
+        cell: ({ getValue }) => {
+            const time = getValue() as string
+            return <div className="text-gray-400 text-[13px] font-medium">{time}</div>
+        }
+    },
+    {
+        accessorKey: "taskType",
+        header: "Task Type",
+        cell: ({ getValue }) => {
+            const taskType = getValue() as string
+            return <div className="text-gray-400 text-[13px] font-medium">{taskType}</div>
         }
     },
     {

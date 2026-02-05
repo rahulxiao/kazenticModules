@@ -22,6 +22,8 @@ import { User, tableData } from "@/data/tableData"
 
 import { AddSubtaskModule } from "@/components/ListView/AddSubtaskModule"
 
+import { cn } from "@/lib/utils"
+
 export default function Page() {
   const [data, setData] = React.useState<User[]>(tableData)
   const [addingSubtaskTo, setAddingSubtaskTo] = React.useState<string | null>(null)
@@ -111,16 +113,19 @@ export default function Page() {
 
   return (
     <div className="p-10 font-sans bg-[#fafafa] min-h-screen">
-      <div className="max-w-[1400px] mx-auto bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden text-[#222]">
-        <Table style={{ width: "100%" }} className="border-collapse">
+      <div className="max-w-[1400px] mx-auto bg-white rounded-xl shadow-sm border border-gray-100 overflow-x-auto text-[#222]">
+        <Table style={{ minWidth: "1200px" }} className="border-collapse">
           <TableHeader >
             {table.getHeaderGroups().map(headerGroup => (
               <TableRow key={headerGroup.id} className="hover:bg-transparent border-b border-gray-100">
-                {headerGroup.headers.map(header => (
+                {headerGroup.headers.map((header, index) => (
                   <TableHead
                     key={header.id}
                     style={{ width: header.getSize() }}
-                    className="relative py-4 px-4 text-left text-[13px] font-semibold text-gray-500 bg-[#F9FAFB] border-r border-gray-50 last:border-r-0"
+                    className={cn(
+                      "relative py-4 px-4 text-left text-[13px] font-semibold text-gray-500 bg-[#F2F9FE] border-r border-gray-50 last:border-r-0",
+                      index === 0 && "sticky left-0 z-20 bg-inherit border-r border-gray-100 shadow-[2px_0_5px_rgba(0,0,0,0.02)]"
+                    )}
                   >
                     {flexRender(
                       header.column.columnDef.header,
@@ -128,11 +133,13 @@ export default function Page() {
                     )}
 
                     {/* Resize Handle */}
-                    <div
-                      onMouseDown={header.getResizeHandler()}
-                      onTouchStart={header.getResizeHandler()}
-                      className="absolute right-0 top-0 h-full w-1 cursor-col-resize select-none bg-transparent hover:bg-blue-500"
-                    />
+                    {header.column.getCanResize() && (
+                      <div
+                        onMouseDown={header.getResizeHandler()}
+                        onTouchStart={header.getResizeHandler()}
+                        className="absolute right-0 top-0 h-full w-1 cursor-col-resize select-none bg-transparent hover:bg-blue-500 z-30"
+                      />
+                    )}
                   </TableHead>
                 ))}
               </TableRow>
@@ -147,11 +154,14 @@ export default function Page() {
               rows.forEach((row, index) => {
                 renderedRows.push(
                   <TableRow key={row.id} className="group hover:bg-[#F9FAFB] border-b border-gray-50 transition-colors">
-                    {row.getVisibleCells().map(cell => (
+                    {row.getVisibleCells().map((cell, idx) => (
                       <TableCell
                         key={cell.id}
                         style={{ width: cell.column.getSize() }}
-                        className="py-1 px-4 border-r border-gray-50 last:border-r-0"
+                        className={cn(
+                          "py-1 px-4 border-r border-gray-50 last:border-r-0",
+                          idx === 0 && "sticky left-0 z-10 bg-white group-hover:bg-[#F9FAFB] border-r border-gray-50 shadow-[2px_0_5px_rgba(0,0,0,0.02)]"
+                        )}
                       >
                         {flexRender(
                           cell.column.columnDef.cell,
