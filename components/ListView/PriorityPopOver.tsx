@@ -27,18 +27,19 @@ export function PriorityPopOver({ priority, onPriorityChange }: PriorityPopOverP
         <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
                 <div
-                    className="inline-flex items-center gap-2 px-1 py-1 rounded cursor-pointer hover:bg-gray-100/50 transition-all transition-colors group"
+                    className="inline-flex items-center gap-2.5 px-2 py-1 rounded cursor-pointer hover:bg-gray-100/50 transition-colors group"
                 >
                     {priority ? (
                         <>
                             <selectedPriority.icon size={16} className={cn(selectedPriority.color, "fill-current")} />
-                            <span className="text-[14px] font-medium text-gray-700">{priority}</span>
+                            <span className="text-[13px] font-bold text-[#1a1c1e]">{priority}</span>
                         </>
                     ) : (
                         <Flag size={16} className="text-gray-300 group-hover:text-gray-400" />
                     )}
                 </div>
             </PopoverTrigger>
+
             <PopoverContent className="p-2 w-[180px] border border-gray-100 bg-white rounded-xl shadow-[0_10px_40px_rgba(0,0,0,0.08)]" align="start">
                 <div className="px-3 py-2 text-[12px] font-bold text-gray-400 uppercase tracking-wider">
                     Task Priority

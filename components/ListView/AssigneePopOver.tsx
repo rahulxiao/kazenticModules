@@ -49,9 +49,10 @@ export function AssigneePopOver({ assignees = [], onAssigneesChange }: AssigneeP
                                 >
                                     <Avatar className="h-7 w-7 text-[10px] font-bold border border-white shadow-sm hover:scale-110 transition-transform">
                                         <AvatarImage src={user.avatar} />
-                                        <AvatarFallback className="bg-indigo-600 text-white">
+                                        <AvatarFallback className="bg-blue-600 text-white font-bold text-[11px]">
                                             {getInitials(user.name)}
                                         </AvatarFallback>
+
                                     </Avatar>
                                     {/* Individual remove button on hover */}
                                     <button

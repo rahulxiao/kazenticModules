@@ -2,15 +2,26 @@ export type User = {
     name: string
     assignees: string[]
     avatar?: string
+    status?: string
+    priority?: string
+    taskType?: string
+    sprints?: string
+    sprintPoints?: string
     startDate?: string
-    dueDate: string
-    priority: string
-    taskID: string
-    timeTracker: string
-    addNewColumn: string
-    dateCreated: string
+    dueDate?: string
+    dateCreated?: string
+    dateClosed?: string
+    timeEstimate?: string
+    timeTracker?: string
+    createdBy?: string
+    comments?: string
+    taskID?: string
+    custom?: string
+    addNewColumn?: string
     subtasks?: User[]
 }
+
+
 
 export const USERS = [
     { name: "Alif Hassan", email: "alif@example.com", avatar: "https://github.com/shadcn.png" },
@@ -30,13 +41,24 @@ export const tableData: User[] = [
     {
         "name": "Design Homepage Layout",
         "assignees": ["alif@example.com"],
-        "startDate": "2026-02-05 14:23",
-        "dueDate": "2026-02-06",
-        "priority": "",
-        "taskID": "86ewq17dq",
-        "timeTracker": "1h 17m",
-        "addNewColumn": "",
+        "status": "IN PROGRESS",
+        "priority": "Urgent",
+        "taskType": "Feature",
+        "sprints": "Sprint 1",
+        "sprintPoints": "2",
+        "startDate": "2025-11-23",
+        "dueDate": "2025-11-23",
         "dateCreated": "2026-02-03",
+        "dateClosed": "",
+        "timeEstimate": "4h",
+        "timeTracker": "1h 17m",
+        "createdBy": "Alif Hassan",
+        "comments": "3",
+        "taskID": "86ewq17dq",
+        "custom": "Phase 1",
+        "addNewColumn": "",
+
+
         "subtasks": [
             {
                 "name": "Subtask 1",

@@ -13,42 +13,27 @@ import { PriorityPopOver } from "./PriorityPopOver"
 import { NameModule } from "./NameModule"
 import { TimeEstimation } from "./TimeEstimation"
 import { TimeTracker } from "./TimeTracker"
+import { StatusModule } from "./StatusModule"
+import { TaskTypeModule } from "./TaskTypeModule"
+import { SprintsModule } from "./SprintsModule"
+import { SprintPointsModule } from "./SprintPointsModule"
+import { DateClosedModule } from "./DateClosedModule"
+import { CreatedByModule } from "./CreatedByModule"
+import { CommentsModule } from "./CommentsModule"
+import { TaskIDModule } from "./TaskIDModule"
+import { CustomModule } from "./CustomModule"
 
 const formatDueDate = (dateStr: string) => {
     if (!dateStr) return "Add date"
-    const hasTime = dateStr.includes(' ')
     const date = moment(dateStr)
-    const today = moment().startOf('day')
-    const yesterday = moment().subtract(1, 'days').startOf('day')
-    const tomorrow = moment().add(1, 'days').startOf('day')
-
-    let label = ""
-    if (date.isSame(today, 'day')) label = "Today"
-    else if (date.isSame(yesterday, 'day')) label = "Yesterday"
-    else if (date.isSame(tomorrow, 'day')) label = "Tomorrow"
-    // If it's within the current week, show day name
-    else if (date.isAfter(moment().subtract(7, 'days')) && date.isBefore(moment().add(7, 'days'))) {
-        label = date.format("ddd")
-    } else {
-        label = date.format("M/D/YY")
-    }
-
-    if (hasTime) {
-        return `${label}, ${date.format("h:mma")}`
-    }
-    return label
+    return date.format("DD/MM/YY")
 }
 
 const getDueDateStyle = (dateStr: string) => {
     if (!dateStr) return "text-gray-400"
-    const date = moment(dateStr)
-    const today = moment().startOf('day')
-    const yesterday = moment().subtract(1, 'days').startOf('day')
-
-    if (date.isSame(yesterday, 'day')) return "text-red-500"
-    if (date.isSame(today, 'day')) return "text-orange-500"
-    return "text-gray-500"
+    return "text-[#1a1c1e] font-bold"
 }
+
 
 import { Plus, PlayCircle, Calendar } from "lucide-react"
 
@@ -85,6 +70,36 @@ export const columns: ColumnDef<User>[] = [
         }
     },
     {
+        accessorKey: "status",
+        header: () => <HeaderMenu title="Status" />,
+        cell: ({ getValue, row, table }) => {
+            const status = getValue() as string
+            return (
+                <StatusModule
+                    status={status}
+                    onStatusChange={(newStatus) => {
+                        (table.options.meta as any)?.updateData(row.id, "status", newStatus)
+                    }}
+                />
+            )
+        }
+    },
+    {
+        accessorKey: "priority",
+        header: () => <HeaderMenu title="Priority" />,
+        cell: ({ getValue, row, table }) => {
+            const priority = getValue() as string
+            return (
+                <PriorityPopOver
+                    priority={priority}
+                    onPriorityChange={(newPriority) => {
+                        (table.options.meta as any)?.updateData(row.id, "priority", newPriority)
+                    }}
+                />
+            )
+        }
+    },
+    {
         accessorKey: "assignees",
         header: () => <HeaderMenu title="Assignee" />,
         cell: ({ getValue, row, table }) => {
@@ -96,34 +111,6 @@ export const columns: ColumnDef<User>[] = [
                         (table.options.meta as any)?.updateData(row.id, "assignees", newAssignees)
                     }}
                 />
-            )
-        }
-    },
-    {
-        accessorKey: "dueDate",
-        header: () => <HeaderMenu title="Due Date" />,
-        cell: ({ getValue, row, table }) => {
-            const date = getValue() as string
-            const original = row.original
-            return (
-                <DatePicker
-                    startDate={original.startDate}
-                    dueDate={original.dueDate}
-                    activeMode="due"
-                    onStartDateChange={(newDate) => {
-                        (table.options.meta as any)?.updateData(row.id, "startDate", newDate)
-                    }}
-                    onDueDateChange={(newDate) => {
-                        (table.options.meta as any)?.updateData(row.id, "dueDate", newDate)
-                    }}
-                >
-                    <div className={cn(
-                        "cursor-pointer hover:bg-black/5 px-2 py-1 rounded transition-colors text-[14px] font-medium inline-block flex items-center gap-1.5",
-                        getDueDateStyle(date)
-                    )}>
-                        {date ? formatDueDate(date) : <Calendar size={14} className="text-gray-300" />}
-                    </div>
-                </DatePicker>
             )
         }
     },
@@ -146,8 +133,8 @@ export const columns: ColumnDef<User>[] = [
                     }}
                 >
                     <div className={cn(
-                        "cursor-pointer hover:bg-black/5 px-2 py-1 rounded transition-colors text-[14px] font-medium inline-block flex items-center gap-1.5",
-                        getDueDateStyle(date)
+                        "cursor-pointer hover:bg-black/5 px-2 py-1 rounded transition-colors text-[13px] font-medium inline-block flex items-center gap-1.5",
+                        getDueDateStyle(date || "")
                     )}>
                         {date ? formatDueDate(date) : <Calendar size={14} className="text-gray-300" />}
                     </div>
@@ -156,58 +143,103 @@ export const columns: ColumnDef<User>[] = [
         }
     },
     {
+        accessorKey: "dueDate",
+        header: () => <HeaderMenu title="Due Date" />,
+        cell: ({ getValue, row, table }) => {
+            const date = getValue() as string
+            const original = row.original
+            return (
+                <DatePicker
+                    startDate={original.startDate}
+                    dueDate={original.dueDate}
+                    activeMode="due"
+                    onStartDateChange={(newDate) => {
+                        (table.options.meta as any)?.updateData(row.id, "startDate", newDate)
+                    }}
+                    onDueDateChange={(newDate) => {
+                        (table.options.meta as any)?.updateData(row.id, "dueDate", newDate)
+                    }}
+                >
+                    <div className={cn(
+                        "cursor-pointer hover:bg-black/5 px-2 py-1 rounded transition-colors text-[13px] font-medium inline-block flex items-center gap-1.5",
+                        getDueDateStyle(date || "")
+                    )}>
+                        {date ? formatDueDate(date) : <Calendar size={14} className="text-gray-300" />}
+                    </div>
+                </DatePicker>
+            )
+        }
+    },
+    {
+        accessorKey: "taskType",
+        header: () => <HeaderMenu title="Task Type" />,
+        cell: ({ getValue, row, table }) => {
+            const type = getValue() as string
+            return (
+                <TaskTypeModule
+                    type={type}
+                    onTypeChange={(newType) => {
+                        (table.options.meta as any)?.updateData(row.id, "taskType", newType)
+                    }}
+                />
+            )
+        }
+    },
+    {
+        accessorKey: "sprints",
+        header: () => <HeaderMenu title="Sprints" />,
+        cell: ({ getValue, row, table }) => {
+            const sprint = getValue() as string
+            return (
+                <SprintsModule
+                    sprint={sprint}
+                    onSprintChange={(newSprint) => {
+                        (table.options.meta as any)?.updateData(row.id, "sprints", newSprint)
+                    }}
+                />
+            )
+        }
+    },
+    {
+        accessorKey: "sprintPoints",
+        header: () => <HeaderMenu title="Sprint Points" />,
+        cell: ({ getValue, row, table }) => {
+            const points = getValue() as string
+            return (
+                <SprintPointsModule
+                    points={points}
+                    onPointsChange={(newPoints) => {
+                        (table.options.meta as any)?.updateData(row.id, "sprintPoints", newPoints)
+                    }}
+                />
+            )
+        }
+    },
+
+    {
         accessorKey: "dateCreated",
+
         header: () => <HeaderMenu title="Date Created" />,
         cell: ({ getValue }) => {
             const date = getValue() as string
             return (
-                <div className="text-gray-700 text-[14px] font-medium">
-                    {moment(date).format("MMM D")}
+                <div className="text-gray-700 text-[13px] font-medium px-2">
+                    {date ? moment(date).format("MMM D") : "-"}
                 </div>
             )
         }
     },
     {
-        accessorKey: "priority",
-        header: () => <HeaderMenu title="Priority" />,
-        cell: ({ getValue, row, table }) => {
-            const priority = getValue() as string
-            return (
-                <PriorityPopOver
-                    priority={priority}
-                    onPriorityChange={(newPriority) => {
-                        (table.options.meta as any)?.updateData(row.id, "priority", newPriority)
-                    }}
-                />
-            )
-        }
-    },
-    {
-        accessorKey: "taskID",
-        header: () => <HeaderMenu title="Task ID" />,
+        accessorKey: "dateClosed",
+        header: () => <HeaderMenu title="Date Closed" />,
         cell: ({ getValue }) => {
-            const id = getValue() as string
-            return <div className="text-gray-400 text-[13px] font-medium"># {id}</div>
-        }
-    },
-    {
-        accessorKey: "timeTracker",
-        header: () => <HeaderMenu title="Time Tracker" />,
-        cell: ({ getValue, row, table }) => {
-            const time = getValue() as string
-            return (
-                <TimeTracker
-                    value={time}
-                    onChange={(newValue) => {
-                        (table.options.meta as any)?.updateData(row.id, "timeTracker", newValue)
-                    }}
-                />
-            )
+            const date = getValue() as string
+            return <DateClosedModule date={date} />
         }
     },
     {
         accessorKey: "timeEstimate",
-        header: () => <HeaderMenu title="Time Estimate" />,
+        header: () => <HeaderMenu title="Time Estimated" />,
         cell: ({ getValue, row, table }) => {
             const time = getValue() as string
             return (
@@ -221,27 +253,57 @@ export const columns: ColumnDef<User>[] = [
         }
     },
     {
-        accessorKey: "taskType",
-        header: "Task Type",
-        cell: ({ getValue }) => {
-            const taskType = getValue() as string
-            return <div className="text-gray-400 text-[13px] font-medium">{taskType}</div>
+        accessorKey: "timeTracker",
+        header: () => <HeaderMenu title="Time Tracked" />,
+        cell: ({ getValue, row, table }) => {
+            const time = getValue() as string
+            return (
+                <TimeTracker
+                    value={time}
+                    onChange={(newValue) => {
+                        (table.options.meta as any)?.updateData(row.id, "timeTracker", newValue)
+                    }}
+                />
+            )
         }
     },
     {
         accessorKey: "createdBy",
-        header: "Created By",
+        header: () => <HeaderMenu title="Created By" />,
         cell: ({ getValue }) => {
-            const createdBy = getValue() as string
-            return <div className="text-gray-400 text-[13px] font-medium">{createdBy}</div>
+            const user = getValue() as string
+            return <CreatedByModule user={user} />
         }
     },
     {
         accessorKey: "comments",
-        header: "Comments",
+        header: () => <HeaderMenu title="Comments" />,
         cell: ({ getValue }) => {
             const comments = getValue() as string
-            return <div className="text-gray-400 text-[13px] font-medium">{comments}</div>
+            return <CommentsModule count={comments} />
+        }
+    },
+    {
+        accessorKey: "taskID",
+        header: () => <HeaderMenu title="Task ID" />,
+        cell: ({ getValue }) => {
+            const id = getValue() as string
+            return <TaskIDModule id={id} />
+        }
+    },
+    {
+        accessorKey: "custom",
+        header: () => <HeaderMenu title="Custom" />,
+        cell: ({ getValue, row, table }) => {
+            const value = getValue() as string
+            return (
+                <CustomModule
+                    value={value}
+                    onValueChange={(newValue) => {
+                        (table.options.meta as any)?.updateData(row.id, "custom", newValue)
+                    }}
+                />
+            )
         }
     },
     {
@@ -249,3 +311,4 @@ export const columns: ColumnDef<User>[] = [
         header: "+",
     },
 ]
+
