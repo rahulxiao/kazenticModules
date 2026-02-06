@@ -6,10 +6,10 @@ import { CSS } from "@dnd-kit/utilities"
 import { TableHead } from "@/components/ui/table"
 import { cn } from "@/lib/utils"
 import { flexRender, Header } from "@tanstack/react-table"
-import { User } from "@/data/tableData"
+import { taskTable } from "@/data/tableData"
 
 interface DraggableHeaderProps {
-    header: Header<User, unknown>
+    header: Header<taskTable, unknown>
     index: number
 }
 
@@ -42,9 +42,10 @@ export function DraggableHeader({ header, index }: DraggableHeaderProps) {
             ref={setNodeRef}
             style={style}
             className={cn(
-                "relative py-4 px-4 text-left text-[13px] font-semibold text-gray-500 bg-[#F2F9FE] border-r border-gray-50 last:border-r-0 select-none",
-                index === 0 && "sticky left-0 z-50 bg-[#F2F9FE] border-r border-gray-100 shadow-[6px_0_15px_rgba(0,0,0,0.1)]",
-                isDragging && "bg-blue-50/80 cursor-grabbing shadow-lg"
+                "relative py-4 px-4 text-left text-[13px] font-semibold text-gray-500 bg-white border-r border-gray-100 last:border-r-0 select-none transition-all",
+                index === 0 && "sticky left-0 z-50 bg-white border-r border-gray-200 shadow-[2px_0_5px_rgba(0,0,0,0.02)]",
+                isDragging && "bg-gray-50/80 cursor-grabbing shadow-lg",
+                header.column.getIsResizing() && "bg-gray-50/50 z-20"
             )}
         >
             <div
@@ -61,11 +62,11 @@ export function DraggableHeader({ header, index }: DraggableHeaderProps) {
                 )}
             </div>
 
-            {/* Resize Handle */}
+            {/* Modern Resize Handle */}
             {header.column.getCanResize() && (
                 <div
                     onMouseDown={(e) => {
-                        e.stopPropagation() // Prevent drag trigger when resizing
+                        e.stopPropagation()
                         header.getResizeHandler()(e)
                     }}
                     onTouchStart={(e) => {
@@ -73,13 +74,14 @@ export function DraggableHeader({ header, index }: DraggableHeaderProps) {
                         header.getResizeHandler()(e)
                     }}
                     className={cn(
-                        "absolute right-0 top-0 h-full w-2 cursor-col-resize select-none z-30 group/resizer",
-                        header.column.getIsResizing() ? "bg-blue-500 w-1" : "hover:bg-blue-400/30"
+                        "absolute right-[-1px] top-0 h-full w-[3px] cursor-col-resize select-none z-30 group/resizer",
+                        header.column.getIsResizing() ? "opacity-100" : "opacity-0 hover:opacity-100 transition-opacity"
                     )}
                 >
+                    {/* The Resize Pill */}
                     <div className={cn(
-                        "absolute right-[1px] top-1/2 -translate-y-1/2 h-4 w-[2px] rounded-full bg-gray-300 transition-colors",
-                        header.column.getIsResizing() ? "bg-blue-600 h-full top-0 translate-y-0" : "group-hover/resizer:bg-blue-500"
+                        "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[4px] h-[20px] rounded-full bg-[#7c3aed] transition-all shadow-sm",
+                        header.column.getIsResizing() && "h-[24px] w-[5px] shadow-[0_0_8px_rgba(124,58,237,0.4)]"
                     )} />
                 </div>
             )}

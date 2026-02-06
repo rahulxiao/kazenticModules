@@ -17,7 +17,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { User, tableData } from "@/data/tableData"
+import { taskTable, tableData } from "@/data/tableData"
 
 import { AddSubtaskModule } from "@/components/ListView/AddSubtaskModule"
 import { cn } from "@/lib/utils"
@@ -42,7 +42,7 @@ import { DraggableHeader } from "@/components/ListView/DraggableHeader"
 import { DraggableRow } from "@/components/ListView/DraggableRow"
 
 export default function Page() {
-  const [data, setData] = React.useState<User[]>(tableData)
+  const [data, setData] = React.useState<taskTable[]>(tableData)
   const [addingSubtaskTo, setAddingSubtaskTo] = React.useState<string | null>(null)
   const [expanded, setExpanded] = React.useState<ExpandedState>({ "0": true, "0.0": true, "0.0.1": true })
 
@@ -96,7 +96,7 @@ export default function Page() {
         return
       }
 
-      const moveRowRecursive = (data: User[], path: string[], targetIdx: number): User[] => {
+      const moveRowRecursive = (data: taskTable[], path: string[], targetIdx: number): taskTable[] => {
         const [currentIndex, ...remainingPath] = path
         const idx = parseInt(currentIndex)
 
@@ -130,7 +130,7 @@ export default function Page() {
   }
 
   const updateData = (rowId: string, columnId: string, value: any) => {
-    const updateRecursive = (data: User[], path: string[]): User[] => {
+    const updateRecursive = (data: taskTable[], path: string[]): taskTable[] => {
       const [currentIndex, ...remainingPath] = path
       const idx = parseInt(currentIndex)
 
@@ -152,14 +152,14 @@ export default function Page() {
   }
 
   const addSubtask = (parentId: string, subtaskName: string) => {
-    const addRecursive = (data: User[], path: string[]): User[] => {
+    const addRecursive = (data: taskTable[], path: string[]): taskTable[] => {
       const [currentIndex, ...remainingPath] = path
       const idx = parseInt(currentIndex)
 
       return data.map((item, i) => {
         if (i === idx) {
           if (remainingPath.length === 0) {
-            const newSubtask: User = {
+            const newSubtask: taskTable = {
               name: subtaskName,
               assignees: [],
               startDate: "",

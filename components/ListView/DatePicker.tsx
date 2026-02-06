@@ -28,6 +28,27 @@ interface DatePickerProps {
     className?: string
 }
 
+export const formatSmartDate = (dateStr: string) => {
+    if (!dateStr) return { text: "", color: "" }
+    const d = moment(dateStr)
+    const today = moment().startOf('day')
+    const diff = d.clone().startOf('day').diff(today, 'days')
+
+    // Check if there's a time component (non-zero hour/minute)
+    const hasTime = dateStr.includes(':') || (d.hour() !== 0 || d.minute() !== 0)
+    const timeSuffix = hasTime ? `, ${d.format("h:mma")}` : ""
+
+    if (diff === 0) return { text: `Today${timeSuffix}`, color: "text-amber-500" }
+    if (diff === 1) return { text: `Tomorrow${timeSuffix}`, color: "text-gray-700" }
+    if (diff === -1) return { text: `Yesterday${timeSuffix}`, color: "text-red-400" }
+
+    // Use day name if within this week or next week (roughly 7 days range)
+    if (diff > 1 && diff < 7) return { text: `${d.format("ddd")}${timeSuffix}`, color: "text-gray-700" }
+    if (diff < -1 && diff > -7) return { text: `${d.format("ddd")}${timeSuffix}`, color: "text-gray-700" }
+
+    return { text: `${d.format("M/D/YY")}${timeSuffix}`, color: "text-gray-700" }
+}
+
 export function DatePicker({
     startDate: propStartDate,
     dueDate: propDueDate,
@@ -47,27 +68,22 @@ export function DatePicker({
         setIsMounted(true)
     }, [])
 
-    // Internal state for both dates
+    // Initialize with direct props if available, otherwise fall back to 'value' if it matches the active mode
     const [startDate, setStartDate] = React.useState<string>(propStartDate || (propActiveMode === 'start' ? value : "") || "")
     const [dueDate, setDueDate] = React.useState<string>(propDueDate || (propActiveMode === 'due' ? value : "") || "")
+
     const [activeField, setActiveField] = React.useState<'start' | 'due'>(propActiveMode)
 
-    // Track which field was initially clicked to maintain behavior
+    // Update internal state when props change
     React.useEffect(() => {
-        if (open) {
-            setActiveField(propActiveMode)
-        }
-    }, [open, propActiveMode])
+        if (propStartDate !== undefined) setStartDate(propStartDate)
+        else if (value !== undefined && propActiveMode === 'start') setStartDate(value)
+    }, [propStartDate, value, propActiveMode])
 
-    // Synchronization with props
-    React.useEffect(() => { if (propStartDate !== undefined) setStartDate(propStartDate) }, [propStartDate])
-    React.useEffect(() => { if (propDueDate !== undefined) setDueDate(propDueDate) }, [propDueDate])
     React.useEffect(() => {
-        if (value !== undefined) {
-            if (propActiveMode === 'start') setStartDate(value)
-            else setDueDate(value)
-        }
-    }, [value, propActiveMode])
+        if (propDueDate !== undefined) setDueDate(propDueDate)
+        else if (value !== undefined && propActiveMode === 'due') setDueDate(value)
+    }, [propDueDate, value, propActiveMode])
 
     const activeDateValue = activeField === 'start' ? startDate : dueDate
     const activeMoment = activeDateValue ? moment(activeDateValue) : moment()
@@ -175,8 +191,8 @@ export function DatePicker({
     }
 
     const formatDateInput = (dateStr: string) => {
-        if (!dateStr) return ""
-        return moment(dateStr).format("M/D/YY")
+        const smart = formatSmartDate(dateStr)
+        return typeof smart === 'string' ? smart : smart.text
     }
 
     return (
@@ -184,7 +200,10 @@ export function DatePicker({
             <PopoverTrigger asChild>
                 {children || (
                     <button className={cn("hover:bg-black/5 px-2 py-1 rounded transition-colors", className)}>
-                        {value ? moment(value).format("M/D/YY") : "Set date"}
+                        {value ? (() => {
+                            const smart = formatSmartDate(value)
+                            return typeof smart === 'string' ? smart : smart.text
+                        })() : "Set date"}
                     </button>
                 )}
             </PopoverTrigger>
@@ -195,21 +214,49 @@ export function DatePicker({
                     <div
                         onClick={() => setActiveField('start')}
                         className={cn(
-                            "flex-1 flex items-center gap-2 border rounded-lg px-3 py-2 cursor-pointer transition-all",
+                            "flex-[1.2] flex items-center gap-2 border rounded-lg px-3 py-2 cursor-pointer transition-all",
                             activeField === 'start' ? "bg-blue-50/50 border-blue-500/50" : "bg-white border-gray-100 hover:border-gray-200"
                         )}
                     >
                         <CalendarIcon size={16} className={startDate ? "text-gray-500" : "text-gray-300"} />
-                        <div className="flex-1 flex items-center justify-between">
-                            <span className={cn("text-[14px] font-medium", startDate ? "text-gray-900" : "text-gray-400")}>
+                        <div className="flex-1 flex items-center justify-between gap-2 overflow-hidden">
+                            <span className={cn("text-[13px] font-semibold whitespace-nowrap", startDate ? "text-gray-900" : "text-gray-400")}>
                                 {startDate ? formatDateInput(startDate) : "Start date"}
                             </span>
-                            {startDate && activeField === 'start' && (
-                                <div onClick={(e) => clearDate(e, 'start')} className="p-1 hover:bg-black/5 rounded-md group relative">
-                                    <X size={14} className="text-gray-400 hover:text-gray-600" />
-                                    <div className="absolute -top-9 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-[11px] font-bold px-2 py-1 rounded shadow-xl opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity">Clear</div>
-                                </div>
-                            )}
+
+                            <div className="flex items-center gap-1">
+                                {startDate && activeField === 'start' && (
+                                    <div onClick={(e) => clearDate(e, 'start')} className="p-1 hover:bg-black/5 rounded-md group relative mr-0.5">
+                                        <X size={14} className="text-gray-400 hover:text-gray-600" />
+                                        <div className="absolute -top-9 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-[11px] font-bold px-2 py-1 rounded shadow-xl opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity">Clear</div>
+                                    </div>
+                                )}
+
+                                <Popover open={timeOpen && activeField === 'start'} onOpenChange={(open) => { setTimeOpen(open); if (open) setActiveField('start'); }}>
+                                    <PopoverTrigger asChild>
+                                        <div
+                                            onClick={(e) => { e.stopPropagation(); setActiveField('start'); setTimeOpen(true); }}
+                                            className={cn(
+                                                "text-[13px] font-bold px-1.5 py-0.5 rounded hover:bg-black/5 transition-colors whitespace-nowrap",
+                                                startDate && startDate.includes(' ') ? "text-blue-600" : "text-gray-400"
+                                            )}
+                                        >
+                                            {(startDate && startDate.includes(' ') ? moment(startDate).format("h:mm a") : null) || "Add time"}
+                                        </div>
+                                    </PopoverTrigger>
+                                    <PopoverContent side="bottom" align="end" className="p-0 border border-gray-100 bg-white rounded-lg shadow-xl w-[140px] max-h-[300px] overflow-y-auto z-[70] animate-in fade-in slide-in-from-top-1">
+                                        {times.map((time, idx) => (
+                                            <div
+                                                key={idx}
+                                                onClick={() => handleSelectTime(time)}
+                                                className="px-4 py-2 text-[13px] text-gray-700 hover:bg-blue-50 hover:text-blue-600 cursor-pointer transition-colors"
+                                            >
+                                                {time}
+                                            </div>
+                                        ))}
+                                    </PopoverContent>
+                                </Popover>
+                            </div>
                         </div>
                     </div>
 
@@ -235,16 +282,16 @@ export function DatePicker({
                                     </div>
                                 )}
 
-                                <Popover open={timeOpen} onOpenChange={setTimeOpen}>
+                                <Popover open={timeOpen && activeField === 'due'} onOpenChange={(open) => { setTimeOpen(open); if (open) setActiveField('due'); }}>
                                     <PopoverTrigger asChild>
                                         <div
-                                            onClick={(e) => { e.stopPropagation(); setTimeOpen(true); }}
+                                            onClick={(e) => { e.stopPropagation(); setActiveField('due'); setTimeOpen(true); }}
                                             className={cn(
                                                 "text-[13px] font-bold px-1.5 py-0.5 rounded hover:bg-black/5 transition-colors whitespace-nowrap",
-                                                selectedTime ? "text-blue-600" : "text-gray-400"
+                                                dueDate && dueDate.includes(' ') ? "text-blue-600" : "text-gray-400"
                                             )}
                                         >
-                                            {selectedTime || "Add time"}
+                                            {(dueDate && dueDate.includes(' ') ? moment(dueDate).format("h:mm a") : null) || "Add time"}
                                         </div>
                                     </PopoverTrigger>
                                     <PopoverContent side="bottom" align="end" className="p-0 border border-gray-100 bg-white rounded-lg shadow-xl w-[140px] max-h-[300px] overflow-y-auto z-[70] animate-in fade-in slide-in-from-top-1">
@@ -310,22 +357,25 @@ export function DatePicker({
                             {days.map((item, i) => {
                                 const isSelected = activeDateValue && moment(activeDateValue).isSame(item.date, 'day')
                                 const isToday = moment().isSame(item.date, 'day')
+                                const isDisabled = activeField === 'due' && startDate && item.date.isBefore(moment(startDate), 'day')
 
                                 return (
                                     <div
                                         key={i}
-                                        onClick={() => handleSelectDate(item.date)}
+                                        onClick={() => !isDisabled && handleSelectDate(item.date)}
                                         className={cn(
-                                            "h-9 flex items-center justify-center text-[13px] font-bold cursor-pointer transition-all rounded-lg m-0.5 relative group",
-                                            isSelected ? "bg-blue-600 text-white shadow-lg shadow-blue-100" :
-                                                item.current ? "text-gray-700 hover:bg-gray-50" : "text-gray-300 hover:text-gray-400"
+                                            "h-9 flex items-center justify-center text-[13px] font-bold transition-all rounded-lg m-0.5 relative group",
+                                            isDisabled ? "text-gray-200 cursor-not-allowed opacity-50" : "cursor-pointer",
+                                            !isDisabled && isSelected ? "bg-blue-600 text-white shadow-lg shadow-blue-100" :
+                                                !isDisabled && item.current ? "text-gray-700 hover:bg-gray-50" :
+                                                    !isDisabled ? "text-gray-300 hover:text-gray-400" : ""
                                         )}
                                     >
                                         {item.day}
-                                        {isToday && !isSelected && (
+                                        {isToday && !isSelected && !isDisabled && (
                                             <div className="absolute bottom-1 w-3.5 h-0.5 bg-red-400 rounded-full" />
                                         )}
-                                        {isSelected && (
+                                        {isSelected && !isDisabled && (
                                             <div className="absolute bottom-1 w-3.5 h-0.5 bg-white/30 rounded-full" />
                                         )}
                                     </div>

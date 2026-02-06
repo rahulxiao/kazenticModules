@@ -6,10 +6,10 @@ import { CSS } from "@dnd-kit/utilities"
 import { TableRow, TableCell } from "@/components/ui/table"
 import { cn } from "@/lib/utils"
 import { flexRender, Row } from "@tanstack/react-table"
-import { User } from "@/data/tableData"
+import { taskTable } from "@/data/tableData"
 
 interface DraggableRowProps {
-    row: Row<User>
+    row: Row<taskTable>
 }
 
 export function DraggableRow({ row }: DraggableRowProps) {
@@ -46,7 +46,7 @@ export function DraggableRow({ row }: DraggableRowProps) {
                     key={cell.id}
                     style={{ width: cell.column.getSize() }}
                     className={cn(
-                        "py-1 px-3 border-r border-gray-50 last:border-r-0 relative group/cell",
+                        "py-1 px-3 border-r border-gray-50 last:border-r-0 relative group/cell transition-colors",
                         idx === 0 && cell.column.id === "name" && "sticky left-0 z-40 bg-white group-hover:bg-[#F9FAFB] border-r border-gray-100 shadow-[6px_0_15px_rgba(0,0,0,0.1)] whitespace-normal align-top",
                         isDragging && idx === 0 && "bg-blue-50"
                     )}

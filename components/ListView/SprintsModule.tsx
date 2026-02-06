@@ -4,13 +4,7 @@ import * as React from "react"
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
 import { Check, Plus } from "lucide-react"
 import { cn } from "@/lib/utils"
-
-const SPRINTS = [
-    { label: "Sprint 1", value: "Sprint 1", range: "(7/12 - 8/12)" },
-    { label: "Sprint 2", value: "Sprint 2", range: "(8/12 - 9/12)" },
-    { label: "Sprint 3", value: "Sprint 3", range: "(9/12 - 10/12)" },
-    { label: "Backlog", value: "Backlog", range: "" },
-]
+import { SPRINTS } from "@/data/tableData"
 
 interface SprintsModuleProps {
     sprint: string
@@ -69,7 +63,10 @@ export function SprintsModule({ sprint, onSprintChange }: SprintsModuleProps) {
                     </div>
                 </PopoverContent>
             </Popover>
-            <div className="w-6 h-6 rounded bg-gray-100 flex items-center justify-center cursor-pointer hover:bg-gray-200 opacity-0 group-hover/sprint:opacity-100 transition-opacity">
+            <div
+                onClick={() => setOpen(true)}
+                className="w-6 h-6 rounded bg-gray-100 flex items-center justify-center cursor-pointer hover:bg-gray-200 opacity-0 group-hover/sprint:opacity-100 transition-opacity"
+            >
                 <Plus size={14} className="text-gray-500" />
             </div>
         </div>

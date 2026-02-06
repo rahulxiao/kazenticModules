@@ -1,9 +1,9 @@
 "use client"
 
 import { ColumnDef } from "@tanstack/react-table"
-import { User } from "@/data/tableData"
+import { taskTable } from "@/data/tableData"
 import { HeaderMenu } from "./HeaderMenu"
-import { DatePicker } from "./DatePicker"
+import { DatePicker, formatSmartDate } from "./DatePicker"
 import moment from "moment"
 import { cn } from "@/lib/utils"
 import { AssigneePopOver } from "./AssigneePopOver"
@@ -35,7 +35,7 @@ const getDueDateStyle = (dateStr: string) => {
 
 import { Plus, PlayCircle, Calendar } from "lucide-react"
 
-export const columns: ColumnDef<User>[] = [
+export const columns: ColumnDef<taskTable>[] = [
     {
         accessorKey: "name",
         header: "Name",
@@ -147,10 +147,18 @@ export const columns: ColumnDef<User>[] = [
                     }}
                 >
                     <div className={cn(
-                        "cursor-pointer hover:bg-black/5 px-2 py-1 rounded transition-colors text-[13px] font-medium inline-block flex items-center gap-1.5",
+                        "cursor-pointer hover:bg-black/5 px-2 py-1 rounded transition-colors text-[13px] font-medium inline-block flex items-center gap-1.5 w-full",
+                        // Dynamic color based on smart date
                         getDueDateStyle(date || "")
                     )}>
-                        {date ? formatDueDate(date) : <Calendar size={14} className="text-gray-300" />}
+                        {date ? (() => {
+                            const smart = formatSmartDate(date);
+                            return (
+                                <span className={smart.color}>
+                                    {smart.text}
+                                </span>
+                            )
+                        })() : <Calendar size={14} className="text-gray-300" />}
                     </div>
                 </DatePicker>
             )
@@ -159,8 +167,8 @@ export const columns: ColumnDef<User>[] = [
     {
         accessorKey: "dueDate",
         header: () => <HeaderMenu title="Due Date" />,
-        size: 120,
-        minSize: 80,
+        size: 150,
+        minSize: 120,
         cell: ({ getValue, row, table }) => {
             const date = getValue() as string
             const original = row.original
@@ -177,10 +185,18 @@ export const columns: ColumnDef<User>[] = [
                     }}
                 >
                     <div className={cn(
-                        "cursor-pointer hover:bg-black/5 px-2 py-1 rounded transition-colors text-[13px] font-medium inline-block flex items-center gap-1.5",
+                        "cursor-pointer hover:bg-black/5 px-2 py-1 rounded transition-colors text-[13px] font-medium inline-block flex items-center gap-1.5 w-full",
+                        // Dynamic color based on smart date
                         getDueDateStyle(date || "")
                     )}>
-                        {date ? formatDueDate(date) : <Calendar size={14} className="text-gray-300" />}
+                        {date ? (() => {
+                            const smart = formatSmartDate(date);
+                            return (
+                                <span className={smart.color}>
+                                    {smart.text}
+                                </span>
+                            )
+                        })() : <Calendar size={14} className="text-gray-300" />}
                     </div>
                 </DatePicker>
             )
@@ -207,7 +223,7 @@ export const columns: ColumnDef<User>[] = [
         accessorKey: "sprints",
         header: () => <HeaderMenu title="Sprints" />,
         size: 180,
-        minSize: 140,
+        minSize: 180,
         cell: ({ getValue, row, table }) => {
             const sprint = getValue() as string
             return (
@@ -223,8 +239,8 @@ export const columns: ColumnDef<User>[] = [
     {
         accessorKey: "sprintPoints",
         header: () => <HeaderMenu title="Sprint Points" />,
-        size: 120,
-        minSize: 80,
+        size: 140,
+        minSize: 140,
         cell: ({ getValue, row, table }) => {
             const points = getValue() as string
             return (
@@ -242,8 +258,8 @@ export const columns: ColumnDef<User>[] = [
         accessorKey: "dateCreated",
 
         header: () => <HeaderMenu title="Date Created" />,
-        size: 120,
-        minSize: 100,
+        size: 140,
+        minSize: 140,
         cell: ({ getValue }) => {
             const date = getValue() as string
             return (
@@ -256,11 +272,18 @@ export const columns: ColumnDef<User>[] = [
     {
         accessorKey: "dateClosed",
         header: () => <HeaderMenu title="Date Closed" />,
-        size: 120,
-        minSize: 100,
-        cell: ({ getValue }) => {
+        size: 140,
+        minSize: 140,
+        cell: ({ getValue, row, table }) => {
             const date = getValue() as string
-            return <DateClosedModule date={date} />
+            return (
+                <DateClosedModule
+                    date={date}
+                    onDateChange={(newDate) => {
+                        (table.options.meta as any)?.updateData(row.id, "dateClosed", newDate)
+                    }}
+                />
+            )
         }
     },
     {
@@ -310,8 +333,8 @@ export const columns: ColumnDef<User>[] = [
     {
         accessorKey: "comments",
         header: () => <HeaderMenu title="Comments" />,
-        size: 100,
-        minSize: 80,
+        size: 140,
+        minSize: 140,
         cell: ({ getValue }) => {
             const comments = getValue() as string
             return <CommentsModule count={comments} />
@@ -346,7 +369,9 @@ export const columns: ColumnDef<User>[] = [
     },
     {
         accessorKey: "addNewColumn",
-        header: "+",
+        header: () => {
+            return <button className="text-gray-400 hover:text-gray-600" title="Add New Column">+</button>
+        },
         size: 50,
         minSize: 40,
     },

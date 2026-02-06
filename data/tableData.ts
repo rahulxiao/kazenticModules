@@ -1,4 +1,4 @@
-export type User = {
+export type taskTable = {
     name: string
     assignees: string[]
     avatar?: string
@@ -18,11 +18,18 @@ export type User = {
     taskID?: string
     custom?: string
     addNewColumn?: string
-    subtasks?: User[]
+    subtasks?: taskTable[]
     tags?: string[]
 }
 
+export const SPRINTS = [
+    { label: "Sprint 1", value: "Sprint 1", range: "(7/12 - 8/12)" },
+    { label: "Sprint 2", value: "Sprint 2", range: "(8/12 - 9/12)" },
+    { label: "Sprint 3", value: "Sprint 3", range: "(9/12 - 10/12)" },
+    { label: "Backlog", value: "Backlog", range: "" },
+]
 
+export type Sprint = typeof SPRINTS[number]
 
 export const USERS = [
     { name: "Alif Hassan", email: "alif@example.com", avatar: "https://github.com/shadcn.png" },
@@ -38,13 +45,13 @@ export const USERS = [
     { name: "Nat qwe", email: "nat@example.com", avatar: "" },
 ]
 
-export const tableData: User[] = [
+export const tableData: taskTable[] = [
     {
         "name": "Design Homepage Layout",
         "assignees": ["alif@example.com"],
         "status": "IN PROGRESS",
         "priority": "Urgent",
-        "taskType": "Feature",
+        "taskType": "Task",
         "sprints": "Sprint 1",
         "sprintPoints": "2",
         "startDate": "2025-11-23",
@@ -67,6 +74,8 @@ export const tableData: User[] = [
                 "startDate": "",
                 "dueDate": "",
                 "priority": "",
+                "sprints": "Sprint 1",
+                "sprintPoints": "10",
                 "taskID": "st001",
                 "timeTracker": "Add time",
                 "addNewColumn": "",
