@@ -19,6 +19,7 @@ export type User = {
     custom?: string
     addNewColumn?: string
     subtasks?: User[]
+    tags?: string[]
 }
 
 
@@ -377,8 +378,8 @@ export const tableData: User[] = [
             }
         ]
     },
-    { name: "Create User Profile Page", assignees: ["alif@example.com"], startDate: "", dueDate: "2026-02-07", priority: "Low", taskID: "86ewq17eq", timeTracker: "Add time", addNewColumn: "", dateCreated: "2026-02-03" },
-    { name: "Add Friend Request System", assignees: ["alif@example.com", "tonmoy@example.com"], startDate: "", dueDate: "2026-02-11", priority: "High", taskID: "86ewq17ew", timeTracker: "Add time", addNewColumn: "", dateCreated: "2026-02-03" },
-    { name: "Develop User Login Functionality", assignees: ["alif@example.com"], startDate: "", dueDate: "2026-02-06", priority: "Urgent", taskID: "86ewq17et", timeTracker: "Add time", addNewColumn: "", dateCreated: "2026-02-03" },
-    { name: "Implement User Logout Functionality", assignees: ["alif@example.com"], startDate: "", dueDate: "2026-02-13", priority: "High", taskID: "86ewq17ev", timeTracker: "Add time", addNewColumn: "", dateCreated: "2026-02-03" },
+    { name: "Create User Profile Page need more people to do this task so that i can see what happend in the task", assignees: ["alif@example.com"], startDate: "", dueDate: "2026-02-07", priority: "Low", taskID: "86ewq17eq", timeTracker: "Add time", timeEstimate: "3h", addNewColumn: "", dateCreated: "2026-02-03", tags: ["backend", "frontend"] },
+    { name: "Add Friend Request System", assignees: ["alif@example.com", "tonmoy@example.com"], startDate: "", dueDate: "2026-02-11", priority: "High", taskID: "86ewq17ew", timeTracker: "Add time", timeEstimate: "6h", addNewColumn: "", dateCreated: "2026-02-03" },
+    { name: "Develop User Login Functionality", assignees: ["alif@example.com"], startDate: "", dueDate: "2026-02-06", priority: "Urgent", taskID: "86ewq17et", timeTracker: "Add time", timeEstimate: "", addNewColumn: "", dateCreated: "2026-02-03" },
+    { name: "Implement User Logout Functionality", assignees: ["alif@example.com"], startDate: "", dueDate: "2026-02-13", priority: "High", taskID: "86ewq17ev", timeTracker: "Add time", timeEstimate: "", addNewColumn: "", dateCreated: "2026-02-03" },
 ]

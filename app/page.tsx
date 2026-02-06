@@ -36,8 +36,10 @@ import {
   arrayMove,
   SortableContext,
   horizontalListSortingStrategy,
+  verticalListSortingStrategy,
 } from "@dnd-kit/sortable"
 import { DraggableHeader } from "@/components/ListView/DraggableHeader"
+import { DraggableRow } from "@/components/ListView/DraggableRow"
 
 export default function Page() {
   const [data, setData] = React.useState<User[]>(tableData)
@@ -63,7 +65,12 @@ export default function Page() {
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event
 
-    if (active && over && active.id !== over.id) {
+    if (!active || !over || active.id === over.id) return
+
+    // DISTINGUISH BETWEEN COLUMN DRAG AND ROW DRAG
+    const isColumnDrag = columnOrder.includes(active.id as string)
+
+    if (isColumnDrag) {
       // Prevent moving 'name' or moving anything to 'name' position (index 0)
       if (active.id === 'name' || over.id === 'name' ||
         active.id === 'addNewColumn' || over.id === 'addNewColumn') {
@@ -74,6 +81,50 @@ export default function Page() {
         const oldIndex = order.indexOf(active.id as string)
         const newIndex = order.indexOf(over.id as string)
         return arrayMove(order, oldIndex, newIndex)
+      })
+    } else {
+      // ROW DRAG
+      const activeId = active.id as string
+      const overId = over.id as string
+
+      // Find the row indices and parent paths
+      const activePath = activeId.split('.')
+      const overPath = overId.split('.')
+
+      // Only allow reordering within the same parent
+      if (activePath.slice(0, -1).join('.') !== overPath.slice(0, -1).join('.')) {
+        return
+      }
+
+      const moveRowRecursive = (data: User[], path: string[], targetIdx: number): User[] => {
+        const [currentIndex, ...remainingPath] = path
+        const idx = parseInt(currentIndex)
+
+        if (remainingPath.length === 0) {
+          // Reached the level where moving happens
+          return arrayMove(data, idx, targetIdx)
+        }
+
+        return data.map((item, i) => {
+          if (i === idx) {
+            return {
+              ...item,
+              subtasks: moveRowRecursive(item.subtasks || [], remainingPath, targetIdx)
+            }
+          }
+          return item
+        })
+      }
+
+      const activeIdx = parseInt(activePath[activePath.length - 1])
+      const overIdx = parseInt(overPath[overPath.length - 1])
+      const parentPath = activePath.slice(0, -1)
+
+      setData(old => {
+        if (parentPath.length === 0) {
+          return arrayMove(old, activeIdx, overIdx)
+        }
+        return moveRowRecursive(old, parentPath, overIdx)
       })
     }
   }
@@ -140,14 +191,18 @@ export default function Page() {
     setExpanded(prev => ({ ...(prev as any), [parentId]: true }))
   }
 
+  const [columnSizing, setColumnSizing] = React.useState({})
+
   const table = useReactTable({
     data,
     columns,
     state: {
       expanded,
       columnOrder,
+      columnSizing,
     },
     onColumnOrderChange: setColumnOrder,
+    onColumnSizingChange: setColumnSizing,
     onExpandedChange: setExpanded,
     getSubRows: row => row.subtasks,
     getCoreRowModel: getCoreRowModel(),
@@ -180,7 +235,7 @@ export default function Page() {
           collisionDetection={closestCenter}
           onDragEnd={handleDragEnd}
         >
-          <Table style={{ minWidth: "1200px" }} className="border-collapse">
+          <Table style={{ minWidth: "1200px", tableLayout: "fixed" }} className="border-collapse">
             <TableHeader >
               {table.getHeaderGroups().map(headerGroup => (
                 <TableRow key={headerGroup.id} className="hover:bg-transparent border-b border-gray-100">
@@ -197,66 +252,63 @@ export default function Page() {
             </TableHeader>
 
             <TableBody>
-              {(() => {
-                const rows = table.getRowModel().rows
-                const renderedRows: React.ReactNode[] = []
+              <SortableContext
+                items={table.getRowModel().rows.map(row => row.id)}
+                strategy={verticalListSortingStrategy}
+              >
+                {(() => {
+                  const rows = table.getRowModel().rows
+                  const renderedRows: React.ReactNode[] = []
 
-                rows.forEach((row, index) => {
-                  renderedRows.push(
-                    <TableRow key={row.id} className="group hover:bg-[#F9FAFB] border-b border-gray-50 transition-colors">
-                      {row.getVisibleCells().map((cell, idx) => (
-                        <TableCell
-                          key={cell.id}
-                          style={{ width: cell.column.getSize() }}
-                          className={cn(
-                            "py-1 px-3 border-r border-gray-50 last:border-r-0 relative group/cell",
-                            idx === 0 && cell.column.id === "name" && "sticky left-0 z-40 bg-white group-hover:bg-[#F9FAFB] border-r border-gray-100 shadow-[6px_0_15px_rgba(0,0,0,0.1)]"
-                          )}
-                        >
-                          {/* Cell Highlight Effect */}
-                          <div className="absolute inset-[2px] border border-transparent group-hover/cell:border-gray-300 group-hover/cell:bg-gray-400/5 rounded-md pointer-events-none transition-all duration-200 z-0" />
+                  rows.forEach((row, index) => {
+                    renderedRows.push(
+                      <DraggableRow key={row.id} row={row} />
+                    )
 
-                          <div className={cn("relative", idx === 0 && cell.column.id === "name" ? "z-10" : "z-0")}>
-                            {flexRender(
-                              cell.column.columnDef.cell,
-                              cell.getContext()
-                            )}
-                          </div>
-                        </TableCell>
-                      ))}
-                    </TableRow>
-                  )
+                    if (addingSubtaskTo) {
+                      const isParent = row.id === addingSubtaskTo
+                      const nextRow = rows[index + 1]
+                      const isLastDescendant = isParent && (!nextRow || !nextRow.id.startsWith(addingSubtaskTo + "."))
+                      const isLastChildOfParent = row.id.startsWith(addingSubtaskTo + ".") && (!nextRow || !nextRow.id.startsWith(addingSubtaskTo + "."))
 
-                  if (addingSubtaskTo) {
-                    const isParent = row.id === addingSubtaskTo
-                    const nextRow = rows[index + 1]
-                    const isLastDescendant = isParent && (!nextRow || !nextRow.id.startsWith(addingSubtaskTo + "."))
-                    const isLastChildOfParent = row.id.startsWith(addingSubtaskTo + ".") && (!nextRow || !nextRow.id.startsWith(addingSubtaskTo + "."))
-
-                    if (isLastDescendant || isLastChildOfParent) {
-                      renderedRows.push(
-                        <TableRow key={`${row.id}-add`} className="group/add bg-[#FDFDFD] border-b border-gray-50">
-                          <TableCell
-                            colSpan={table.getAllColumns().length}
-                            className="p-0 border-none sticky left-0 z-30 bg-[#FDFDFD]"
-                          >
-                            <AddSubtaskModule
-                              depth={row.id === addingSubtaskTo ? row.depth + 1 : row.depth}
-                              onCancel={() => setAddingSubtaskTo(null)}
-                              onSave={(subtaskName) => {
-                                addSubtask(addingSubtaskTo, subtaskName)
-                                setAddingSubtaskTo(null)
-                              }}
-                            />
-                          </TableCell>
-                        </TableRow>
-                      )
+                      if (isLastDescendant || isLastChildOfParent) {
+                        renderedRows.push(
+                          <TableRow key={`${row.id}-add`} className="group/add bg-[#FDFDFD] border-b border-gray-50">
+                            {table.getVisibleFlatColumns().map((column, colIdx) => {
+                              const isNameColumn = column.id === "name"
+                              return (
+                                <TableCell
+                                  key={column.id}
+                                  style={{ width: column.getSize() }}
+                                  className={cn(
+                                    "p-0 border-r border-gray-50 last:border-r-0 relative",
+                                    isNameColumn && "sticky left-0 z-40 bg-[#FDFDFD] border-r border-gray-100 shadow-[6px_0_15px_rgba(0,0,0,0.1)]"
+                                  )}
+                                >
+                                  {isNameColumn ? (
+                                    <AddSubtaskModule
+                                      depth={row.id === addingSubtaskTo ? row.depth + 1 : row.depth}
+                                      onCancel={() => setAddingSubtaskTo(null)}
+                                      onSave={(subtaskName) => {
+                                        addSubtask(addingSubtaskTo, subtaskName)
+                                        setAddingSubtaskTo(null)
+                                      }}
+                                    />
+                                  ) : (
+                                    <div className="h-full w-full" />
+                                  )}
+                                </TableCell>
+                              )
+                            })}
+                          </TableRow>
+                        )
+                      }
                     }
-                  }
-                })
+                  })
 
-                return renderedRows
-              })()}
+                  return renderedRows
+                })()}
+              </SortableContext>
             </TableBody>
           </Table>
         </DndContext>

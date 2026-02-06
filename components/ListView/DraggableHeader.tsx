@@ -30,7 +30,7 @@ export function DraggableHeader({ header, index }: DraggableHeaderProps) {
 
     const style: React.CSSProperties = {
         transform: CSS.Translate.toString(transform),
-        transition,
+        transition: isDragging ? transition : undefined, // Disable transition when not dragging (prevents laggy resizing)
         width: header.getSize(),
         zIndex: isDragging ? 100 : undefined,
         opacity: isDragging ? 0.8 : 1,
@@ -61,13 +61,27 @@ export function DraggableHeader({ header, index }: DraggableHeaderProps) {
                 )}
             </div>
 
-            {/* Resize Handle - Still functional if needed */}
+            {/* Resize Handle */}
             {header.column.getCanResize() && (
                 <div
-                    onMouseDown={header.getResizeHandler()}
-                    onTouchStart={header.getResizeHandler()}
-                    className="absolute right-0 top-0 h-full w-1 cursor-col-resize select-none bg-transparent hover:bg-blue-500 z-30"
-                />
+                    onMouseDown={(e) => {
+                        e.stopPropagation() // Prevent drag trigger when resizing
+                        header.getResizeHandler()(e)
+                    }}
+                    onTouchStart={(e) => {
+                        e.stopPropagation()
+                        header.getResizeHandler()(e)
+                    }}
+                    className={cn(
+                        "absolute right-0 top-0 h-full w-2 cursor-col-resize select-none z-30 group/resizer",
+                        header.column.getIsResizing() ? "bg-blue-500 w-1" : "hover:bg-blue-400/30"
+                    )}
+                >
+                    <div className={cn(
+                        "absolute right-[1px] top-1/2 -translate-y-1/2 h-4 w-[2px] rounded-full bg-gray-300 transition-colors",
+                        header.column.getIsResizing() ? "bg-blue-600 h-full top-0 translate-y-0" : "group-hover/resizer:bg-blue-500"
+                    )} />
+                </div>
             )}
         </TableHead>
     )
