@@ -14,20 +14,69 @@ import {
   Table,
   TableBody,
   TableCell,
-  TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
 import { User, tableData } from "@/data/tableData"
 
 import { AddSubtaskModule } from "@/components/ListView/AddSubtaskModule"
-
 import { cn } from "@/lib/utils"
+
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  MouseSensor,
+  TouchSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from "@dnd-kit/core"
+import {
+  arrayMove,
+  SortableContext,
+  horizontalListSortingStrategy,
+} from "@dnd-kit/sortable"
+import { DraggableHeader } from "@/components/ListView/DraggableHeader"
 
 export default function Page() {
   const [data, setData] = React.useState<User[]>(tableData)
   const [addingSubtaskTo, setAddingSubtaskTo] = React.useState<string | null>(null)
   const [expanded, setExpanded] = React.useState<ExpandedState>({ "0": true, "0.0": true, "0.0.1": true })
+
+  // Initialize column order, ensuring 'name' is first and handled specially
+  const [columnOrder, setColumnOrder] = React.useState<string[]>(() => {
+    const order = columns.map((c: any) => c.accessorKey || c.id || "unknown")
+    return order
+  })
+
+  const sensors = useSensors(
+    useSensor(MouseSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
+    useSensor(TouchSensor),
+    useSensor(KeyboardSensor)
+  )
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event
+
+    if (active && over && active.id !== over.id) {
+      // Prevent moving 'name' or moving anything to 'name' position (index 0)
+      if (active.id === 'name' || over.id === 'name' ||
+        active.id === 'addNewColumn' || over.id === 'addNewColumn') {
+        return
+      }
+
+      setColumnOrder((order) => {
+        const oldIndex = order.indexOf(active.id as string)
+        const newIndex = order.indexOf(over.id as string)
+        return arrayMove(order, oldIndex, newIndex)
+      })
+    }
+  }
 
   const updateData = (rowId: string, columnId: string, value: any) => {
     const updateRecursive = (data: User[], path: string[]): User[] => {
@@ -96,7 +145,9 @@ export default function Page() {
     columns,
     state: {
       expanded,
+      columnOrder,
     },
+    onColumnOrderChange: setColumnOrder,
     onExpandedChange: setExpanded,
     getSubRows: row => row.subtasks,
     getCoreRowModel: getCoreRowModel(),
@@ -111,110 +162,104 @@ export default function Page() {
     },
   })
 
+  // Prevent hydration mismatch for DND components
+  const [mounted, setMounted] = React.useState(false)
+  React.useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!mounted) {
+    return <div className="p-10 font-sans bg-[#fafafa] min-h-screen" />
+  }
+
   return (
     <div className="p-10 font-sans bg-[#fafafa] min-h-screen">
       <div className="max-w-[1400px] mx-auto bg-white rounded-xl shadow-sm border border-gray-100 overflow-x-auto text-[#222]">
-        <Table style={{ minWidth: "1200px" }} className="border-collapse">
-          <TableHeader >
-            {table.getHeaderGroups().map(headerGroup => (
-              <TableRow key={headerGroup.id} className="hover:bg-transparent border-b border-gray-100">
-                {headerGroup.headers.map((header, index) => (
-                  <TableHead
-                    key={header.id}
-                    style={{ width: header.getSize() }}
-                    className={cn(
-                      "relative py-4 px-4 text-left text-[13px] font-semibold text-gray-500 bg-[#F2F9FE] border-r border-gray-50 last:border-r-0",
-                      index === 0 && "sticky left-0 z-50 bg-[#F2F9FE] border-r border-gray-100 shadow-[6px_0_15px_rgba(0,0,0,0.1)]"
-                    )}
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+        >
+          <Table style={{ minWidth: "1200px" }} className="border-collapse">
+            <TableHeader >
+              {table.getHeaderGroups().map(headerGroup => (
+                <TableRow key={headerGroup.id} className="hover:bg-transparent border-b border-gray-100">
+                  <SortableContext
+                    items={columnOrder}
+                    strategy={horizontalListSortingStrategy}
                   >
-                    {flexRender(
-                      header.column.columnDef.header,
-                      header.getContext()
-                    )}
-
-                    {/* Resize Handle */}
-                    {header.column.getCanResize() && (
-                      <div
-                        onMouseDown={header.getResizeHandler()}
-                        onTouchStart={header.getResizeHandler()}
-                        className="absolute right-0 top-0 h-full w-1 cursor-col-resize select-none bg-transparent hover:bg-blue-500 z-30"
-                      />
-                    )}
-                  </TableHead>
-                ))}
-              </TableRow>
-            ))}
-          </TableHeader>
-
-          <TableBody>
-            {(() => {
-              const rows = table.getRowModel().rows
-              const renderedRows: React.ReactNode[] = []
-
-              rows.forEach((row, index) => {
-                renderedRows.push(
-                  <TableRow key={row.id} className="group hover:bg-[#F9FAFB] border-b border-gray-50 transition-colors">
-                    {row.getVisibleCells().map((cell, idx) => (
-                      <TableCell
-                        key={cell.id}
-                        style={{ width: cell.column.getSize() }}
-                        className={cn(
-                          "py-1 px-3 border-r border-gray-50 last:border-r-0 relative group/cell",
-                          idx === 0 && "sticky left-0 z-40 bg-white group-hover:bg-[#F9FAFB] border-r border-gray-50 shadow-[6px_0_15px_rgba(0,0,0,0.1)]"
-                        )}
-                      >
-                        {/* Cell Highlight Effect */}
-                        <div className="absolute inset-[2px] border border-transparent group-hover/cell:border-gray-300 group-hover/cell:bg-gray-400/5 rounded-md pointer-events-none transition-all duration-200 z-0" />
-
-                        <div className={cn("relative", idx === 0 ? "z-10" : "z-0")}>
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext()
-                          )}
-                        </div>
-                      </TableCell>
+                    {headerGroup.headers.map((header, index) => (
+                      <DraggableHeader key={header.id} header={header} index={index} />
                     ))}
-                  </TableRow>
-                )
+                  </SortableContext>
+                </TableRow>
+              ))}
+            </TableHeader>
 
-                // Check if this is the right place to show the "Add subtask" input
-                // It should show after the last visible descendant of the expanding parent
-                if (addingSubtaskTo) {
-                  const isParent = row.id === addingSubtaskTo
-                  const nextRow = rows[index + 1]
-                  const isLastDescendant = isParent && (!nextRow || !nextRow.id.startsWith(addingSubtaskTo + "."))
-                  const nextIsRelative = nextRow && nextRow.id.startsWith(addingSubtaskTo + ".")
-                  const nextIsNotRelative = nextRow && !nextRow.id.startsWith(addingSubtaskTo + ".")
+            <TableBody>
+              {(() => {
+                const rows = table.getRowModel().rows
+                const renderedRows: React.ReactNode[] = []
 
-                  // If current row is the last visible descendant of the addingSubtaskTo parent
-                  const isLastChildOfParent = row.id.startsWith(addingSubtaskTo + ".") && (!nextRow || !nextRow.id.startsWith(addingSubtaskTo + "."))
-
-                  if (isLastDescendant || isLastChildOfParent) {
-                    renderedRows.push(
-                      <TableRow key={`${row.id}-add`} className="group/add bg-[#FDFDFD] border-b border-gray-50">
+                rows.forEach((row, index) => {
+                  renderedRows.push(
+                    <TableRow key={row.id} className="group hover:bg-[#F9FAFB] border-b border-gray-50 transition-colors">
+                      {row.getVisibleCells().map((cell, idx) => (
                         <TableCell
-                          colSpan={table.getAllColumns().length}
-                          className="p-0 border-none sticky left-0 z-30 bg-[#FDFDFD]"
+                          key={cell.id}
+                          style={{ width: cell.column.getSize() }}
+                          className={cn(
+                            "py-1 px-3 border-r border-gray-50 last:border-r-0 relative group/cell",
+                            idx === 0 && cell.column.id === "name" && "sticky left-0 z-40 bg-white group-hover:bg-[#F9FAFB] border-r border-gray-100 shadow-[6px_0_15px_rgba(0,0,0,0.1)]"
+                          )}
                         >
-                          <AddSubtaskModule
-                            depth={row.id === addingSubtaskTo ? row.depth + 1 : row.depth}
-                            onCancel={() => setAddingSubtaskTo(null)}
-                            onSave={(subtaskName) => {
-                              addSubtask(addingSubtaskTo, subtaskName)
-                              setAddingSubtaskTo(null)
-                            }}
-                          />
-                        </TableCell>
-                      </TableRow>
-                    )
-                  }
-                }
-              })
+                          {/* Cell Highlight Effect */}
+                          <div className="absolute inset-[2px] border border-transparent group-hover/cell:border-gray-300 group-hover/cell:bg-gray-400/5 rounded-md pointer-events-none transition-all duration-200 z-0" />
 
-              return renderedRows
-            })()}
-          </TableBody>
-        </Table>
+                          <div className={cn("relative", idx === 0 && cell.column.id === "name" ? "z-10" : "z-0")}>
+                            {flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext()
+                            )}
+                          </div>
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  )
+
+                  if (addingSubtaskTo) {
+                    const isParent = row.id === addingSubtaskTo
+                    const nextRow = rows[index + 1]
+                    const isLastDescendant = isParent && (!nextRow || !nextRow.id.startsWith(addingSubtaskTo + "."))
+                    const isLastChildOfParent = row.id.startsWith(addingSubtaskTo + ".") && (!nextRow || !nextRow.id.startsWith(addingSubtaskTo + "."))
+
+                    if (isLastDescendant || isLastChildOfParent) {
+                      renderedRows.push(
+                        <TableRow key={`${row.id}-add`} className="group/add bg-[#FDFDFD] border-b border-gray-50">
+                          <TableCell
+                            colSpan={table.getAllColumns().length}
+                            className="p-0 border-none sticky left-0 z-30 bg-[#FDFDFD]"
+                          >
+                            <AddSubtaskModule
+                              depth={row.id === addingSubtaskTo ? row.depth + 1 : row.depth}
+                              onCancel={() => setAddingSubtaskTo(null)}
+                              onSave={(subtaskName) => {
+                                addSubtask(addingSubtaskTo, subtaskName)
+                                setAddingSubtaskTo(null)
+                              }}
+                            />
+                          </TableCell>
+                        </TableRow>
+                      )
+                    }
+                  }
+                })
+
+                return renderedRows
+              })()}
+            </TableBody>
+          </Table>
+        </DndContext>
       </div>
     </div>
   )
