@@ -20,6 +20,7 @@ import {
     ArrowUp,
     ArrowDown,
     Hash,
+    X,
 } from "lucide-react"
 
 import {
@@ -45,6 +46,7 @@ export type MenuAction =
     | "duplicate"
     | "deleteField"
     | "customizeTaskId"
+    | "clearSort"
 
 export interface MenuItemConfig {
     id: MenuAction
@@ -122,6 +124,11 @@ export const menuItemDefinitions: Record<MenuAction, Omit<MenuItemConfig, "actio
         icon: Hash,
         label: "Customize task ID",
     },
+    clearSort: {
+        id: "clearSort",
+        icon: X,
+        label: "Clear sort",
+    },
 }
 
 export const defaultActions: Record<MenuAction, (columnId: string) => void> = {
@@ -137,6 +144,7 @@ export const defaultActions: Record<MenuAction, (columnId: string) => void> = {
     duplicate: (columnId) => console.log(`Duplicate: ${columnId}`),
     deleteField: (columnId) => console.log(`Delete field: ${columnId}`),
     customizeTaskId: (columnId) => console.log(`Customize task ID: ${columnId}`),
+    clearSort: (columnId) => console.log(`Clear sort: ${columnId}`),
 }
 
 const fullMenuConfig: HeaderMenuConfig = {
@@ -350,6 +358,11 @@ export function HeaderMenu({
             calculate: (colId: string) => {
                 setCalculateOpen(true)
             },
+            clearSort: (colId: string) => {
+                const currentSorting = table.getState().sorting
+                const newSorting = currentSorting.filter(s => s.id !== colId)
+                table.setSorting(newSorting)
+            },
         }
     }
 
@@ -468,6 +481,16 @@ export function HeaderMenu({
                 >
                     {table && <SortingOrderPanel table={table} />}
                     <div className="flex flex-col text-sm py-1 overflow-y-auto max-h-[500px]">
+                        {/* Dynamic "Clear sort" option */}
+                        {currentSort && (
+                            <div className="p-1 border-b border-border/50">
+                                <MenuItem
+                                    icon={menuItemDefinitions.clearSort.icon}
+                                    label={menuItemDefinitions.clearSort.label}
+                                    onClick={() => handleItemClick("clearSort")}
+                                />
+                            </div>
+                        )}
                         {menuConfig.sections.map((section, sectionIndex) => (
                             <div
                                 key={sectionIndex}
