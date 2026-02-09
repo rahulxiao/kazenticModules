@@ -2,7 +2,7 @@
 
 import { ColumnDef } from "@tanstack/react-table"
 import { taskTable } from "@/data/tableData"
-import { HeaderMenu } from "./HeaderMenu"
+import { HeaderMenu } from "./HeaderManu/HeaderMenu"
 import { DatePicker, formatSmartDate } from "./DatePicker"
 import moment from "moment"
 import { cn } from "@/lib/utils"
@@ -77,16 +77,29 @@ export const columns: ColumnDef<taskTable>[] = [
     },
     {
         accessorKey: "status",
-        header: () => <HeaderMenu title="Status" />,
+        header: ({ table, column }) => <HeaderMenu title="Status" columnId={column.id} table={table} />,
         size: 160,
         minSize: 120,
-        cell: ({ getValue, row, table }) => {
+        sortingFn: (rowA, rowB) => {
+            const statusOrder: Record<string, number> = {
+                "To Do": 1,
+                "In Progress": 2,
+                "In Review": 3,
+                "Done": 4,
+                "Blocked": 5,
+                "": 6,
+            }
+            const statusA = (rowA.getValue("status") as string) || ""
+            const statusB = (rowB.getValue("status") as string) || ""
+            return (statusOrder[statusA] || 999) - (statusOrder[statusB] || 999)
+        },
+        cell: ({ getValue, row, column, table }) => {
             const status = getValue() as string
             return (
                 <StatusModule
                     status={status}
                     onStatusChange={(newStatus) => {
-                        (table.options.meta as any)?.updateData(row.id, "status", newStatus)
+                        (table.options.meta as any)?.updateData(row.id, column.id, newStatus)
                     }}
                 />
             )
@@ -94,16 +107,28 @@ export const columns: ColumnDef<taskTable>[] = [
     },
     {
         accessorKey: "priority",
-        header: () => <HeaderMenu title="Priority" />,
+        header: ({ table, column }) => <HeaderMenu title="Priority" columnId={column.id} table={table} />,
         size: 140,
         minSize: 100,
-        cell: ({ getValue, row, table }) => {
+        sortingFn: (rowA, rowB) => {
+            const priorityOrder: Record<string, number> = {
+                "Urgent": 1,
+                "High": 2,
+                "Medium": 3,
+                "Low": 4,
+                "": 5,
+            }
+            const priorityA = (rowA.getValue("priority") as string) || ""
+            const priorityB = (rowB.getValue("priority") as string) || ""
+            return (priorityOrder[priorityA] || 999) - (priorityOrder[priorityB] || 999)
+        },
+        cell: ({ getValue, row, column, table }) => {
             const priority = getValue() as string
             return (
                 <PriorityPopOver
                     priority={priority}
                     onPriorityChange={(newPriority) => {
-                        (table.options.meta as any)?.updateData(row.id, "priority", newPriority)
+                        (table.options.meta as any)?.updateData(row.id, column.id, newPriority)
                     }}
                 />
             )
@@ -111,16 +136,16 @@ export const columns: ColumnDef<taskTable>[] = [
     },
     {
         accessorKey: "assignees",
-        header: () => <HeaderMenu title="Assignee" />,
+        header: ({ table, column }) => <HeaderMenu title="Assignee" columnId={column.id} table={table} />,
         size: 140,
         minSize: 100,
-        cell: ({ getValue, row, table }) => {
+        cell: ({ getValue, row, column, table }) => {
             const assignees = getValue() as string[]
             return (
                 <AssigneePopOver
                     assignees={assignees}
                     onAssigneesChange={(newAssignees) => {
-                        (table.options.meta as any)?.updateData(row.id, "assignees", newAssignees)
+                        (table.options.meta as any)?.updateData(row.id, column.id, newAssignees)
                     }}
                 />
             )
@@ -128,9 +153,16 @@ export const columns: ColumnDef<taskTable>[] = [
     },
     {
         accessorKey: "startDate",
-        header: () => <HeaderMenu title="Start Date" />,
+        header: ({ table, column }) => <HeaderMenu title="Start Date" columnId={column.id} table={table} />,
         size: 120,
         minSize: 80,
+        sortingFn: (rowA, rowB) => {
+            const dateA = rowA.getValue("startDate") as string
+            const dateB = rowB.getValue("startDate") as string
+            if (!dateA) return 1
+            if (!dateB) return -1
+            return new Date(dateA).getTime() - new Date(dateB).getTime()
+        },
         cell: ({ getValue, row, table }) => {
             const date = getValue() as string
             const original = row.original
@@ -166,9 +198,16 @@ export const columns: ColumnDef<taskTable>[] = [
     },
     {
         accessorKey: "dueDate",
-        header: () => <HeaderMenu title="Due Date" />,
+        header: ({ table, column }) => <HeaderMenu title="Due Date" columnId={column.id} table={table} />,
         size: 150,
         minSize: 120,
+        sortingFn: (rowA, rowB) => {
+            const dateA = rowA.getValue("dueDate") as string
+            const dateB = rowB.getValue("dueDate") as string
+            if (!dateA) return 1
+            if (!dateB) return -1
+            return new Date(dateA).getTime() - new Date(dateB).getTime()
+        },
         cell: ({ getValue, row, table }) => {
             const date = getValue() as string
             const original = row.original
@@ -204,16 +243,16 @@ export const columns: ColumnDef<taskTable>[] = [
     },
     {
         accessorKey: "taskType",
-        header: () => <HeaderMenu title="Task Type" />,
+        header: ({ table, column }) => <HeaderMenu title="Task Type" columnId={column.id} table={table} />,
         size: 150,
         minSize: 110,
-        cell: ({ getValue, row, table }) => {
+        cell: ({ getValue, row, column, table }) => {
             const type = getValue() as string
             return (
                 <TaskTypeModule
                     type={type}
                     onTypeChange={(newType) => {
-                        (table.options.meta as any)?.updateData(row.id, "taskType", newType)
+                        (table.options.meta as any)?.updateData(row.id, column.id, newType)
                     }}
                 />
             )
@@ -221,16 +260,16 @@ export const columns: ColumnDef<taskTable>[] = [
     },
     {
         accessorKey: "sprints",
-        header: () => <HeaderMenu title="Sprints" />,
+        header: ({ table, column }) => <HeaderMenu title="Sprints" columnId={column.id} table={table} />,
         size: 180,
         minSize: 180,
-        cell: ({ getValue, row, table }) => {
+        cell: ({ getValue, row, column, table }) => {
             const sprint = getValue() as string
             return (
                 <SprintsModule
                     sprint={sprint}
                     onSprintChange={(newSprint) => {
-                        (table.options.meta as any)?.updateData(row.id, "sprints", newSprint)
+                        (table.options.meta as any)?.updateData(row.id, column.id, newSprint)
                     }}
                 />
             )
@@ -238,16 +277,21 @@ export const columns: ColumnDef<taskTable>[] = [
     },
     {
         accessorKey: "sprintPoints",
-        header: () => <HeaderMenu title="Sprint Points" />,
+        header: ({ table, column }) => <HeaderMenu title="Sprint Points" columnId={column.id} table={table} />,
         size: 140,
         minSize: 140,
-        cell: ({ getValue, row, table }) => {
+        sortingFn: (rowA, rowB) => {
+            const pointsA = parseInt((rowA.getValue("sprintPoints") as string) || "0")
+            const pointsB = parseInt((rowB.getValue("sprintPoints") as string) || "0")
+            return pointsA - pointsB
+        },
+        cell: ({ getValue, row, column, table }) => {
             const points = getValue() as string
             return (
                 <SprintPointsModule
                     points={points}
                     onPointsChange={(newPoints) => {
-                        (table.options.meta as any)?.updateData(row.id, "sprintPoints", newPoints)
+                        (table.options.meta as any)?.updateData(row.id, column.id, newPoints)
                     }}
                 />
             )
@@ -257,9 +301,16 @@ export const columns: ColumnDef<taskTable>[] = [
     {
         accessorKey: "dateCreated",
 
-        header: () => <HeaderMenu title="Date Created" />,
+        header: ({ table, column }) => <HeaderMenu title="Date Created" columnId={column.id} table={table} />,
         size: 140,
         minSize: 140,
+        sortingFn: (rowA, rowB) => {
+            const dateA = rowA.getValue("dateCreated") as string
+            const dateB = rowB.getValue("dateCreated") as string
+            if (!dateA) return 1
+            if (!dateB) return -1
+            return new Date(dateA).getTime() - new Date(dateB).getTime()
+        },
         cell: ({ getValue }) => {
             const date = getValue() as string
             return (
@@ -271,16 +322,23 @@ export const columns: ColumnDef<taskTable>[] = [
     },
     {
         accessorKey: "dateClosed",
-        header: () => <HeaderMenu title="Date Closed" />,
+        header: ({ table, column }) => <HeaderMenu title="Date Closed" columnId={column.id} table={table} />,
         size: 140,
         minSize: 140,
-        cell: ({ getValue, row, table }) => {
+        sortingFn: (rowA, rowB) => {
+            const dateA = rowA.getValue("dateClosed") as string
+            const dateB = rowB.getValue("dateClosed") as string
+            if (!dateA) return 1
+            if (!dateB) return -1
+            return new Date(dateA).getTime() - new Date(dateB).getTime()
+        },
+        cell: ({ getValue, row, column, table }) => {
             const date = getValue() as string
             return (
                 <DateClosedModule
                     date={date}
                     onDateChange={(newDate) => {
-                        (table.options.meta as any)?.updateData(row.id, "dateClosed", newDate)
+                        (table.options.meta as any)?.updateData(row.id, column.id, newDate)
                     }}
                 />
             )
@@ -288,16 +346,16 @@ export const columns: ColumnDef<taskTable>[] = [
     },
     {
         accessorKey: "timeEstimate",
-        header: () => <HeaderMenu title="Time Estimated" />,
+        header: ({ table, column }) => <HeaderMenu title="Time Estimated" columnId={column.id} table={table} />,
         size: 150,
         minSize: 110,
-        cell: ({ getValue, row, table }) => {
+        cell: ({ getValue, row, column, table }) => {
             const time = getValue() as string
             return (
                 <TimeEstimation
                     value={time}
                     onChange={(newLabel) => {
-                        (table.options.meta as any)?.updateData(row.id, "timeEstimate", newLabel);
+                        (table.options.meta as any)?.updateData(row.id, column.id, newLabel);
                     }}
                 />
             )
@@ -305,16 +363,16 @@ export const columns: ColumnDef<taskTable>[] = [
     },
     {
         accessorKey: "timeTracker",
-        header: () => <HeaderMenu title="Time Tracked" />,
+        header: ({ table, column }) => <HeaderMenu title="Time Tracked" columnId={column.id} table={table} />,
         size: 150,
         minSize: 110,
-        cell: ({ getValue, row, table }) => {
+        cell: ({ getValue, row, column, table }) => {
             const time = getValue() as string
             return (
                 <TimeTracker
                     value={time}
                     onChange={(newValue) => {
-                        (table.options.meta as any)?.updateData(row.id, "timeTracker", newValue)
+                        (table.options.meta as any)?.updateData(row.id, column.id, newValue)
                     }}
                 />
             )
@@ -322,7 +380,7 @@ export const columns: ColumnDef<taskTable>[] = [
     },
     {
         accessorKey: "createdBy",
-        header: () => <HeaderMenu title="Created By" />,
+        header: ({ table }) => <HeaderMenu title="Created By" columnId="createdBy" table={table} />,
         size: 150,
         minSize: 110,
         cell: ({ getValue }) => {
@@ -332,7 +390,7 @@ export const columns: ColumnDef<taskTable>[] = [
     },
     {
         accessorKey: "comments",
-        header: () => <HeaderMenu title="Comments" />,
+        header: ({ table }) => <HeaderMenu title="Comments" columnId="comments" table={table} />,
         size: 140,
         minSize: 140,
         cell: ({ getValue }) => {
@@ -342,7 +400,7 @@ export const columns: ColumnDef<taskTable>[] = [
     },
     {
         accessorKey: "taskID",
-        header: () => <HeaderMenu title="Task ID" />,
+        header: ({ table }) => <HeaderMenu title="Task ID" columnId="taskID" table={table} />,
         size: 120,
         minSize: 90,
         cell: ({ getValue }) => {
@@ -352,16 +410,16 @@ export const columns: ColumnDef<taskTable>[] = [
     },
     {
         accessorKey: "custom",
-        header: () => <HeaderMenu title="Custom" />,
+        header: ({ table, column }) => <HeaderMenu title="Custom" columnId={column.id} table={table} />,
         size: 150,
         minSize: 110,
-        cell: ({ getValue, row, table }) => {
+        cell: ({ getValue, row, column, table }) => {
             const value = getValue() as string
             return (
                 <CustomModule
                     value={value}
                     onValueChange={(newValue) => {
-                        (table.options.meta as any)?.updateData(row.id, "custom", newValue)
+                        (table.options.meta as any)?.updateData(row.id, column.id, newValue)
                     }}
                 />
             )
@@ -369,8 +427,18 @@ export const columns: ColumnDef<taskTable>[] = [
     },
     {
         accessorKey: "addNewColumn",
-        header: () => {
-            return <button className="text-gray-400 hover:text-gray-600" title="Add New Column">+</button>
+        header: ({ table }: any) => {
+            return (
+                <div className="flex h-full w-full items-center justify-center">
+                    <button
+                        onClick={() => (table.options.meta as any)?.onOpenAddColumns?.()}
+                        className="flex h-7 w-7 items-center justify-center rounded-md text-gray-400 hover:bg-gray-100 hover:text-gray-700 transition-all duration-200"
+                        title="Add New Column"
+                    >
+                        <Plus strokeWidth={2} className="h-4 w-4" />
+                    </button>
+                </div>
+            )
         },
         size: 50,
         minSize: 40,
