@@ -13,31 +13,19 @@ const indexColumn: ColumnDef<taskTable> = {
     accessorKey: "index",
     id: "index",
     // Header: Shows # by default. Shows Checkbox if hovered OR if rows are selected.
-    header: ({ table }) => {
-        const isSelected = table.getIsAllPageRowsSelected() || table.getIsSomePageRowsSelected()
-        return (
-            <div className="group/header flex items-center justify-center w-full h-full relative">
-                <span className={cn(
-                    "transition-opacity duration-200 text-[13px] text-gray-500 font-semibold",
-                    isSelected ? "opacity-0 hidden" : "group-hover/header:opacity-0 group-hover/header:hidden"
-                )}>
-                    #
-                </span>
-                <Checkbox
-                    checked={
-                        table.getIsAllPageRowsSelected() ||
-                        (table.getIsSomePageRowsSelected() && "indeterminate")
-                    }
-                    onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-                    aria-label="Select all"
-                    className={cn(
-                        "absolute transition-opacity duration-200 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600",
-                        isSelected ? "opacity-100 relative" : "opacity-0 group-hover/header:opacity-100 group-hover/header:relative"
-                    )}
-                />
-            </div>
-        )
-    },
+    header: ({ table }) => (
+        <div className="flex items-center justify-center w-full h-full">
+            <Checkbox
+                checked={
+                    table.getIsAllPageRowsSelected() ||
+                    (table.getIsSomePageRowsSelected() && "indeterminate")
+                }
+                onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+                aria-label="Select all"
+                className="data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600 w-4 h-4 rounded border-gray-300"
+            />
+        </div>
+    ),
     cell: ({ row, table, ...rest }: any) => {
         const dragHandleProps = rest.dragHandleProps
         const isSelected = row.getIsSelected()
@@ -46,26 +34,17 @@ const indexColumn: ColumnDef<taskTable> = {
             <div
                 className="flex items-center justify-center w-full h-full relative group/index-cell"
             >
-                {/* Index Number: Visible when NOT selected AND NOT hovered */}
-                <span className={cn(
-                    "text-xs font-medium text-gray-500 transition-all absolute",
-                    isSelected ? "opacity-0 scale-90" : "group-hover:opacity-0 group-hover:scale-90"
-                )}>
-                    {row.index + 1}
-                </span>
-
-                {/* Drag Handle & Checkbox Container: Visible when Selected OR Hovered */}
                 <div
                     className={cn(
                         "flex items-center gap-1 transition-all",
-                        isSelected
+                        (isSelected || true) // Always show checkbox for now to match image
                             ? "opacity-100 scale-100"
-                            : "opacity-0 scale-90 group-hover:opacity-100 group-hover:scale-100 pointer-events-none group-hover:pointer-events-auto"
+                            : "opacity-0 scale-90 group-hover:opacity-100 group-hover:scale-100"
                     )}
                 >
                     <GripVertical
                         size={14}
-                        className="text-gray-400 cursor-grab active:cursor-grabbing"
+                        className="text-gray-400 cursor-grab active:cursor-grabbing opacity-0 group-hover/index-cell:opacity-100"
                         {...dragHandleProps}
                     />
                     <Checkbox
@@ -90,7 +69,7 @@ const modifiedListViewColumns = listViewColumns.map((col: any) => {
             ...col,
             header: ({ column, table }: any) => (
                 <HeaderMenu
-                    title="Name"
+                    title="Task Name"
                     columnId="name"
                     table={table}
                 />

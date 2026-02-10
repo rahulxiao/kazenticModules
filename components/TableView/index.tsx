@@ -22,6 +22,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
+import { ChevronDown, Check } from "lucide-react"
 import { AddColums } from "../ListView/FieldColums"
 import { BulkActionsToolbar } from "../ListView/BulkActionsToolbar"
 import { Column } from "@tanstack/react-table"
@@ -47,6 +48,44 @@ export default function TaskTable() {
     const [columnPinning, setColumnPinning] = React.useState<ColumnPinningState>({ left: ["index"] })
     const [addingSubtaskTo, setAddingSubtaskTo] = React.useState<string | null>(null)
     const [isAddColumnsOpen, setIsAddColumnsOpen] = React.useState(false)
+    const [rowSizing, setRowSizing] = React.useState<Record<string, number>>({})
+
+    // Row Resizing Logic
+    const handleRowResizeStart = React.useCallback(
+        (e: React.MouseEvent | React.TouchEvent, rowId: string) => {
+            e.preventDefault()
+            const startY = 'touches' in e ? e.touches[0].clientY : e.clientY
+
+            // Find the closest TR to get its current visual height
+            const rowElement = (e.target as HTMLElement).closest('tr')
+            const currentRect = rowElement?.getBoundingClientRect()
+            const startHeight = currentRect?.height || rowSizing[rowId] || 50
+
+            const handleMove = (moveEvent: MouseEvent | TouchEvent) => {
+                const currentY = 'touches' in moveEvent ? moveEvent.touches[0].clientY : moveEvent.clientY
+                const delta = currentY - startY
+                const newHeight = Math.max(50, startHeight + delta) // Minimum height 50px
+
+                setRowSizing((prev) => ({
+                    ...prev,
+                    [rowId]: newHeight,
+                }))
+            }
+
+            const handleUp = () => {
+                document.removeEventListener('mousemove', handleMove)
+                document.removeEventListener('mouseup', handleUp)
+                document.removeEventListener('touchmove', handleMove)
+                document.removeEventListener('touchend', handleUp)
+            }
+
+            document.addEventListener('mousemove', handleMove)
+            document.addEventListener('mouseup', handleUp)
+            document.addEventListener('touchmove', handleMove)
+            document.addEventListener('touchend', handleUp)
+        },
+        [rowSizing]
+    )
 
     // Bulk Handlers
     const handleClearSelection = React.useCallback(() => setRowSelection({}), [])
@@ -122,6 +161,8 @@ export default function TaskTable() {
             onAddSubtask: handleAddSubtask,
             onOpenAddColumns: () => setIsAddColumnsOpen(true),
             viewType: 'table',
+            rowSizing,
+            onRowResizeStart: handleRowResizeStart,
         },
     })
 
@@ -138,7 +179,7 @@ export default function TaskTable() {
                                         <TableHead
                                             key={header.id}
                                             colSpan={header.colSpan}
-                                            className="h-10 px-0 text-xs font-medium text-gray-500 relative group border-r border-gray-100 last:border-r-0 bg-[#f3f8ff]"
+                                            className="h-12 px-0 text-xs font-medium text-gray-500 relative group border-r border-gray-100 last:border-r-0 bg-[#f3f8ff]"
                                             style={{
                                                 width: header.getSize(),
                                                 minWidth: header.getSize(),
@@ -169,12 +210,35 @@ export default function TaskTable() {
                         ))}
                     </TableHeader>
                     <TableBody>
+                        {/* Mock Grouping Row: ACTIVE */}
+                        <TableRow className="bg-[#fcfdfd] hover:bg-[#fcfdfd] border-gray-100">
+                            <TableCell className="p-0 border-r border-gray-100 sticky left-0 z-10 bg-[#fcfdfd]">
+                                <div className="flex items-center justify-center h-full">
+                                    <ChevronDown size={14} className="text-gray-400" />
+                                </div>
+                            </TableCell>
+                            <TableCell colSpan={columns.length - 1} className="p-0">
+                                <div className="flex items-center gap-2 px-3 py-2">
+                                    <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-[#e6f4ea] text-[#1e8e3e] border border-[#ceead6]">
+                                        <Check size={12} strokeWidth={3} />
+                                        <span className="text-[11px] font-bold uppercase tracking-wider">Active</span>
+                                    </div>
+                                    <span className="text-[11px] font-bold text-gray-400 bg-gray-50 border border-gray-100 px-1.5 py-0.5 rounded-md">
+                                        4
+                                    </span>
+                                </div>
+                            </TableCell>
+                        </TableRow>
+
                         {table.getRowModel().rows?.length ? (
                             table.getRowModel().rows.map((row) => (
                                 <TableRow
                                     key={row.id}
                                     data-state={row.getIsSelected() && "selected"}
-                                    className="group hover:bg-gray-50/50 border-gray-100"
+                                    className="group hover:bg-gray-50/50 border-gray-100 relative"
+                                    style={{
+                                        height: rowSizing[row.id] ? `${rowSizing[row.id]}px` : undefined,
+                                    }}
                                 >
                                     {row.getVisibleCells().map((cell) => {
                                         const { position, ...pinningStyles } = getCommonPinningStyles(cell.column)
@@ -182,9 +246,10 @@ export default function TaskTable() {
                                         return (
                                             <TableCell
                                                 key={cell.id}
-                                                className={`p-0 border-r border-gray-100 last:border-r-0 overflow-hidden relative transition-colors ${isPinned
-                                                    ? "bg-white group-hover:bg-gray-50"
-                                                    : "bg-white group-hover:bg-gray-50/50"
+                                                className={`p-0 border-r border-gray-100 last:border-r-0 overflow-visible relative transition-colors whitespace-normal break-words ${cell.column.id === 'index' ? 'align-middle' : 'align-top'
+                                                    } ${isPinned
+                                                        ? "bg-white group-hover:bg-gray-50"
+                                                        : "bg-white group-hover:bg-gray-50/50"
                                                     }`}
                                                 style={{
                                                     width: cell.column.getSize(),
@@ -198,6 +263,13 @@ export default function TaskTable() {
                                                 {flexRender(
                                                     cell.column.columnDef.cell,
                                                     cell.getContext()
+                                                )}
+                                                {cell.column.id === 'index' && (
+                                                    <div
+                                                        className="absolute bottom-0 left-0 w-full h-1.5 cursor-row-resize hover:bg-blue-400/50 transition-colors z-[100]"
+                                                        onMouseDown={(e) => handleRowResizeStart(e, row.id)}
+                                                        onTouchStart={(e) => handleRowResizeStart(e, row.id)}
+                                                    />
                                                 )}
                                             </TableCell>
                                         )
@@ -214,21 +286,23 @@ export default function TaskTable() {
                                 </TableCell>
                             </TableRow>
                         )}
-                        {/* Add New Row Button */}
-                        <TableRow className="hover:bg-gray-50/50 cursor-pointer border-gray-100">
-                            <TableCell
-                                colSpan={columns.length}
-                                className="p-0"
-                                onClick={() => {
-                                    // Logic to add new row
-                                    console.log("Add new row")
-                                }}
-                            >
-                                <div className="flex items-center gap-2 px-3 py-2 text-gray-500 hover:text-gray-900 transition-colors text-sm font-medium h-10 border-r border-transparent">
-                                    <Plus className="w-4 h-4" />
-                                    <span>New</span>
+                        {/* Calculate Row */}
+                        <TableRow className="hover:bg-transparent border-gray-100 h-10">
+                            <TableCell className="p-0 border-r border-gray-100 sticky left-0 z-10 bg-white" />
+                            <TableCell className="p-0 border-r border-gray-100 bg-white">
+                                <div className="flex items-center gap-2 px-4 py-2 text-[12px] font-medium text-gray-400 hover:text-gray-600 transition-colors cursor-pointer group/calc">
+                                    <Plus className="w-3.5 h-3.5" />
+                                    <span>Create Task</span>
                                 </div>
                             </TableCell>
+                            {table.getVisibleFlatColumns().slice(2).map((column) => (
+                                <TableCell key={column.id} className="p-0 border-r border-gray-100">
+                                    <div className="flex items-center justify-center gap-1.5 px-3 py-2 text-[11px] font-medium text-gray-400 hover:text-gray-600 transition-colors cursor-pointer whitespace-nowrap group/calc">
+                                        <span>Calculate</span>
+                                        <ChevronDown size={12} className="opacity-0 group-hover/calc:opacity-100 transition-opacity" />
+                                    </div>
+                                </TableCell>
+                            ))}
                         </TableRow>
                     </TableBody>
                 </Table>

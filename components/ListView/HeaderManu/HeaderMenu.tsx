@@ -503,7 +503,7 @@ export function HeaderMenu({
 
     return (
         <>
-            <div className="absolute top-0 left-0 w-full h-10 pointer-events-none invisible">
+            <div className="absolute top-0 left-0 w-full h-full pointer-events-none invisible">
                 <CalculatePopover
                     open={calculateOpen}
                     onOpenChange={setCalculateOpen}
