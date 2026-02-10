@@ -9,7 +9,8 @@ import {
 import { Button } from "@/components/ui/button"
 import {
     ChevronDown,
-    Check
+    Check,
+    Trash2
 } from "lucide-react"
 import {
     DropdownMenu,
@@ -33,7 +34,9 @@ interface CalculatePopoverProps {
     open: boolean
     onOpenChange: (open: boolean) => void
     onCalculate: (method: string) => void
+    onClear?: () => void
     children: React.ReactNode
+    currentMethod?: string
 }
 
 type CalculationMethod =
@@ -44,6 +47,9 @@ type CalculationMethod =
     | "count_not_empty"
     | "percent_total"
     | "percent_filled"
+    | "earliest_date"
+    | "latest_date"
+    | "date_range"
 
 const methodLabels: Record<string, string> = {
     count_all: "Count all",
@@ -53,10 +59,19 @@ const methodLabels: Record<string, string> = {
     count_not_empty: "Count not empty",
     percent_total: "Percent of total",
     percent_filled: "Percent filled",
+    earliest_date: "Earliest date",
+    latest_date: "Latest date",
+    date_range: "Date range",
 }
 
-export function CalculatePopover({ open, onOpenChange, onCalculate, children }: CalculatePopoverProps) {
-    const [selectedMethod, setSelectedMethod] = React.useState<string>("count_values")
+export function CalculatePopover({ open, onOpenChange, onCalculate, children, currentMethod, onClear }: CalculatePopoverProps) {
+    const [selectedMethod, setSelectedMethod] = React.useState<string>(currentMethod || "count_values")
+
+    React.useEffect(() => {
+        if (currentMethod) {
+            setSelectedMethod(currentMethod)
+        }
+    }, [currentMethod])
 
     const handleCalculate = () => {
         onCalculate(selectedMethod)
@@ -73,10 +88,20 @@ export function CalculatePopover({ open, onOpenChange, onCalculate, children }: 
                 align="start"
                 sideOffset={5}
             >
-                <div className="px-4 py-3 border-b border-zinc-100 bg-white">
+                <div className="flex items-center justify-between px-4 py-3 border-b border-zinc-100 bg-white">
                     <h3 className="text-[11px] font-bold tracking-wider text-zinc-500 uppercase">
                         CALCULATE
                     </h3>
+                    <button
+                        onClick={() => {
+                            if (onClear) onClear()
+                            onOpenChange(false)
+                        }}
+                        className="text-zinc-400 hover:text-red-500 transition-colors"
+                        title="Clear calculation"
+                    >
+                        <Trash2 className="h-4 w-4" />
+                    </button>
                 </div>
 
                 <div className="p-4 space-y-4 bg-white">
@@ -129,6 +154,27 @@ export function CalculatePopover({ open, onOpenChange, onCalculate, children }: 
                                             </DropdownMenuRadioItem>
                                             <DropdownMenuRadioItem value="percent_filled" className="hover:bg-zinc-100 text-zinc-700 data-[state=checked]:text-blue-600">
                                                 Percent filled
+                                            </DropdownMenuRadioItem>
+                                        </DropdownMenuRadioGroup>
+                                    </DropdownMenuSubContent>
+                                </DropdownMenuPortal>
+                            </DropdownMenuSub>
+
+                            <DropdownMenuSub>
+                                <DropdownMenuSubTrigger className="hover:bg-zinc-100 data-[state=open]:bg-zinc-100 text-zinc-700">
+                                    <span>Dates</span>
+                                </DropdownMenuSubTrigger>
+                                <DropdownMenuPortal>
+                                    <DropdownMenuSubContent className="bg-white text-zinc-900 border-zinc-200">
+                                        <DropdownMenuRadioGroup value={selectedMethod} onValueChange={setSelectedMethod}>
+                                            <DropdownMenuRadioItem value="earliest_date" className="hover:bg-zinc-100 text-zinc-700 data-[state=checked]:text-blue-600">
+                                                Earliest date
+                                            </DropdownMenuRadioItem>
+                                            <DropdownMenuRadioItem value="latest_date" className="hover:bg-zinc-100 text-zinc-700 data-[state=checked]:text-blue-600">
+                                                Latest date
+                                            </DropdownMenuRadioItem>
+                                            <DropdownMenuRadioItem value="date_range" className="hover:bg-zinc-100 text-zinc-700 data-[state=checked]:text-blue-600">
+                                                Date range
                                             </DropdownMenuRadioItem>
                                         </DropdownMenuRadioGroup>
                                     </DropdownMenuSubContent>

@@ -431,6 +431,10 @@ export function HeaderMenu({
                     onCalculate={(method) => {
                         (table?.options.meta as any)?.handleCalculate?.(columnId, method)
                     }}
+                    onClear={() => {
+                        (table?.options.meta as any)?.clearCalculation?.(columnId)
+                    }}
+                    currentMethod={(table?.options.meta as any)?.getCalculation?.(columnId)?.method}
                 >
                     <div className="w-full h-full" />
                 </CalculatePopover>

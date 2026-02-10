@@ -34,11 +34,25 @@ const getDueDateStyle = (dateStr: string) => {
 
 
 import { Plus, PlayCircle, Calendar } from "lucide-react"
+import { Checkbox } from "@/components/ui/checkbox"
 
 export const columns: ColumnDef<taskTable>[] = [
     {
         accessorKey: "name",
-        header: "Name",
+        header: ({ table }) => (
+            <div className="flex items-center gap-2">
+                <Checkbox
+                    checked={
+                        table.getIsAllPageRowsSelected() ||
+                        (table.getIsSomePageRowsSelected() && "indeterminate")
+                    }
+                    onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+                    aria-label="Select all"
+                    className="translate-y-[1px]"
+                />
+                <span>Name</span>
+            </div>
+        ),
         enableResizing: true,
         size: 400,
         minSize: 400,
@@ -61,6 +75,8 @@ export const columns: ColumnDef<taskTable>[] = [
                 canExpand={subtasks.length > 0}
                 subtaskCount={subtasks.length}
                 depth={row.depth}
+                isSelected={row.getIsSelected()}
+                onToggleSelect={(value) => row.toggleSelected(!!value)}
                 onToggleExpand={() => {
                     if (subtasks.length > 0) {
                         row.toggleExpanded();

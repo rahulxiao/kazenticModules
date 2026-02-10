@@ -26,6 +26,8 @@ interface DatePickerProps {
     onChange?: (date: string) => void
     children?: React.ReactNode
     className?: string
+    open?: boolean
+    onOpenChange?: (open: boolean) => void
 }
 
 export const formatSmartDate = (dateStr: string) => {
@@ -58,9 +60,20 @@ export function DatePicker({
     value,
     onChange,
     children,
-    className
+    className,
+    open,
+    onOpenChange
 }: DatePickerProps) {
-    const [open, setOpen] = React.useState(false)
+    const [localOpen, setLocalOpen] = React.useState(false)
+
+    const isControlled = open !== undefined
+    const isOpen = isControlled ? open : localOpen
+    const handleOpenChange = (newOpen: boolean) => {
+        if (!isControlled) {
+            setLocalOpen(newOpen)
+        }
+        onOpenChange?.(newOpen)
+    }
     const [timeOpen, setTimeOpen] = React.useState(false)
     const [isMounted, setIsMounted] = React.useState(false)
 
@@ -196,7 +209,7 @@ export function DatePicker({
     }
 
     return (
-        <Popover open={open} onOpenChange={setOpen}>
+        <Popover open={isOpen} onOpenChange={handleOpenChange}>
             <PopoverTrigger asChild>
                 {children || (
                     <button className={cn("hover:bg-black/5 px-2 py-1 rounded transition-colors", className)}>

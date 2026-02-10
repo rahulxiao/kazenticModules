@@ -17,7 +17,7 @@ import {
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
-const STATUSES = [
+export const STATUSES = [
     { label: "TO DO", value: "TO DO", icon: ArrowUpRight, color: "text-orange-500", bg: "bg-orange-50" },
     { label: "IN PROGRESS", value: "IN PROGRESS", icon: Zap, color: "text-purple-500", bg: "bg-purple-50" },
     { label: "ACTIVE", value: "ACTIVE", icon: CheckCircle2, color: "text-emerald-500", bg: "bg-emerald-50" },

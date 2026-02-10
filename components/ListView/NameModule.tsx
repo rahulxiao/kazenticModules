@@ -4,6 +4,7 @@ import * as React from "react"
 import { GripVertical, ChevronRight, ChevronDown, Circle, Plus, Tag, Edit2, Link2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
+import { Checkbox } from "@/components/ui/checkbox"
 
 interface NameModuleProps {
     name: string
@@ -19,6 +20,8 @@ interface NameModuleProps {
     subtaskCount?: number
     tags?: string[]
     dragHandleProps?: any
+    isSelected?: boolean
+    onToggleSelect?: (value: boolean) => void
 }
 
 export function NameModule({
@@ -34,7 +37,9 @@ export function NameModule({
     isSubtask = false,
     subtaskCount = 0,
     tags = [],
-    dragHandleProps
+    dragHandleProps,
+    isSelected,
+    onToggleSelect
 }: NameModuleProps) {
     const [isHovered, setIsHovered] = React.useState(false)
 
@@ -48,14 +53,18 @@ export function NameModule({
             {/* Drag Handle & Checkbox */}
             <div className={cn(
                 "flex items-center gap-1 transition-opacity duration-200 w-[40px] shrink-0 pt-0.5",
-                isHovered ? "opacity-100" : "opacity-0"
+                (isHovered || isSelected) ? "opacity-100" : "opacity-0"
             )}>
                 <GripVertical
                     size={14}
                     className="text-gray-400 cursor-grab active:cursor-grabbing"
                     {...dragHandleProps}
                 />
-                <div className="w-4 h-4 rounded border border-gray-300 bg-white" />
+                <Checkbox
+                    checked={isSelected}
+                    onCheckedChange={(checked) => onToggleSelect?.(checked as boolean)}
+                    className="data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600 w-4 h-4 rounded border-gray-300 transition-all"
+                />
             </div>
 
             {/* Expand/Collapse Arrow */}

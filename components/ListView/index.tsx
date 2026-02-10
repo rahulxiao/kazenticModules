@@ -26,6 +26,8 @@ import { AddColums } from "@/components/ListView/FieldColums"
 import { CalculatePopover } from "@/components/ListView/HeaderManu/CalculatePopover"
 import { cn } from "@/lib/utils"
 import { Plus, ChevronDown } from "lucide-react"
+import moment from "moment"
+import { BulkActionsToolbar } from "@/components/ListView/BulkActionsToolbar"
 
 import {
     DndContext,
@@ -53,6 +55,7 @@ export default function ListView() {
     const [columnVisibility, setColumnVisibility] = React.useState({})
     const [isAddColumnsOpen, setIsAddColumnsOpen] = React.useState(false)
     const [sorting, setSorting] = React.useState<SortingState>([])
+    const [rowSelection, setRowSelection] = React.useState({})
 
     const [tableColumns, setTableColumns] = React.useState(() => [...columns])
 
@@ -251,60 +254,249 @@ export default function ListView() {
         })
     }
 
-    const [columnCalculations, setColumnCalculations] = React.useState<Record<string, { method: string, value: string | number }>>({})
+    const [columnCalculationMethods, setColumnCalculationMethods] = React.useState<Record<string, string>>({})
     const [calculateOpenColId, setCalculateOpenColId] = React.useState<string | null>(null)
     const [isCreatingTask, setIsCreatingTask] = React.useState(false)
 
+    // Helper to flatten data for calculations
+    const flattenData = React.useCallback((items: taskTable[]): taskTable[] => {
+        return items.reduce((acc, item) => {
+            return [...acc, item, ...(item.subtasks ? flattenData(item.subtasks) : [])]
+        }, [] as taskTable[])
+    }, [])
+
+    // Derived calculations based on data and selected methods
+    const columnCalculations = React.useMemo(() => {
+        const results: Record<string, { method: string, value: string | number }> = {}
+        const flatData = flattenData(data)
+
+        Object.entries(columnCalculationMethods).forEach(([columnId, method]) => {
+            const values = flatData.map((row: any) => row[columnId])
+            let value: string | number = ""
+
+            switch (method) {
+                case "count_all":
+                    value = flatData.length
+                    break
+                case "count_values":
+                    value = values.filter(v => v !== null && v !== undefined && v !== "").length
+                    break
+                case "count_unique":
+                    value = new Set(values.filter(v => v !== null && v !== undefined && v !== "")).size
+                    break
+                case "count_empty":
+                    value = values.filter(v => v === null || v === undefined || v === "").length
+                    break
+                case "count_not_empty":
+                    value = values.filter(v => v !== null && v !== undefined && v !== "").length
+                    break
+                case "percent_filled":
+                    const filled = values.filter(v => v !== null && v !== undefined && v !== "").length
+                    value = flatData.length ? `${Math.round((filled / flatData.length) * 100)}%` : "0%"
+                    break
+                case "percent_total":
+                    const totalFilled = values.filter(v => v !== null && v !== undefined && v !== "").length
+                    value = flatData.length ? `${Math.round((totalFilled / flatData.length) * 100)}%` : "0%"
+                    break
+                case "earliest_date":
+                    const dates = values
+                        .filter(v => v && moment(v).isValid())
+                        .map(v => moment(v))
+                        .sort((a, b) => a.valueOf() - b.valueOf())
+                    value = dates.length ? dates[0].format("MMM D") : "-"
+                    break
+                case "latest_date":
+                    const datesLatest = values
+                        .filter(v => v && moment(v).isValid())
+                        .map(v => moment(v))
+                        .sort((a, b) => b.valueOf() - a.valueOf())
+                    value = datesLatest.length ? datesLatest[0].format("MMM D") : "-"
+                    break
+                case "date_range":
+                    const datesRange = values
+                        .filter(v => v && moment(v).isValid())
+                        .map(v => moment(v))
+                        .sort((a, b) => a.valueOf() - b.valueOf())
+
+                    if (datesRange.length === 0) {
+                        value = "-"
+                    } else if (datesRange.length === 1) {
+                        value = datesRange[0].format("MMM D")
+                    } else {
+                        const start = datesRange[0]
+                        const end = datesRange[datesRange.length - 1]
+                        value = `${start.format("MMM D")} - ${end.format("MMM D")}`
+                    }
+                    break
+                default:
+                    value = ""
+            }
+            results[columnId] = { method, value }
+        })
+
+        return results
+    }, [data, columnCalculationMethods, flattenData])
+
+
     const handleCalculate = (columnId: string, method: string) => {
-        let value: string | number = ""
-
-        const flatten = (items: taskTable[]): taskTable[] => {
-            return items.reduce((acc, item) => {
-                return [...acc, item, ...(item.subtasks ? flatten(item.subtasks) : [])]
-            }, [] as taskTable[])
-        }
-
-        const flatData = flatten(data)
-        const values = flatData.map((row: any) => row[columnId])
-
-        switch (method) {
-            case "count_all":
-                value = flatData.length
-                break
-            case "count_values":
-                value = values.filter(v => v !== null && v !== undefined && v !== "").length
-                break
-            case "count_unique":
-                value = new Set(values.filter(v => v !== null && v !== undefined && v !== "")).size
-                break
-            case "count_empty":
-                value = values.filter(v => v === null || v === undefined || v === "").length
-                break
-            case "count_not_empty":
-                value = values.filter(v => v !== null && v !== undefined && v !== "").length
-                break
-            case "percent_filled":
-                const filled = values.filter(v => v !== null && v !== undefined && v !== "").length
-                value = flatData.length ? `${Math.round((filled / flatData.length) * 100)}%` : "0%"
-                break
-            case "percent_total":
-                // Assuming this means "what percent of total items have this value?" - wait, usually implies sum?
-                // Or simply same as percent filled?
-                // Let's implement as "Percent of total rows"
-                value = flatData.length ? `${Math.round((values.length / flatData.length) * 100)}%` : "0%" // basically 100?
-                // Maybe it means numeric sum percentage? But these are text columns.
-                // Reverting to same as filled for now or just generic percentage.
-                const filled2 = values.filter(v => v !== null && v !== undefined && v !== "").length
-                value = flatData.length ? `${Math.round((filled2 / flatData.length) * 100)}%` : "0%" // basically 100?
-                break
-            default:
-                value = ""
-        }
-
-        setColumnCalculations(prev => ({
+        setColumnCalculationMethods(prev => ({
             ...prev,
-            [columnId]: { method, value }
+            [columnId]: method
         }))
+    }
+
+    const handleClearCalculation = (columnId: string) => {
+        setColumnCalculationMethods(prev => {
+            const newState = { ...prev }
+            delete newState[columnId]
+            return newState
+        })
+    }
+
+    const handleDeleteSelected = () => {
+        const selectedIds = Object.keys(rowSelection);
+
+        // Recursive deletion helper
+        const deleteRecursive = (items: taskTable[]): taskTable[] => {
+            return items.filter((item, index) => { // This index logic is tricky with selection IDs which are row IDs
+                // Row IDs from tanstack table are usually "0", "0.1", etc. based on index path.
+                // However, selection relies on `getRowId`.
+                // By default getRowId returns index. But with subrows it returns "0.1".
+                // Since we don't have unique stable IDs for everything (taskID is string),
+                // we'll rely on the row selection keys which match the row.id from table.
+                // WE CANNOT easily filter by ID since IDs change after filter.
+                // Better approach: Get the row objects from table instance if possible
+                // OR: We need stable IDs for row selection to persist correctly, but for deletion we just need to know what to delete.
+
+                // Let's use a simpler approach: Set data by filtering out items whose IDs are in selection?
+                // Wait, rowSelection keys depend on current table state.
+                return true;
+            })
+        }
+
+        // Actually, simpler: Get selected rows from table instance
+        const selectedRows = table.getSelectedRowModel().flatRows;
+        const selectedTaskIds = new Set(selectedRows.map(row => row.original.taskID));
+
+        const deleteByTaskId = (items: taskTable[]): taskTable[] => {
+            return items.filter(item => {
+                if (selectedTaskIds.has(item.taskID)) return false;
+                if (item.subtasks) {
+                    item.subtasks = deleteByTaskId(item.subtasks);
+                }
+                return true;
+            })
+        }
+
+        setData(prev => deleteByTaskId(prev));
+        setRowSelection({});
+    }
+
+    const handleUpdateSelectedStatus = (newStatus: string) => {
+        const selectedRows = table.getSelectedRowModel().flatRows;
+        const selectedTaskIds = new Set(selectedRows.map(row => row.original.taskID));
+
+        const updateStatusByTaskId = (items: taskTable[]): taskTable[] => {
+            return items.map(item => {
+                let newItem = { ...item }
+                if (selectedTaskIds.has(item.taskID)) {
+                    newItem.status = newStatus
+                }
+                if (item.subtasks) {
+                    newItem.subtasks = updateStatusByTaskId(item.subtasks)
+                }
+                return newItem;
+            })
+        }
+
+        setData(prev => updateStatusByTaskId(prev));
+        setRowSelection({});
+    }
+
+    const handleUpdateSelectedAssignees = (newAssignees: string[]) => {
+        const selectedRows = table.getSelectedRowModel().flatRows;
+        const selectedTaskIds = new Set(selectedRows.map(row => row.original.taskID));
+
+        const updateByTaskId = (items: taskTable[]): taskTable[] => {
+            return items.map(item => {
+                let newItem = { ...item }
+                if (selectedTaskIds.has(item.taskID)) {
+                    // Merge new assignees with existing ones (additive only)
+                    const existing = item.assignees || []
+                    newItem.assignees = [...new Set([...existing, ...newAssignees])]
+                }
+                if (item.subtasks) {
+                    newItem.subtasks = updateByTaskId(item.subtasks)
+                }
+                return newItem;
+            })
+        }
+
+        setData(prev => updateByTaskId(prev));
+        // Do not clear selection so user can continue interacting
+    }
+
+    const handleUpdateSelectedStartDate = (date: string) => {
+        const selectedRows = table.getSelectedRowModel().flatRows;
+        const selectedTaskIds = new Set(selectedRows.map(row => row.original.taskID));
+
+        const updateByTaskId = (items: taskTable[]): taskTable[] => {
+            return items.map(item => {
+                let newItem = { ...item }
+                if (selectedTaskIds.has(item.taskID)) {
+                    newItem.startDate = date
+                }
+                if (item.subtasks) {
+                    newItem.subtasks = updateByTaskId(item.subtasks)
+                }
+                return newItem;
+            })
+        }
+
+        setData(prev => updateByTaskId(prev));
+        // Do not clear selection
+    }
+
+    const handleUpdateSelectedDueDate = (date: string) => {
+        const selectedRows = table.getSelectedRowModel().flatRows;
+        const selectedTaskIds = new Set(selectedRows.map(row => row.original.taskID));
+
+        const updateByTaskId = (items: taskTable[]): taskTable[] => {
+            return items.map(item => {
+                let newItem = { ...item }
+                if (selectedTaskIds.has(item.taskID)) {
+                    newItem.dueDate = date
+                }
+                if (item.subtasks) {
+                    newItem.subtasks = updateByTaskId(item.subtasks)
+                }
+                return newItem;
+            })
+        }
+
+        setData(prev => updateByTaskId(prev));
+        // Do not clear selection
+    }
+
+    const handleUpdateSelectedPriority = (priority: string) => {
+        const selectedRows = table.getSelectedRowModel().flatRows;
+        const selectedTaskIds = new Set(selectedRows.map(row => row.original.taskID));
+
+        const updateByTaskId = (items: taskTable[]): taskTable[] => {
+            return items.map(item => {
+                let newItem = { ...item }
+                if (selectedTaskIds.has(item.taskID)) {
+                    newItem.priority = priority
+                }
+                if (item.subtasks) {
+                    newItem.subtasks = updateByTaskId(item.subtasks)
+                }
+                return newItem;
+            })
+        }
+
+        setData(prev => updateByTaskId(prev));
+        // Do not clear selection
     }
 
     const addTask = (name: string) => {
@@ -332,8 +524,11 @@ export default function ListView() {
             columnSizing,
             columnVisibility,
             sorting,
+            rowSelection,
         },
         enableMultiSort: true,
+        enableRowSelection: true,
+        onRowSelectionChange: setRowSelection,
         onSortingChange: setSorting,
         onColumnVisibilityChange: setColumnVisibility,
         onColumnOrderChange: setColumnOrder,
@@ -353,6 +548,8 @@ export default function ListView() {
             onOpenAddColumns: () => setIsAddColumnsOpen(true),
             duplicateColumn,
             handleCalculate,
+            clearCalculation: handleClearCalculation,
+            getCalculation: (columnId: string) => columnCalculations[columnId],
         },
     })
 
@@ -490,6 +687,8 @@ export default function ListView() {
                                                         open={calculateOpenColId === column.id}
                                                         onOpenChange={(open) => setCalculateOpenColId(open ? column.id : null)}
                                                         onCalculate={(method) => handleCalculate(column.id, method)}
+                                                        onClear={() => handleClearCalculation(column.id)}
+                                                        currentMethod={calculation?.method}
                                                     >
                                                         <button className="flex items-center justify-center gap-1 hover:bg-gray-200 px-2 py-1 rounded transition-colors h-7 min-w-[70px]">
                                                             {calculation ? (
@@ -519,6 +718,16 @@ export default function ListView() {
                 table={table}
                 isOpen={isAddColumnsOpen}
                 onClose={() => setIsAddColumnsOpen(false)}
+            />
+            <BulkActionsToolbar
+                selectedCount={Object.keys(rowSelection).length}
+                onClearSelection={() => setRowSelection({})}
+                onDelete={handleDeleteSelected}
+                onUpdateStatus={handleUpdateSelectedStatus}
+                onUpdateAssignees={handleUpdateSelectedAssignees}
+                onUpdateStartDate={handleUpdateSelectedStartDate}
+                onUpdateDueDate={handleUpdateSelectedDueDate}
+                onUpdatePriority={handleUpdateSelectedPriority}
             />
         </div>
     )

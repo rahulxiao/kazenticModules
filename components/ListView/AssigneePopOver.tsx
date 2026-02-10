@@ -10,11 +10,23 @@ import { cn } from "@/lib/utils"
 interface AssigneePopOverProps {
     assignees: string[]
     onAssigneesChange: (newAssignees: string[]) => void
+    children?: React.ReactNode
+    open?: boolean
+    onOpenChange?: (open: boolean) => void
 }
 
-export function AssigneePopOver({ assignees = [], onAssigneesChange }: AssigneePopOverProps) {
-    const [open, setOpen] = React.useState(false)
+export function AssigneePopOver({ assignees = [], onAssigneesChange, children, open, onOpenChange }: AssigneePopOverProps) {
+    const [localOpen, setLocalOpen] = React.useState(false)
     const [search, setSearch] = React.useState("")
+
+    const isControlled = open !== undefined
+    const isOpen = isControlled ? open : localOpen
+    const handleOpenChange = (newOpen: boolean) => {
+        if (!isControlled) {
+            setLocalOpen(newOpen)
+        }
+        onOpenChange?.(newOpen)
+    }
 
     const filteredUsers = USERS.filter(u =>
         u.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -36,46 +48,48 @@ export function AssigneePopOver({ assignees = [], onAssigneesChange }: AssigneeP
     const selectedUsers = USERS.filter(u => assignees.includes(u.email))
 
     return (
-        <Popover open={open} onOpenChange={setOpen}>
+        <Popover open={isOpen} onOpenChange={handleOpenChange}>
             <PopoverTrigger asChild>
-                <div className="group cursor-pointer flex items-center -space-x-1.5 transition-all">
-                    {selectedUsers.length > 0 ? (
-                        <>
-                            {selectedUsers.map((user, i) => (
-                                <div
-                                    key={user.email}
-                                    className="relative transition-transform duration-200"
-                                    style={{ zIndex: selectedUsers.length - i }}
-                                >
-                                    <Avatar className="h-7 w-7 text-[10px] font-bold border border-white shadow-sm hover:scale-110 transition-transform">
-                                        <AvatarImage src={user.avatar} />
-                                        <AvatarFallback className="bg-blue-600 text-white font-bold text-[11px]">
-                                            {getInitials(user.name)}
-                                        </AvatarFallback>
-
-                                    </Avatar>
-                                    {/* Individual remove button on hover */}
-                                    <button
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            toggleUser(user.email);
-                                        }}
-                                        className="absolute -top-1 -right-1 h-3.5 w-3.5 rounded-full bg-red-500 text-white border border-white flex items-center justify-center opacity-0 group-hover:opacity-100 hover:bg-red-600 transition-all scale-0 group-hover:scale-100 z-50 shadow-md"
+                {children || (
+                    <div className="group cursor-pointer flex items-center -space-x-1.5 transition-all">
+                        {selectedUsers.length > 0 ? (
+                            <>
+                                {selectedUsers.map((user, i) => (
+                                    <div
+                                        key={user.email}
+                                        className="relative transition-transform duration-200"
+                                        style={{ zIndex: selectedUsers.length - i }}
                                     >
-                                        <X size={8} className="stroke-[3]" />
-                                    </button>
+                                        <Avatar className="h-7 w-7 text-[10px] font-bold border border-white shadow-sm hover:scale-110 transition-transform">
+                                            <AvatarImage src={user.avatar} />
+                                            <AvatarFallback className="bg-blue-600 text-white font-bold text-[11px]">
+                                                {getInitials(user.name)}
+                                            </AvatarFallback>
+
+                                        </Avatar>
+                                        {/* Individual remove button on hover */}
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                toggleUser(user.email);
+                                            }}
+                                            className="absolute -top-1 -right-1 h-3.5 w-3.5 rounded-full bg-red-500 text-white border border-white flex items-center justify-center opacity-0 group-hover:opacity-100 hover:bg-red-600 transition-all scale-0 group-hover:scale-100 z-50 shadow-md"
+                                        >
+                                            <X size={8} className="stroke-[3]" />
+                                        </button>
+                                    </div>
+                                ))}
+                                <div className="h-7 w-7 rounded-full bg-transparent border border-transparent flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity ml-1">
+                                    <Plus size={14} className="text-gray-400" />
                                 </div>
-                            ))}
-                            <div className="h-7 w-7 rounded-full bg-transparent border border-transparent flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity ml-1">
-                                <Plus size={14} className="text-gray-400" />
+                            </>
+                        ) : (
+                            <div className="h-7 w-7 rounded-full border border-gray-200 flex items-center justify-center hover:border-indigo-400 hover:bg-indigo-50/50 transition-colors">
+                                <UserPlus2 size={14} className="text-gray-300" />
                             </div>
-                        </>
-                    ) : (
-                        <div className="h-7 w-7 rounded-full border border-gray-200 flex items-center justify-center hover:border-indigo-400 hover:bg-indigo-50/50 transition-colors">
-                            <UserPlus2 size={14} className="text-gray-300" />
-                        </div>
-                    )}
-                </div>
+                        )}
+                    </div>
+                )}
             </PopoverTrigger>
             <PopoverContent className="p-2 w-[280px] border border-gray-100 bg-white rounded-xl shadow-[0_10px_40px_rgba(0,0,0,0.08)]" align="start">
                 <div className="relative mb-2">
