@@ -41,30 +41,55 @@ export function DraggableRow({ row }: DraggableRowProps) {
                 isDragging && "bg-blue-50/50 shadow-md z-50 border-blue-200"
             )}
         >
-            {row.getVisibleCells().map((cell, idx) => (
-                <TableCell
-                    key={cell.id}
-                    style={{ width: cell.column.getSize() }}
-                    className={cn(
-                        "py-1 px-3 border-r border-gray-50 last:border-r-0 relative group/cell transition-colors",
-                        idx === 0 && cell.column.id === "name" && "sticky left-0 z-40 bg-white group-hover:bg-[#F9FAFB] border-r border-gray-100 shadow-[6px_0_15px_rgba(0,0,0,0.1)] whitespace-normal align-top",
-                        isDragging && idx === 0 && "bg-blue-50"
-                    )}
-                >
-                    {/* Cell Highlight Effect */}
-                    <div className="absolute inset-[2px] border border-transparent group-hover/cell:border-gray-300 group-hover/cell:bg-gray-400/5 rounded-md pointer-events-none transition-all duration-200 z-0" />
+            {row.getVisibleCells().map((cell, idx) => {
+                const isSticky = ["index", "name"].includes(cell.column.id)
+                // If we are in TableView (index exists), drag handle is on index.
+                // If ListView (index doesn't exist, name is first), drag handle on name.
+                const isIndexColumn = cell.column.id === "index"
+                const isNameColumnFirst = cell.column.id === "name" && idx === 0
+                const isDragColumn = isIndexColumn || isNameColumnFirst
 
-                    <div className={cn("relative", idx === 0 && cell.column.id === "name" ? "z-10" : "z-0")}>
-                        {flexRender(
-                            cell.column.columnDef.cell,
-                            {
-                                ...cell.getContext(),
-                                dragHandleProps: idx === 0 ? { ...attributes, ...listeners } : undefined
-                            }
+                const getLeft = () => {
+                    if (cell.column.id === "index") return 0
+                    if (cell.column.id === "name") {
+                        if (idx === 0) return 0 // ListView
+                        return 50 // TableView (50px index)
+                    }
+                    return undefined
+                }
+
+                return (
+                    <TableCell
+                        key={cell.id}
+                        style={{
+                            width: cell.column.getSize(),
+                            minWidth: cell.column.columnDef.minSize,
+                            left: getLeft(),
+                            position: isSticky ? "sticky" : undefined,
+                            zIndex: isSticky ? (isDragging ? 100 : 20) : undefined,
+                            backgroundColor: isSticky ? "white" : undefined
+                        }}
+                        className={cn(
+                            "py-1 px-3 border-r border-gray-50 last:border-r-0 relative group/cell transition-colors",
+                            isSticky && "group-hover:bg-[#F9FAFB] border-r border-gray-100 shadow-[2px_0_5px_rgba(0,0,0,0.02)] whitespace-normal align-top",
+                            isDragging && isSticky && "bg-blue-50"
                         )}
-                    </div>
-                </TableCell>
-            ))}
+                    >
+                        {/* Cell Highlight Effect */}
+                        <div className="absolute inset-[2px] border border-transparent group-hover/cell:border-gray-300 group-hover/cell:bg-gray-400/5 rounded-md pointer-events-none transition-all duration-200 z-0" />
+
+                        <div className={cn("relative", isSticky ? "z-10" : "z-0")}>
+                            {flexRender(
+                                cell.column.columnDef.cell,
+                                {
+                                    ...cell.getContext(),
+                                    dragHandleProps: isDragColumn ? { ...attributes, ...listeners } : undefined
+                                }
+                            )}
+                        </div>
+                    </TableCell>
+                )
+            })}
         </TableRow>
     )
 }

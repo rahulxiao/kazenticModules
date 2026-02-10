@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils"
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
 import { Checkbox } from "@/components/ui/checkbox"
 
-interface NameModuleProps {
+export interface NameModuleProps {
     name: string
     avatar?: string
     onNameChange?: (newName: string) => void
@@ -22,6 +22,7 @@ interface NameModuleProps {
     dragHandleProps?: any
     isSelected?: boolean
     onToggleSelect?: (value: boolean) => void
+    variant?: "list" | "table"
 }
 
 export function NameModule({
@@ -39,7 +40,8 @@ export function NameModule({
     tags = [],
     dragHandleProps,
     isSelected,
-    onToggleSelect
+    onToggleSelect,
+    variant = "list"
 }: NameModuleProps) {
     const [isHovered, setIsHovered] = React.useState(false)
 
@@ -50,22 +52,24 @@ export function NameModule({
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
         >
-            {/* Drag Handle & Checkbox */}
-            <div className={cn(
-                "flex items-center gap-1 transition-opacity duration-200 w-[40px] shrink-0 pt-0.5",
-                (isHovered || isSelected) ? "opacity-100" : "opacity-0"
-            )}>
-                <GripVertical
-                    size={14}
-                    className="text-gray-400 cursor-grab active:cursor-grabbing"
-                    {...dragHandleProps}
-                />
-                <Checkbox
-                    checked={isSelected}
-                    onCheckedChange={(checked) => onToggleSelect?.(checked as boolean)}
-                    className="data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600 w-4 h-4 rounded border-gray-300 transition-all"
-                />
-            </div>
+            {/* Drag Handle & Checkbox - Only show in List variant */}
+            {variant === "list" && (
+                <div className={cn(
+                    "flex items-center gap-1 transition-opacity duration-200 w-[40px] shrink-0 pt-0.5",
+                    (isHovered || isSelected) ? "opacity-100" : "opacity-0"
+                )}>
+                    <GripVertical
+                        size={14}
+                        className="text-gray-400 cursor-grab active:cursor-grabbing"
+                        {...dragHandleProps}
+                    />
+                    <Checkbox
+                        checked={isSelected}
+                        onCheckedChange={(checked) => onToggleSelect?.(checked as boolean)}
+                        className="data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600 w-4 h-4 rounded border-gray-300 transition-all"
+                    />
+                </div>
+            )}
 
             {/* Expand/Collapse Arrow */}
             <div

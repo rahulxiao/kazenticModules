@@ -207,7 +207,7 @@ export function AddColums<TData>({ table, isOpen, onClose }: AddColumsProps<TDat
     // Sync table column order when categories change
     React.useEffect(() => {
         const allColumnIds = categories.flatMap(cat => cat.items.map(item => item.id))
-        const fullOrder = ['name', 'assignees', ...allColumnIds, 'addNewColumn']
+        const fullOrder = ['index', 'name', 'assignees', ...allColumnIds, 'addNewColumn']
         table.setColumnOrder(fullOrder)
     }, [categories, table])
 

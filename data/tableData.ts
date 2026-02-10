@@ -1,4 +1,5 @@
 export type taskTable = {
+    id?: string
     name: string
     assignees: string[]
     avatar?: string
@@ -47,6 +48,7 @@ export const USERS = [
 
 export const tableData: taskTable[] = [
     {
+        "id": "1",
         "name": "Design Homepage Layout",
         "assignees": ["alif@example.com"],
         "status": "IN PROGRESS",
@@ -69,6 +71,7 @@ export const tableData: taskTable[] = [
 
         "subtasks": [
             {
+                "id": "2",
                 "name": "Subtask 1",
                 "assignees": [],
                 "startDate": "",
@@ -82,6 +85,7 @@ export const tableData: taskTable[] = [
                 "dateCreated": "2026-02-04",
                 "subtasks": [
                     {
+                        "id": "3",
                         "name": "Subtask 2",
                         "assignees": [],
                         "startDate": "",
@@ -93,6 +97,7 @@ export const tableData: taskTable[] = [
                         "dateCreated": "2026-02-04",
                         "subtasks": [
                             {
+                                "id": "4",
                                 "name": "Subtask 3",
                                 "assignees": [],
                                 "startDate": "",
@@ -387,8 +392,96 @@ export const tableData: taskTable[] = [
             }
         ]
     },
-    { name: "Create User Profile Page need more people to do this task so that i can see what happend in the task", assignees: ["alif@example.com"], startDate: "", dueDate: "2026-02-07", priority: "Low", taskID: "86ewq17eq", timeTracker: "Add time", timeEstimate: "3h", addNewColumn: "", dateCreated: "2026-02-03", tags: ["backend", "frontend"] },
-    { name: "Add Friend Request System", assignees: ["alif@example.com", "tonmoy@example.com"], startDate: "", dueDate: "2026-02-11", priority: "High", taskID: "86ewq17ew", timeTracker: "Add time", timeEstimate: "6h", addNewColumn: "", dateCreated: "2026-02-03" },
-    { name: "Develop User Login Functionality", assignees: ["alif@example.com"], startDate: "", dueDate: "2026-02-06", priority: "Urgent", taskID: "86ewq17et", timeTracker: "Add time", timeEstimate: "", addNewColumn: "", dateCreated: "2026-02-03" },
-    { name: "Implement User Logout Functionality", assignees: ["alif@example.com"], startDate: "", dueDate: "2026-02-13", priority: "High", taskID: "86ewq17ev", timeTracker: "Add time", timeEstimate: "", addNewColumn: "", dateCreated: "2026-02-03" },
+    {
+        id: "5",
+        name: "Create User Profile Page need more people to do this task so that i can see what happend in the task",
+        assignees: ["alif@example.com"],
+        startDate: "",
+        dueDate: "2026-02-07",
+        priority: "Low",
+        taskID: "86ewq17eq",
+        timeTracker: "Add time",
+        timeEstimate: "3h",
+        addNewColumn: "",
+        dateCreated: "2026-02-03",
+        tags: ["backend", "frontend"],
+        status: "To Do",
+        taskType: "Development",
+        sprints: "",
+        sprintPoints: "",
+        dateClosed: "",
+        createdBy: "alif@example.com",
+        comments: "0",
+        custom: "",
+        subtasks: []
+    },
+    {
+        id: "6",
+        name: "Add Friend Request System",
+        assignees: ["alif@example.com", "tonmoy@example.com"],
+        startDate: "",
+        dueDate: "2026-02-11",
+        priority: "High",
+        taskID: "86ewq17ew",
+        timeTracker: "Add time",
+        timeEstimate: "6h",
+        addNewColumn: "",
+        dateCreated: "2026-02-03",
+        tags: [],
+        status: "To Do",
+        taskType: "Development",
+        sprints: "",
+        sprintPoints: "",
+        dateClosed: "",
+        createdBy: "alif@example.com",
+        comments: "0",
+        custom: "",
+        subtasks: []
+    },
+    {
+        id: "7",
+        name: "Develop User Login Functionality",
+        assignees: ["alif@example.com"],
+        startDate: "",
+        dueDate: "2026-02-06",
+        priority: "Urgent",
+        taskID: "86ewq17et",
+        timeTracker: "Add time",
+        timeEstimate: "",
+        addNewColumn: "",
+        dateCreated: "2026-02-03",
+        tags: [],
+        status: "To Do",
+        taskType: "Development",
+        sprints: "",
+        sprintPoints: "",
+        dateClosed: "",
+        createdBy: "alif@example.com",
+        comments: "0",
+        custom: "",
+        subtasks: []
+    },
+    {
+        id: "8",
+        name: "Implement User Logout Functionality",
+        assignees: ["alif@example.com"],
+        startDate: "",
+        dueDate: "2026-02-13",
+        priority: "High",
+        taskID: "86ewq17ev",
+        timeTracker: "Add time",
+        timeEstimate: "",
+        addNewColumn: "",
+        dateCreated: "2026-02-03",
+        tags: [],
+        status: "To Do",
+        taskType: "Development",
+        sprints: "",
+        sprintPoints: "",
+        dateClosed: "",
+        createdBy: "alif@example.com",
+        comments: "0",
+        custom: "",
+        subtasks: []
+    },
 ]

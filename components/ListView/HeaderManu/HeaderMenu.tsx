@@ -21,6 +21,11 @@ import {
     ArrowDown,
     Hash,
     X,
+    ArrowLeftFromLine,
+    ArrowRightFromLine,
+    ArrowLeftRight,
+    Pin,
+    Check,
 } from "lucide-react"
 
 import {
@@ -47,6 +52,10 @@ export type MenuAction =
     | "deleteField"
     | "customizeTaskId"
     | "clearSort"
+    | "insertLeft"
+    | "insertRight"
+    | "autosize"
+    | "pinColumn"
 
 export interface MenuItemConfig {
     id: MenuAction
@@ -129,6 +138,26 @@ export const menuItemDefinitions: Record<MenuAction, Omit<MenuItemConfig, "actio
         icon: X,
         label: "Clear sort",
     },
+    insertLeft: {
+        id: "insertLeft",
+        icon: ArrowLeftFromLine,
+        label: "Insert left",
+    },
+    insertRight: {
+        id: "insertRight",
+        icon: ArrowRightFromLine,
+        label: "Insert right",
+    },
+    autosize: {
+        id: "autosize",
+        icon: ArrowLeftRight,
+        label: "Autosize this column",
+    },
+    pinColumn: {
+        id: "pinColumn",
+        icon: Pin,
+        label: "Pin column",
+    },
 }
 
 export const defaultActions: Record<MenuAction, (columnId: string) => void> = {
@@ -145,6 +174,10 @@ export const defaultActions: Record<MenuAction, (columnId: string) => void> = {
     deleteField: (columnId) => console.log(`Delete field: ${columnId}`),
     customizeTaskId: (columnId) => console.log(`Customize task ID: ${columnId}`),
     clearSort: (columnId) => console.log(`Clear sort: ${columnId}`),
+    insertLeft: (columnId) => console.log(`Insert left: ${columnId}`),
+    insertRight: (columnId) => console.log(`Insert right: ${columnId}`),
+    autosize: (columnId) => console.log(`Autosize: ${columnId}`),
+    pinColumn: (columnId) => console.log(`Pin column: ${columnId}`),
 }
 
 const fullMenuConfig: HeaderMenuConfig = {
@@ -194,7 +227,16 @@ const customCommonMenuConfig: HeaderMenuConfig = {
     ],
 }
 
+const nameColumnMenuConfig: HeaderMenuConfig = {
+    sections: [
+        { items: ["moveToStart", "moveToEnd"] },
+    ],
+}
+
 export const columnMenuConfigs: Record<string, HeaderMenuConfig> = {
+    // Name column
+    name: nameColumnMenuConfig,
+
     // Full featured columns
     status: fullMenuConfig,
     priority: fullMenuConfig,
@@ -248,9 +290,26 @@ export function HeaderMenu({
     // Determine which config to use
     const menuConfig = config || (columnId && columnMenuConfigs[columnId]) || fullMenuConfig
 
+    const viewType = (table?.options.meta as any)?.viewType
+
+    const displayedSections = React.useMemo(() => {
+        if (viewType === 'table') {
+            return [
+                { items: ["sort", "insertLeft", "insertRight", "autosize", "pinColumn"] as MenuAction[] },
+                ...menuConfig.sections.map(section => ({
+                    ...section,
+                    items: section.items.filter(item => item !== "sort")
+                })).filter(section => section.items.length > 0)
+            ]
+        }
+        return menuConfig.sections
+    }, [menuConfig, viewType])
+
+
     // Get current sort state for this column
     const column = table && columnId ? table.getColumn(columnId) : null
     const currentSort = column?.getIsSorted()
+    const currentPinned = column?.getIsPinned()
 
     // Create sort functions that use the table instance
     const createSortActions = () => {
@@ -300,7 +359,12 @@ export function HeaderMenu({
                 const currentOrder = table.getState().columnOrder
                 const columnIndex = currentOrder.indexOf(colId)
 
-                // Don't move if it's the 'name' column or already at position 1 (after 'name')
+                // Don't move if it's the 'name' column or already at position 1 (after 'name' which is 0)
+                // Note: Index column is "index" (0), Name is "name" (1) in ListView?
+                // The loop iterates columns.
+
+                // Keep 'name' at index 1? Or 0?
+                // In ListView, name is index 0.
                 if (colId === 'name' || columnIndex <= 1) return
 
                 // Move to position 1 (right after 'name' which is always at 0)
@@ -362,6 +426,21 @@ export function HeaderMenu({
                 const currentSorting = table.getState().sorting
                 const newSorting = currentSorting.filter(s => s.id !== colId)
                 table.setSorting(newSorting)
+            },
+            insertLeft: (colId: string) => {
+                (table.options.meta as any)?.onOpenAddColumns?.()
+            },
+            insertRight: (colId: string) => {
+                (table.options.meta as any)?.onOpenAddColumns?.()
+            },
+            autosize: (colId: string) => {
+                table.getColumn(colId)?.resetSize()
+            },
+            pinColumn: (colId: string) => {
+                const col = table.getColumn(colId)
+                if (col) {
+                    col.pin(col.getIsPinned() ? false : 'left')
+                }
             },
         }
     }
@@ -445,9 +524,12 @@ export function HeaderMenu({
                     <PopoverTrigger asChild>
                         <button className="flex items-center gap-1.5 text-left font-normal text-muted-foreground px-2 py-1 hover:bg-black/5 dark:hover:bg-white/10 rounded-md transition-colors flex-1">
                             {title}
+                            {currentPinned && (
+                                <Pin className="h-3 w-3 text-blue-600 rotate-45" />
+                            )}
                             {currentSort && (
                                 <span className="text-blue-600">
-                                    {currentSort === 'asc' ? (
+                                    {currentSort === "asc" ? (
                                         <ArrowUp className="h-3 w-3" />
                                     ) : (
                                         <ArrowDown className="h-3 w-3" />
@@ -461,7 +543,7 @@ export function HeaderMenu({
                             onClick={handleSortAscending}
                             className={cn(
                                 "hover:bg-black/10 dark:hover:bg-white/20 rounded-sm transition-colors p-0.5",
-                                currentSort === 'asc' && "text-blue-600"
+                                currentSort === "asc" && "text-blue-600"
                             )}
                             title="Sort ascending"
                         >
@@ -471,7 +553,7 @@ export function HeaderMenu({
                             onClick={handleSortDescending}
                             className={cn(
                                 "hover:bg-black/10 dark:hover:bg-white/20 rounded-sm transition-colors p-0.5",
-                                currentSort === 'desc' && "text-blue-600"
+                                currentSort === "desc" && "text-blue-600"
                             )}
                             title="Sort descending"
                         >
@@ -495,22 +577,31 @@ export function HeaderMenu({
                                 />
                             </div>
                         )}
-                        {menuConfig.sections.map((section, sectionIndex) => (
+                        {displayedSections.map((section, sectionIndex) => (
                             <div
                                 key={sectionIndex}
                                 className={cn(
                                     "p-1",
-                                    sectionIndex < menuConfig.sections.length - 1 && "border-b border-border/50"
+                                    sectionIndex < displayedSections.length - 1 && "border-b border-border/50"
                                 )}
                             >
                                 {section.items.map((itemId) => {
                                     const itemDef = menuItemDefinitions[itemId]
+                                    let label = itemDef.label
+                                    let rightElement
+
+                                    if (itemId === "pinColumn" && currentPinned) {
+                                        label = "Unpin column"
+                                        rightElement = <Check className="ml-auto w-4 h-4 text-blue-600" />
+                                    }
+
                                     return (
                                         <MenuItem
                                             key={itemId}
                                             icon={itemDef.icon}
-                                            label={itemDef.label}
+                                            label={label}
                                             onClick={() => handleItemClick(itemId)}
+                                            rightElement={rightElement}
                                         />
                                     )
                                 })}
@@ -532,18 +623,22 @@ function MenuItem({
     icon: Icon,
     label,
     onClick,
+    rightElement,
 }: {
     icon: LucideIcon
     label: string
     onClick: () => void
+    rightElement?: React.ReactNode
 }) {
     return (
         <div
             onClick={onClick}
-            className="flex items-center gap-3 px-3 py-2 hover:bg-muted/50 cursor-pointer rounded-sm transition-colors"
+            className="flex items-center gap-3 px-3 py-2 hover:bg-muted/50 cursor-pointer rounded-sm transition-colors w-full"
         >
             <Icon className="h-4 w-4 text-muted-foreground stroke-[1.5px]" />
-            <span className="font-medium text-foreground/80">{label}</span>
+            <span className="font-medium text-foreground/80 flex-1">{label}</span>
+            {rightElement}
         </div>
     )
 }
+

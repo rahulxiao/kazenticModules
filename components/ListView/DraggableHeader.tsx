@@ -14,7 +14,8 @@ interface DraggableHeaderProps {
 }
 
 export function DraggableHeader({ header, index }: DraggableHeaderProps) {
-    const isPinned = header.column.id === "name" || header.column.id === "addNewColumn"
+    const isPinned = ["name", "addNewColumn", "select", "index"].includes(header.column.id)
+    const isSticky = ["select", "index", "name"].includes(header.column.id)
 
     const {
         attributes,
@@ -28,13 +29,28 @@ export function DraggableHeader({ header, index }: DraggableHeaderProps) {
         disabled: isPinned
     })
 
+    // Calculate left offset for sticky columns
+    // We assume index=50px based on definition
+    const getLeft = () => {
+        if (header.column.id === "index") return 0
+        if (header.column.id === "name") {
+            // If we are in TableView (index exists), name is 2nd.
+            // If ListView, name is 1st (index 0).
+            if (index === 0) return 0 // ListView
+            return 50 // TableView (50px index)
+        }
+        return undefined
+    }
+
     const style: React.CSSProperties = {
         transform: CSS.Translate.toString(transform),
-        transition: isDragging ? transition : undefined, // Disable transition when not dragging (prevents laggy resizing)
+        transition: isDragging ? transition : undefined,
         width: header.getSize(),
-        zIndex: isDragging ? 100 : undefined,
+        zIndex: isDragging ? 100 : (isSticky ? 20 : undefined),
         opacity: isDragging ? 0.8 : 1,
-        cursor: isPinned ? "default" : undefined
+        cursor: isPinned ? "default" : undefined,
+        left: getLeft(),
+        position: isSticky ? "sticky" : "relative"
     }
 
     return (
@@ -43,7 +59,7 @@ export function DraggableHeader({ header, index }: DraggableHeaderProps) {
             style={style}
             className={cn(
                 "relative py-4 px-4 text-left text-[13px] font-semibold text-gray-500 bg-white border-r border-gray-100 last:border-r-0 select-none transition-all",
-                index === 0 && "sticky left-0 z-50 bg-white border-r border-gray-200 shadow-[2px_0_5px_rgba(0,0,0,0.02)]",
+                isSticky && "z-20 bg-white border-r border-gray-200 shadow-[2px_0_5px_rgba(0,0,0,0.02)]",
                 isDragging && "bg-gray-50/80 cursor-grabbing shadow-lg",
                 header.column.getIsResizing() && "bg-gray-50/50 z-20"
             )}
