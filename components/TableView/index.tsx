@@ -23,6 +23,7 @@ import {
     TableRow,
 } from "@/components/ui/table"
 import { AddColums } from "../ListView/FieldColums"
+import { BulkActionsToolbar } from "../ListView/BulkActionsToolbar"
 import { Column } from "@tanstack/react-table"
 
 // Helper for sticky columns
@@ -46,6 +47,31 @@ export default function TaskTable() {
     const [columnPinning, setColumnPinning] = React.useState<ColumnPinningState>({ left: ["index"] })
     const [addingSubtaskTo, setAddingSubtaskTo] = React.useState<string | null>(null)
     const [isAddColumnsOpen, setIsAddColumnsOpen] = React.useState(false)
+
+    // Bulk Handlers
+    const handleClearSelection = React.useCallback(() => setRowSelection({}), [])
+
+    const handleDelete = React.useCallback(() => {
+        const selectedIds = Object.keys(rowSelection).filter((id) => rowSelection[id])
+        if (selectedIds.length === 0) return
+
+        setData((prev) => prev.filter((row) => !rowSelection[row.id || row.taskID || ""]))
+        setRowSelection({})
+    }, [rowSelection])
+
+    const handleBulkUpdate = React.useCallback(
+        (field: keyof taskTable, value: any) => {
+            const selectedIds = Object.keys(rowSelection).filter((id) => rowSelection[id])
+            if (selectedIds.length === 0) return
+
+            setData((prev) =>
+                prev.map((row) =>
+                    rowSelection[row.id || row.taskID || ""] ? { ...row, [field]: value } : row
+                )
+            )
+        },
+        [rowSelection]
+    )
 
     // Update data function for cell edits
     const updateData = React.useCallback(
@@ -152,10 +178,14 @@ export default function TaskTable() {
                                 >
                                     {row.getVisibleCells().map((cell) => {
                                         const { position, ...pinningStyles } = getCommonPinningStyles(cell.column)
+                                        const isPinned = cell.column.getIsPinned()
                                         return (
                                             <TableCell
                                                 key={cell.id}
-                                                className="p-0 border-r border-gray-100 last:border-r-0 overflow-hidden relative bg-white group-hover:bg-gray-50/50 transition-colors"
+                                                className={`p-0 border-r border-gray-100 last:border-r-0 overflow-hidden relative transition-colors ${isPinned
+                                                    ? "bg-white group-hover:bg-gray-50"
+                                                    : "bg-white group-hover:bg-gray-50/50"
+                                                    }`}
                                                 style={{
                                                     width: cell.column.getSize(),
                                                     minWidth: cell.column.getSize(),
@@ -208,6 +238,17 @@ export default function TaskTable() {
                 table={table}
                 isOpen={isAddColumnsOpen}
                 onClose={() => setIsAddColumnsOpen(false)}
+            />
+
+            <BulkActionsToolbar
+                selectedCount={Object.keys(rowSelection).filter(id => rowSelection[id]).length}
+                onClearSelection={handleClearSelection}
+                onDelete={handleDelete}
+                onUpdateStatus={(status) => handleBulkUpdate("status", status)}
+                onUpdateAssignees={(assignees) => handleBulkUpdate("assignees", assignees)}
+                onUpdateStartDate={(date) => handleBulkUpdate("startDate", date)}
+                onUpdateDueDate={(date) => handleBulkUpdate("dueDate", date)}
+                onUpdatePriority={(priority) => handleBulkUpdate("priority", priority)}
             />
         </div>
     )
