@@ -16,6 +16,11 @@ interface AssigneePopOverProps {
     onOpenChange?: (open: boolean) => void
 }
 
+const getInitials = (name: string) => {
+    if (!name) return "U"
+    return name[0].toUpperCase()
+}
+
 export function AssigneePopOver({ assignees = [], onAssigneesChange, children, open, onOpenChange }: AssigneePopOverProps) {
     const [localOpen, setLocalOpen] = React.useState(false)
     const [search, setSearch] = React.useState("")
@@ -34,11 +39,6 @@ export function AssigneePopOver({ assignees = [], onAssigneesChange, children, o
         u.email.toLowerCase().includes(search.toLowerCase())
     )
 
-    const getInitials = (name: string) => {
-        if (!name) return "U"
-        return name[0].toUpperCase()
-    }
-
     const toggleUser = (email: string) => {
         const newAssignees = assignees.includes(email)
             ? assignees.filter(e => e !== email)
@@ -55,53 +55,15 @@ export function AssigneePopOver({ assignees = [], onAssigneesChange, children, o
                     <div className="group cursor-pointer flex items-center -space-x-1.5 transition-all">
                         {selectedUsers.length > 0 ? (
                             <>
-                                {selectedUsers.map((user, i) => {
-                                    const [isProfileOpen, setIsProfileOpen] = React.useState(false)
-
-                                    return (
-                                        <div
-                                            key={user.email}
-                                            className="relative transition-transform duration-200"
-                                            style={{ zIndex: selectedUsers.length - i }}
-                                        >
-                                            <Popover open={isProfileOpen} onOpenChange={setIsProfileOpen}>
-                                                <PopoverTrigger asChild>
-                                                    <div
-                                                        className="cursor-pointer"
-                                                        onMouseEnter={() => setIsProfileOpen(true)}
-                                                        onMouseLeave={() => setIsProfileOpen(false)}
-                                                    >
-                                                        <Avatar className="h-7 w-7 text-[11px] font-bold border border-white shadow-sm hover:scale-110 transition-transform">
-                                                            <AvatarImage src={user.avatar} />
-                                                            <AvatarFallback className="bg-[#5c67ff] text-white font-bold text-[11px]">
-                                                                {getInitials(user.name)}
-                                                            </AvatarFallback>
-                                                        </Avatar>
-                                                    </div>
-                                                </PopoverTrigger>
-                                                <PopoverContent
-                                                    className="p-0 w-auto border-none bg-transparent shadow-none pointer-events-none"
-                                                    side="bottom"
-                                                    align="start"
-                                                >
-                                                    <div className="pointer-events-auto">
-                                                        <UserProfileCard user={user} />
-                                                    </div>
-                                                </PopoverContent>
-                                            </Popover>
-                                            {/* Individual remove button on hover */}
-                                            <button
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    toggleUser(user.email);
-                                                }}
-                                                className="absolute -top-1 -right-1 h-3.5 w-3.5 rounded-full bg-red-500 text-white border border-white flex items-center justify-center opacity-0 group-hover:opacity-100 hover:bg-red-600 transition-all scale-0 group-hover:scale-100 z-50 shadow-md"
-                                            >
-                                                <X size={8} className="stroke-[3]" />
-                                            </button>
-                                        </div>
-                                    )
-                                })}
+                                {selectedUsers.map((user, i) => (
+                                    <UserAvatarItem
+                                        key={user.email}
+                                        user={user}
+                                        index={i}
+                                        total={selectedUsers.length}
+                                        onRemove={toggleUser}
+                                    />
+                                ))}
                                 <div className="h-7 w-7 rounded-full bg-transparent border border-transparent flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity ml-1">
                                     <Plus size={14} className="text-gray-400" />
                                 </div>
@@ -186,5 +148,51 @@ export function AssigneePopOver({ assignees = [], onAssigneesChange, children, o
                 </div>
             </PopoverContent>
         </Popover>
+    )
+}
+
+function UserAvatarItem({ user, index, total, onRemove }: { user: typeof USERS[0], index: number, total: number, onRemove: (email: string) => void }) {
+    const [isProfileOpen, setIsProfileOpen] = React.useState(false)
+
+    return (
+        <div
+            className="relative transition-transform duration-200"
+            style={{ zIndex: total - index }}
+        >
+            <Popover open={isProfileOpen} onOpenChange={setIsProfileOpen}>
+                <PopoverTrigger asChild>
+                    <div
+                        className="cursor-pointer"
+                        onMouseEnter={() => setIsProfileOpen(true)}
+                        onMouseLeave={() => setIsProfileOpen(false)}
+                    >
+                        <Avatar className="h-7 w-7 text-[11px] font-bold border border-white shadow-sm hover:scale-110 transition-transform">
+                            <AvatarImage src={user.avatar} />
+                            <AvatarFallback className="bg-[#5c67ff] text-white font-bold text-[11px]">
+                                {getInitials(user.name)}
+                            </AvatarFallback>
+                        </Avatar>
+                    </div>
+                </PopoverTrigger>
+                <PopoverContent
+                    className="p-0 w-auto border-none bg-transparent shadow-none pointer-events-none"
+                    side="bottom"
+                    align="start"
+                >
+                    <div className="pointer-events-auto">
+                        <UserProfileCard user={user} />
+                    </div>
+                </PopoverContent>
+            </Popover>
+            <button
+                onClick={(e) => {
+                    e.stopPropagation();
+                    onRemove(user.email);
+                }}
+                className="absolute -top-1 -right-1 h-3.5 w-3.5 rounded-full bg-red-500 text-white border border-white flex items-center justify-center opacity-0 group-hover:opacity-100 hover:bg-red-600 transition-all scale-0 group-hover:scale-100 z-50 shadow-md"
+            >
+                <X size={8} className="stroke-[3]" />
+            </button>
+        </div>
     )
 }
