@@ -14,8 +14,11 @@ interface DraggableHeaderProps {
 }
 
 export function DraggableHeader({ header, index }: DraggableHeaderProps) {
-    const isPinned = ["name", "addNewColumn", "select", "index"].includes(header.column.id)
-    const isSticky = ["select", "index", "name"].includes(header.column.id)
+    const viewType = (header.getContext().table.options.meta as any)?.viewType
+    const isPinned = ["index", "addNewColumn", "select"].includes(header.column.id) ||
+        (viewType === 'list' && header.column.id === 'name')
+    const isSticky = header.column.getIsPinned() === "left" || ["select", "index"].includes(header.column.id) ||
+        (viewType === 'list' && header.column.id === 'name')
 
     const {
         attributes,
@@ -30,15 +33,12 @@ export function DraggableHeader({ header, index }: DraggableHeaderProps) {
     })
 
     // Calculate left offset for sticky columns
-    // We assume index=50px based on definition
     const getLeft = () => {
         if (header.column.id === "index") return 0
-        if (header.column.id === "name") {
-            // If we are in TableView (index exists), name is 2nd.
-            // If ListView, name is 1st (index 0).
-            if (index === 0) return 0 // ListView
-            return 50 // TableView (50px index)
+        if (header.column.getIsPinned() === "left") {
+            return header.column.getStart("left")
         }
+        if (viewType === 'list' && header.column.id === 'name') return 0
         return undefined
     }
 

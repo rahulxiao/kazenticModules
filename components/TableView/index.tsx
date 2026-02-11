@@ -25,6 +25,8 @@ import {
 import { ChevronDown, Check, Flag, MoreHorizontal, RefreshCcw, CheckCircle2, Circle, MoreVertical } from "lucide-react"
 import { AddColums } from "../ListView/FieldColums"
 import { BulkActionsToolbar } from "../ListView/BulkActionsToolbar"
+import { CalculateModule } from "../ListView/CalculateModule"
+import moment from "moment"
 import { Column } from "@tanstack/react-table"
 import {
     DndContext,
@@ -63,6 +65,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
 import { UserProfileCard } from "../ListView/UserProfileCard"
 import { USERS } from "@/data/tableData"
+import { CreateTaskModule } from "../ListView/CreateTaskModule"
 
 export default function TaskTable() {
     const [data, setData] = React.useState<taskTable[]>(tableData)
@@ -72,7 +75,10 @@ export default function TaskTable() {
     const [addingSubtaskTo, setAddingSubtaskTo] = React.useState<string | null>(null)
     const [isAddColumnsOpen, setIsAddColumnsOpen] = React.useState(false)
     const [rowSizing, setRowSizing] = React.useState<Record<string, number>>({})
-    const [selectedGroup, setSelectedGroup] = React.useState<string>("status")
+    const [selectedGroup, setSelectedGroup] = React.useState<string>("")
+    const [creatingInGroup, setCreatingInGroup] = React.useState<string | null>(null)
+    const [columnCalculationMethods, setColumnCalculationMethods] = React.useState<Record<string, string>>({})
+    const [calculateOpenColId, setCalculateOpenColId] = React.useState<string | null>(null)
 
     const [columnOrder, setColumnOrder] = React.useState<string[]>(() =>
         columns.map((c: any) => c.accessorKey || c.id || "")
@@ -95,7 +101,7 @@ export default function TaskTable() {
         const isColumnDrag = columnOrder.includes(active.id as string)
         if (isColumnDrag) {
             // Prevent moving pinned columns
-            const pinned = ["index", "name"]
+            const pinned = ["index"]
             if (pinned.includes(active.id as string) || pinned.includes(over.id as string)) return
 
             setColumnOrder((order) => {
@@ -246,6 +252,49 @@ export default function TaskTable() {
         [rowSelection]
     )
 
+    const addTask = React.useCallback((name: string, groupValue?: string) => {
+        const newTask: taskTable = {
+            name: name,
+            assignees: [],
+            startDate: "",
+            dueDate: "",
+            priority: "Normal",
+            status: "To Do",
+            taskID: Math.random().toString(36).substring(2, 11),
+            timeTracker: "Add time",
+            addNewColumn: "",
+            dateCreated: new Date().toISOString().split('T')[0],
+            subtasks: []
+        }
+
+        // Apply group value if grouping is active
+        if (selectedGroup && groupValue && groupValue !== "Uncategorized") {
+            if (selectedGroup === 'assignees') {
+                const emails = groupValue.split(', ')
+                newTask.assignees = [emails[0]]
+            } else {
+                (newTask as any)[selectedGroup] = groupValue
+            }
+        }
+
+        setData(prev => [...prev, newTask])
+    }, [selectedGroup])
+
+    const handleCalculate = (columnId: string, method: string) => {
+        setColumnCalculationMethods(prev => ({
+            ...prev,
+            [columnId]: method
+        }))
+    }
+
+    const handleClearCalculation = (columnId: string) => {
+        setColumnCalculationMethods(prev => {
+            const newState = { ...prev }
+            delete newState[columnId]
+            return newState
+        })
+    }
+
     // Update data function for cell edits
     const updateData = React.useCallback(
         (rowId: string, columnId: string, value: any) => {
@@ -296,6 +345,9 @@ export default function TaskTable() {
             addingSubtaskTo,
             onAddSubtask: handleAddSubtask,
             onOpenAddColumns: () => setIsAddColumnsOpen(true),
+            handleCalculate,
+            clearCalculation: handleClearCalculation,
+            columnCalculationMethods,
             viewType: 'table',
             rowSizing,
             onRowResizeStart: handleRowResizeStart,
@@ -460,18 +512,29 @@ export default function TaskTable() {
                                                     {/* Group Footer */}
                                                     <TableRow className="h-12 hover:bg-transparent border-t border-gray-50">
                                                         <TableCell className="p-0 border-r border-gray-50 bg-white sticky left-0 z-30" style={{ width: table.getColumn('index')?.getSize() }} />
-                                                        <TableCell className="p-0 border-r border-gray-50 bg-white">
-                                                            <div className="flex items-center gap-2 px-4 py-2 text-[13px] font-medium text-gray-400 hover:text-gray-600 transition-colors cursor-pointer group/calc">
-                                                                <Plus className="w-3.5 h-3.5" />
-                                                                <span>Create Task</span>
-                                                            </div>
+                                                        <TableCell
+                                                            className={cn(
+                                                                "p-0 border-r border-gray-50 bg-white",
+                                                                creatingInGroup === groupName && "z-40"
+                                                            )}
+                                                            style={{ width: table.getColumn('name')?.getSize() }}
+                                                        >
+                                                            <CreateTaskModule
+                                                                onSave={(name) => addTask(name, groupName)}
+                                                                onOpenChange={(open) => setCreatingInGroup(open ? groupName : null)}
+                                                            />
                                                         </TableCell>
                                                         {table.getVisibleFlatColumns().slice(2).map((column) => (
                                                             <TableCell key={column.id} className="p-0 border-r border-gray-50 bg-white">
-                                                                <div className="flex items-center justify-center gap-1.5 px-3 py-2 text-[11px] font-medium text-gray-400 hover:text-gray-600 transition-colors cursor-pointer whitespace-nowrap group/calc">
-                                                                    <span>Calculate</span>
-                                                                    <ChevronDown size={12} className="opacity-0 group-hover/calc:opacity-100 transition-opacity" />
-                                                                </div>
+                                                                <CalculateModule
+                                                                    items={groupRows}
+                                                                    columnId={column.id}
+                                                                    currentMethod={columnCalculationMethods[column.id]}
+                                                                    onCalculate={(method) => handleCalculate(column.id, method)}
+                                                                    onClear={() => handleClearCalculation(column.id)}
+                                                                    isOpen={calculateOpenColId === `${groupName}-${column.id}`}
+                                                                    onOpenChange={(open) => setCalculateOpenColId(open ? `${groupName}-${column.id}` : null)}
+                                                                />
                                                             </TableCell>
                                                         ))}
                                                     </TableRow>

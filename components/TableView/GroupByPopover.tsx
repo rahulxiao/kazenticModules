@@ -64,7 +64,9 @@ export function GroupByPopover({ selectedGroup, onGroupChange }: GroupByPopoverP
                                 <path d="M7 10v4" />
                                 <path d="M14 7h-4" />
                             </svg>
-                            <span className="text-[#5a6a85] font-semibold text-[14px]">Group by : {currentOption?.label}</span>
+                            <span className="text-[#5a6a85] font-semibold text-[14px]">
+                                Group by {currentOption ? `: ${currentOption.label}` : ""}
+                            </span>
                         </div>
                     </button>
                 </PopoverTrigger>
@@ -89,7 +91,7 @@ export function GroupByPopover({ selectedGroup, onGroupChange }: GroupByPopoverP
                                 )}
                             >
                                 <span className="text-[12px] font-medium text-[#5a6a85]">
-                                    {currentOption?.label}
+                                    {currentOption?.label || "Select group"}
                                 </span>
                                 <ChevronRight className="w-[16px] h-[16px] text-gray-400" />
                             </button>
@@ -114,7 +116,7 @@ export function GroupByPopover({ selectedGroup, onGroupChange }: GroupByPopoverP
                         <div className="w-full flex justify-end pt-3 pr-1">
                             <button
                                 onClick={() => {
-                                    onGroupChange("status")
+                                    onGroupChange("")
                                     setIsOpen(false)
                                 }}
                                 className="text-[12px] font-semibold text-[#f55151] hover:text-red-600 transition-colors"

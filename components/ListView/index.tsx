@@ -22,8 +22,9 @@ import {
 import { taskTable, tableData } from "@/data/tableData"
 
 import { AddSubtaskModule } from "@/components/ListView/AddSubtaskModule"
+import { CreateTaskModule } from "@/components/ListView/CreateTaskModule"
 import { AddColums } from "@/components/ListView/FieldColums"
-import { CalculatePopover } from "@/components/ListView/HeaderManu/CalculatePopover"
+import { CalculateModule } from "@/components/ListView/CalculateModule"
 import { cn } from "@/lib/utils"
 import { Plus, ChevronDown } from "lucide-react"
 import moment from "moment"
@@ -266,76 +267,7 @@ export default function ListView() {
     }, [])
 
     // Derived calculations based on data and selected methods
-    const columnCalculations = React.useMemo(() => {
-        const results: Record<string, { method: string, value: string | number }> = {}
-        const flatData = flattenData(data)
-
-        Object.entries(columnCalculationMethods).forEach(([columnId, method]) => {
-            const values = flatData.map((row: any) => row[columnId])
-            let value: string | number = ""
-
-            switch (method) {
-                case "count_all":
-                    value = flatData.length
-                    break
-                case "count_values":
-                    value = values.filter(v => v !== null && v !== undefined && v !== "").length
-                    break
-                case "count_unique":
-                    value = new Set(values.filter(v => v !== null && v !== undefined && v !== "")).size
-                    break
-                case "count_empty":
-                    value = values.filter(v => v === null || v === undefined || v === "").length
-                    break
-                case "count_not_empty":
-                    value = values.filter(v => v !== null && v !== undefined && v !== "").length
-                    break
-                case "percent_filled":
-                    const filled = values.filter(v => v !== null && v !== undefined && v !== "").length
-                    value = flatData.length ? `${Math.round((filled / flatData.length) * 100)}%` : "0%"
-                    break
-                case "percent_total":
-                    const totalFilled = values.filter(v => v !== null && v !== undefined && v !== "").length
-                    value = flatData.length ? `${Math.round((totalFilled / flatData.length) * 100)}%` : "0%"
-                    break
-                case "earliest_date":
-                    const dates = values
-                        .filter(v => v && moment(v).isValid())
-                        .map(v => moment(v))
-                        .sort((a, b) => a.valueOf() - b.valueOf())
-                    value = dates.length ? dates[0].format("MMM D") : "-"
-                    break
-                case "latest_date":
-                    const datesLatest = values
-                        .filter(v => v && moment(v).isValid())
-                        .map(v => moment(v))
-                        .sort((a, b) => b.valueOf() - a.valueOf())
-                    value = datesLatest.length ? datesLatest[0].format("MMM D") : "-"
-                    break
-                case "date_range":
-                    const datesRange = values
-                        .filter(v => v && moment(v).isValid())
-                        .map(v => moment(v))
-                        .sort((a, b) => a.valueOf() - b.valueOf())
-
-                    if (datesRange.length === 0) {
-                        value = "-"
-                    } else if (datesRange.length === 1) {
-                        value = datesRange[0].format("MMM D")
-                    } else {
-                        const start = datesRange[0]
-                        const end = datesRange[datesRange.length - 1]
-                        value = `${start.format("MMM D")} - ${end.format("MMM D")}`
-                    }
-                    break
-                default:
-                    value = ""
-            }
-            results[columnId] = { method, value }
-        })
-
-        return results
-    }, [data, columnCalculationMethods, flattenData])
+    const flatData = React.useMemo(() => flattenData(data), [data, flattenData])
 
 
     const handleCalculate = (columnId: string, method: string) => {
@@ -549,7 +481,8 @@ export default function ListView() {
             duplicateColumn,
             handleCalculate,
             clearCalculation: handleClearCalculation,
-            getCalculation: (columnId: string) => columnCalculations[columnId],
+            columnCalculationMethods,
+            viewType: 'list',
         },
     })
 
@@ -650,7 +583,6 @@ export default function ListView() {
                             <TableRow className="hover:bg-gray-50 border-t-2 border-gray-100 transition-colors group">
                                 {table.getVisibleFlatColumns().map((column) => {
                                     const isNameColumn = column.id === "name"
-                                    const calculation = columnCalculations[column.id]
 
                                     return (
                                         <TableCell
@@ -663,47 +595,20 @@ export default function ListView() {
                                             )}
                                         >
                                             {isNameColumn ? (
-                                                isCreatingTask ? (
-                                                    <AddSubtaskModule
-                                                        depth={0}
-                                                        onCancel={() => setIsCreatingTask(false)}
-                                                        onSave={(name) => {
-                                                            addTask(name)
-                                                            setIsCreatingTask(false)
-                                                        }}
-                                                    />
-                                                ) : (
-                                                    <button
-                                                        onClick={() => setIsCreatingTask(true)}
-                                                        className="flex items-center gap-2 text-gray-400 hover:text-gray-700 transition-colors pl-2"
-                                                    >
-                                                        <Plus className="h-4 w-4" />
-                                                        Create Task
-                                                    </button>
-                                                )
+                                                <CreateTaskModule
+                                                    onSave={addTask}
+                                                    onOpenChange={setIsCreatingTask}
+                                                />
                                             ) : (
-                                                <div className="flex justify-center w-full">
-                                                    <CalculatePopover
-                                                        open={calculateOpenColId === column.id}
-                                                        onOpenChange={(open) => setCalculateOpenColId(open ? column.id : null)}
-                                                        onCalculate={(method) => handleCalculate(column.id, method)}
-                                                        onClear={() => handleClearCalculation(column.id)}
-                                                        currentMethod={calculation?.method}
-                                                    >
-                                                        <button className="flex items-center justify-center gap-1 hover:bg-gray-200 px-2 py-1 rounded transition-colors h-7 min-w-[70px]">
-                                                            {calculation ? (
-                                                                <span className="text-gray-900 font-semibold">{calculation.value}</span>
-                                                            ) : (
-                                                                // UPDATED: Used group-hover to trigger visibility on row hover
-                                                                // Wrapped text and icon in a div for unified handling
-                                                                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                                                                    <span className="text-[11px] font-medium text-gray-400">Calculate</span>
-                                                                    <ChevronDown className="h-3 w-3 text-gray-400" />
-                                                                </div>
-                                                            )}
-                                                        </button>
-                                                    </CalculatePopover>
-                                                </div>
+                                                <CalculateModule
+                                                    items={flatData}
+                                                    columnId={column.id}
+                                                    currentMethod={columnCalculationMethods[column.id]}
+                                                    onCalculate={(method) => handleCalculate(column.id, method)}
+                                                    onClear={() => handleClearCalculation(column.id)}
+                                                    isOpen={calculateOpenColId === column.id}
+                                                    onOpenChange={(open) => setCalculateOpenColId(open ? column.id : null)}
+                                                />
                                             )}
                                         </TableCell>
                                     )

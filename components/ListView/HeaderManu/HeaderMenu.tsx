@@ -363,13 +363,11 @@ export function HeaderMenu({
                 // Note: Index column is "index" (0), Name is "name" (1) in ListView?
                 // The loop iterates columns.
 
-                // Keep 'name' at index 1? Or 0?
-                // In ListView, name is index 0.
-                if (colId === 'name' || columnIndex <= 1) return
+                if (colId === 'index' || columnIndex <= 1) return
 
-                // Move to position 1 (right after 'name' which is always at 0)
+                // Move to position 1 (right after 'index' which is always at 0)
                 const newOrder = [
-                    currentOrder[0], // Keep 'name' at the start
+                    currentOrder[0], // Keep 'index' at the start
                     colId,
                     ...currentOrder.slice(1, columnIndex),
                     ...currentOrder.slice(columnIndex + 1)
@@ -383,8 +381,8 @@ export function HeaderMenu({
                 const currentOrder = table.getState().columnOrder
                 const columnIndex = currentOrder.indexOf(colId)
 
-                // Don't move if it's the 'name' column or 'addNewColumn', or already at the end
-                if (colId === 'name' || colId === 'addNewColumn') return
+                // Don't move if it's the 'index' column or 'addNewColumn', or already at the end
+                if (colId === 'index' || colId === 'addNewColumn') return
 
                 // Find the position before 'addNewColumn' (if it exists)
                 const addColumnIndex = currentOrder.indexOf('addNewColumn')
@@ -513,7 +511,7 @@ export function HeaderMenu({
                     onClear={() => {
                         (table?.options.meta as any)?.clearCalculation?.(columnId)
                     }}
-                    currentMethod={(table?.options.meta as any)?.getCalculation?.(columnId)?.method}
+                    currentMethod={(table?.options.meta as any)?.columnCalculationMethods?.[columnId || ""]}
                 >
                     <div className="w-full h-full" />
                 </CalculatePopover>
