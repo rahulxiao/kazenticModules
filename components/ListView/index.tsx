@@ -565,13 +565,13 @@ export default function ListView() {
 
     return (
         <div className="p-10 font-sans bg-[#fafafa] min-h-screen">
-            <div className="max-w-[1400px] mx-auto bg-white rounded-xl shadow-sm border border-gray-100 overflow-x-auto text-[#222]">
+            <div className="max-w-[1400px] mx-auto bg-white rounded-xl shadow-sm border border-gray-100 overflow-visible text-[#222]">
                 <DndContext
                     sensors={sensors}
                     collisionDetection={closestCenter}
                     onDragEnd={handleDragEnd}
                 >
-                    <Table style={{ minWidth: "1200px", tableLayout: "fixed" }} className="border-collapse">
+                    <Table style={{ minWidth: "1200px", tableLayout: "fixed" }} className="border-collapse" overflow={false}>
                         <TableHeader >
                             {table.getHeaderGroups().map(headerGroup => (
                                 <TableRow key={headerGroup.id} className="hover:bg-transparent border-b border-gray-100">
