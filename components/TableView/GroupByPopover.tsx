@@ -70,7 +70,7 @@ export function GroupByPopover({ selectedGroup, onGroupChange }: GroupByPopoverP
                 </PopoverTrigger>
                 <PopoverContent
                     className={cn(
-                        "p-0 bg-white border border-gray-200 shadow-[0_4px_24px_rgba(0,0,0,0.08)] rounded-[12px] overflow-hidden transition-all duration-200 flex border-width-[1px]",
+                        "p-0 bg-white border border-gray-200 shadow-[0_4px_24px_rgba(0,0,0,0.08)] rounded-[12px] overflow-hidden transition-all duration-200 flex border-width-[1px] z-[100]",
                         activePanel ? "w-[392px]" : "w-[201px]"
                     )}
                     align="start"

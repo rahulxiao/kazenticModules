@@ -327,7 +327,7 @@ export default function TaskTable() {
                             <div style={{ width: Math.max(table.getTotalSize(), 1200) }} className="min-h-full">
 
                                 {/* Sticky Header Box */}
-                                <div className="sticky top-0 z-[100] bg-white border-b border-gray-100">
+                                <div className="sticky top-0 z-[10] bg-white border-b border-gray-100">
                                     <Table style={{ width: Math.max(table.getTotalSize(), 1200), tableLayout: 'fixed' }} className="border-collapse" overflow={false}>
                                         <TableHeader className="bg-white">
                                             {table.getHeaderGroups().map((headerGroup) => (
