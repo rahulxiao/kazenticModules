@@ -26,6 +26,22 @@ import { ChevronDown, Check, Flag, MoreHorizontal, RefreshCcw, CheckCircle2, Cir
 import { AddColums } from "../ListView/FieldColums"
 import { BulkActionsToolbar } from "../ListView/BulkActionsToolbar"
 import { Column } from "@tanstack/react-table"
+import {
+    DndContext,
+    closestCenter,
+    KeyboardSensor,
+    MouseSensor,
+    TouchSensor,
+    useSensor,
+    useSensors,
+    DragEndEvent,
+} from "@dnd-kit/core"
+import {
+    SortableContext,
+    horizontalListSortingStrategy,
+    arrayMove,
+} from "@dnd-kit/sortable"
+import { DraggableHeader } from "@/components/ListView/DraggableHeader"
 
 // Helper for sticky columns
 const getCommonPinningStyles = (column: Column<any>): React.CSSProperties => {
@@ -57,6 +73,38 @@ export default function TaskTable() {
     const [isAddColumnsOpen, setIsAddColumnsOpen] = React.useState(false)
     const [rowSizing, setRowSizing] = React.useState<Record<string, number>>({})
     const [selectedGroup, setSelectedGroup] = React.useState<string>("status")
+
+    const [columnOrder, setColumnOrder] = React.useState<string[]>(() =>
+        columns.map((c: any) => c.accessorKey || c.id || "")
+    )
+
+    const sensors = useSensors(
+        useSensor(MouseSensor, {
+            activationConstraint: {
+                distance: 8,
+            },
+        }),
+        useSensor(TouchSensor),
+        useSensor(KeyboardSensor)
+    )
+
+    const handleDragEnd = (event: DragEndEvent) => {
+        const { active, over } = event
+        if (!active || !over || active.id === over.id) return
+
+        const isColumnDrag = columnOrder.includes(active.id as string)
+        if (isColumnDrag) {
+            // Prevent moving pinned columns
+            const pinned = ["index", "name"]
+            if (pinned.includes(active.id as string) || pinned.includes(over.id as string)) return
+
+            setColumnOrder((order) => {
+                const oldIndex = order.indexOf(active.id as string)
+                const newIndex = order.indexOf(over.id as string)
+                return arrayMove(order, oldIndex, newIndex)
+            })
+        }
+    }
 
     // Grouping Logic
     const groupedData = React.useMemo(() => {
@@ -229,11 +277,13 @@ export default function TaskTable() {
             sorting,
             rowSelection,
             columnPinning,
+            columnOrder,
         },
         enableRowSelection: true,
         onRowSelectionChange: setRowSelection,
         onSortingChange: setSorting,
         onColumnPinningChange: setColumnPinning,
+        onColumnOrderChange: setColumnOrder,
         getRowId: (row) => row.id || row.taskID || "",
         getCoreRowModel: getCoreRowModel(),
         getSortedRowModel: getSortedRowModel(),
@@ -254,210 +304,198 @@ export default function TaskTable() {
 
     return (
         <div className="w-full min-h-screen bg-[#fafafa] text-gray-900 overflow-auto p-10 font-sans">
-            <div className="max-w-[1400px] mx-auto flex flex-col gap-6">
-                <div className="flex items-center justify-between">
-                    <GroupByPopover
-                        selectedGroup={selectedGroup}
-                        onGroupChange={setSelectedGroup}
-                    />
-                </div>
-
-                <div className="bg-white rounded-xl shadow-[0_2px_15px_rgba(0,0,0,0.03)] border border-gray-100 overflow-hidden flex flex-col">
-                    {/* Unified Scroll Container */}
-                    <div className="overflow-auto bg-white">
-                        {/* 
-                            This wrapper ensures that the header and all rows are part of the same scroll context.
-                            We set a min-width matching the table size to enable horizontal scrolling if needed.
-                        */}
-                        <div style={{ width: Math.max(table.getTotalSize(), 1200) }} className="min-h-full">
-
-                            {/* Sticky Header Box */}
-                            <div className="sticky top-0 z-[100] bg-white border-b border-gray-100">
-                                <Table style={{ width: Math.max(table.getTotalSize(), 1200), tableLayout: 'fixed' }} className="border-collapse" overflow={false}>
-                                    <TableHeader className="bg-white">
-                                        {table.getHeaderGroups().map((headerGroup) => (
-                                            <TableRow key={headerGroup.id} className="hover:bg-transparent border-none h-12">
-                                                {headerGroup.headers.map((header) => {
-                                                    const pinningStyles = getCommonPinningStyles(header.column)
-                                                    return (
-                                                        <TableHead
-                                                            key={header.id}
-                                                            colSpan={header.colSpan}
-                                                            className="px-4 text-[13px] font-semibold text-gray-500 relative group border-r border-gray-50 last:border-r-0 bg-white"
-                                                            style={{
-                                                                width: header.getSize(),
-                                                                minWidth: header.getSize(),
-                                                                ...pinningStyles,
-                                                            }}
-                                                        >
-                                                            {header.isPlaceholder
-                                                                ? null
-                                                                : flexRender(
-                                                                    header.column.columnDef.header,
-                                                                    header.getContext()
-                                                                )}
-                                                            {header.column.getCanResize() && (
-                                                                <div
-                                                                    onMouseDown={header.getResizeHandler()}
-                                                                    onTouchStart={header.getResizeHandler()}
-                                                                    className={`absolute right-0 top-0 h-full w-[1px] cursor-col-resize touch-none hover:bg-gray-400 ${header.column.getIsResizing() ? "bg-blue-500 w-[2px]" : "bg-transparent"
-                                                                        }`}
-                                                                />
-                                                            )}
-                                                        </TableHead>
-                                                    )
-                                                })}
-                                            </TableRow>
-                                        ))}
-                                    </TableHeader>
-                                </Table>
-                            </div>
-
-                            <div className="p-0 space-y-0">
-                                {Object.entries(groupedData).map(([groupName, groupRows]) => (
-                                    <div key={groupName} className="border-b border-gray-100 last:border-b-0">
-                                        {/* Group Header Bar */}
-                                        <div className="flex items-center justify-between px-4 py-3 bg-[#f8fafc]/50 border-b border-gray-50">
-                                            <div className="flex items-center gap-3">
-                                                <ChevronDown size={14} className="text-gray-400 cursor-pointer" />
-                                                {selectedGroup === 'assignees' ? (
-                                                    <div className="flex items-center gap-2">
-                                                        <div className="flex items-center -space-x-1.5 px-0.5">
-                                                            {groupName.split(', ').map((email, idx) => {
-                                                                const user = USERS.find(u => u.email === email)
-                                                                if (!user && email === "Uncategorized") return null
-
-                                                                const displayUser = user || { name: email, email: email, avatar: "" }
-                                                                const initials = displayUser.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
-
-                                                                return <GroupAssigneeAvatar key={email + idx} user={displayUser} initials={initials} />
-                                                            })}
-                                                        </div>
-                                                    </div>
-                                                ) : selectedGroup === 'priority' ? (
-                                                    <div className="flex items-center gap-2">
-                                                        {(() => {
-                                                            const normalized = groupName.toLowerCase()
-                                                            let colorClass = "text-gray-400"
-                                                            if (normalized === "urgent") colorClass = "text-[#ff4d4d]"
-                                                            if (normalized === "high") colorClass = "text-[#ffd600]"
-                                                            if (normalized === "normal") colorClass = "text-[#4b89ff]"
-                                                            if (normalized === "low") colorClass = "text-[#8e8e8e]"
-
-                                                            return (
-                                                                <div className="flex items-center gap-2 px-2 py-1 rounded-md bg-white border border-gray-100 shadow-sm">
-                                                                    <Flag size={14} className={cn(colorClass, "fill-current")} />
-                                                                    <span className="text-[11px] font-bold uppercase tracking-tight text-gray-900">{groupName}</span>
-                                                                </div>
-                                                            )
-                                                        })()}
-                                                    </div>
-                                                ) : (
-                                                    <div className={cn(
-                                                        "flex items-center gap-1.5 px-2 py-1 rounded-md border",
-                                                        getStatusStyle(groupName)
-                                                    )}>
-                                                        <StatusIcon status={groupName} />
-                                                        <span className="text-[11px] font-bold uppercase tracking-tight">{groupName}</span>
-                                                    </div>
-                                                )}
-                                                <div className="flex items-center justify-center min-w-[20px] h-[20px] px-1 rounded-full bg-gray-50 text-[11px] font-bold text-gray-400 border border-gray-200">
-                                                    {groupRows.length}
-                                                </div>
-                                                <MoreHorizontal size={14} className="text-gray-300 ml-1 cursor-pointer hover:text-gray-500 transition-colors" />
-                                                <Plus size={14} className="text-gray-300 cursor-pointer hover:text-gray-500 transition-colors" />
-                                            </div>
-                                        </div>
-
-                                        <Table style={{ width: Math.max(table.getTotalSize(), 1200), tableLayout: 'fixed' }} className="border-collapse" overflow={false}>
-                                            <TableBody>
-                                                {groupRows.map((rowData) => {
-                                                    const row = table.getRowModel().rows.find(r => r.original.id === rowData.id)
-                                                    if (!row) return null
-
-                                                    return (
-                                                        <TableRow
-                                                            key={row.id}
-                                                            data-state={row.getIsSelected() && "selected"}
-                                                            className="group hover:bg-gray-50/50 border-b border-gray-50 last:border-b-0 relative"
-                                                            style={{
-                                                                height: rowSizing[row.id] ? `${rowSizing[row.id]}px` : undefined,
-                                                            }}
-                                                        >
-                                                            {row.getVisibleCells().map((cell) => {
-                                                                const pinningStyles = getCommonPinningStyles(cell.column)
-                                                                const isPinned = cell.column.getIsPinned()
-                                                                return (
-                                                                    <TableCell
-                                                                        key={cell.id}
-                                                                        className={`p-0 border-r border-gray-100 last:border-r-0 overflow-visible relative transition-colors whitespace-normal break-words ${cell.column.id === 'index' ? 'align-middle' : 'align-top'
-                                                                            } ${isPinned
-                                                                                ? "bg-white group-hover:bg-gray-50"
-                                                                                : "bg-white group-hover:bg-gray-50/50"
-                                                                            }`}
-                                                                        style={{
-                                                                            width: cell.column.getSize(),
-                                                                            minWidth: cell.column.getSize(),
-                                                                            maxWidth: cell.column.getSize(),
-                                                                            ...pinningStyles,
-                                                                        }}
-                                                                    >
-                                                                        {flexRender(
-                                                                            cell.column.columnDef.cell,
-                                                                            cell.getContext()
-                                                                        )}
-                                                                        {cell.column.id === 'index' && (
-                                                                            <div
-                                                                                className="absolute bottom-0 left-0 w-full h-1.5 cursor-row-resize hover:bg-blue-400/50 transition-colors z-[100]"
-                                                                                onMouseDown={(e) => handleRowResizeStart(e, row.id)}
-                                                                                onTouchStart={(e) => handleRowResizeStart(e, row.id)}
-                                                                            />
-                                                                        )}
-                                                                    </TableCell>
-                                                                )
-                                                            })}
-                                                        </TableRow>
-                                                    )
-                                                })}
-
-                                                {/* Group Footer */}
-                                                <TableRow className="h-12 hover:bg-transparent border-t border-gray-50">
-                                                    <TableCell className="p-0 border-r border-gray-50 bg-white sticky left-0 z-30" style={{ width: table.getColumn('index')?.getSize() }} />
-                                                    <TableCell className="p-0 border-r border-gray-50 bg-white">
-                                                        <div className="flex items-center gap-2 px-4 py-2 text-[13px] font-medium text-gray-400 hover:text-gray-600 transition-colors cursor-pointer group/calc">
-                                                            <Plus className="w-3.5 h-3.5" />
-                                                            <span>Create Task</span>
-                                                        </div>
-                                                    </TableCell>
-                                                    {table.getVisibleFlatColumns().slice(2).map((column) => (
-                                                        <TableCell key={column.id} className="p-0 border-r border-gray-50 bg-white">
-                                                            <div className="flex items-center justify-center gap-1.5 px-3 py-2 text-[11px] font-medium text-gray-400 hover:text-gray-600 transition-colors cursor-pointer whitespace-nowrap group/calc">
-                                                                <span>Calculate</span>
-                                                                <ChevronDown size={12} className="opacity-0 group-hover/calc:opacity-100 transition-opacity" />
-                                                            </div>
-                                                        </TableCell>
-                                                    ))}
-                                                </TableRow>
-                                            </TableBody>
-                                        </Table>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
+            <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}
+            >
+                <div className="max-w-[1400px] mx-auto flex flex-col gap-6">
+                    <div className="flex items-center justify-between">
+                        <GroupByPopover
+                            selectedGroup={selectedGroup}
+                            onGroupChange={setSelectedGroup}
+                        />
                     </div>
 
-                    <BulkActionsToolbar
-                        selectedCount={Object.keys(rowSelection).filter(id => rowSelection[id]).length}
-                        onClearSelection={handleClearSelection}
-                        onDelete={handleDelete}
-                        onUpdateStatus={(status) => handleBulkUpdate("status", status)}
-                        onUpdateAssignees={(assignees) => handleBulkUpdate("assignees", assignees)}
-                        onUpdateStartDate={(date) => handleBulkUpdate("startDate", date)}
-                        onUpdateDueDate={(date) => handleBulkUpdate("dueDate", date)}
-                        onUpdatePriority={(priority) => handleBulkUpdate("priority", priority)}
-                    />
+                    <div className="bg-white rounded-xl shadow-[0_2px_15px_rgba(0,0,0,0.03)] border border-gray-100 overflow-hidden flex flex-col">
+                        {/* Unified Scroll Container */}
+                        <div className="overflow-auto bg-white">
+                            {/* 
+                                This wrapper ensures that the header and all rows are part of the same scroll context.
+                                We set a min-width matching the table size to enable horizontal scrolling if needed.
+                            */}
+                            <div style={{ width: Math.max(table.getTotalSize(), 1200) }} className="min-h-full">
+
+                                {/* Sticky Header Box */}
+                                <div className="sticky top-0 z-[100] bg-white border-b border-gray-100">
+                                    <Table style={{ width: Math.max(table.getTotalSize(), 1200), tableLayout: 'fixed' }} className="border-collapse" overflow={false}>
+                                        <TableHeader className="bg-white">
+                                            {table.getHeaderGroups().map((headerGroup) => (
+                                                <TableRow key={headerGroup.id} className="hover:bg-transparent border-none h-12">
+                                                    <SortableContext
+                                                        items={columnOrder}
+                                                        strategy={horizontalListSortingStrategy}
+                                                    >
+                                                        {headerGroup.headers.map((header, index) => (
+                                                            <DraggableHeader
+                                                                key={header.id}
+                                                                header={header}
+                                                                index={index}
+                                                            />
+                                                        ))}
+                                                    </SortableContext>
+                                                </TableRow>
+                                            ))}
+                                        </TableHeader>
+                                    </Table>
+                                </div>
+
+                                <div className="p-0 space-y-0">
+                                    {Object.entries(groupedData).map(([groupName, groupRows]) => (
+                                        <div key={groupName} className="border-b border-gray-100 last:border-b-0">
+                                            {/* Group Header Bar */}
+                                            <div className="flex items-center justify-between px-4 py-3 bg-[#f8fafc]/50 border-b border-gray-50">
+                                                <div className="flex items-center gap-3">
+                                                    <ChevronDown size={14} className="text-gray-400 cursor-pointer" />
+                                                    {selectedGroup === 'assignees' ? (
+                                                        <div className="flex items-center gap-2">
+                                                            <div className="flex items-center -space-x-1.5 px-0.5">
+                                                                {groupName.split(', ').map((email, idx) => {
+                                                                    const user = USERS.find(u => u.email === email)
+                                                                    if (!user && email === "Uncategorized") return null
+
+                                                                    const displayUser = user || { name: email, email: email, avatar: "" }
+                                                                    const initials = displayUser.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
+
+                                                                    return <GroupAssigneeAvatar key={email + idx} user={displayUser} initials={initials} />
+                                                                })}
+                                                            </div>
+                                                        </div>
+                                                    ) : selectedGroup === 'priority' ? (
+                                                        <div className="flex items-center gap-2">
+                                                            {(() => {
+                                                                const normalized = groupName.toLowerCase()
+                                                                let colorClass = "text-gray-400"
+                                                                if (normalized === "urgent") colorClass = "text-[#ff4d4d]"
+                                                                if (normalized === "high") colorClass = "text-[#ffd600]"
+                                                                if (normalized === "normal") colorClass = "text-[#4b89ff]"
+                                                                if (normalized === "low") colorClass = "text-[#8e8e8e]"
+
+                                                                return (
+                                                                    <div className="flex items-center gap-2 px-2 py-1 rounded-md bg-white border border-gray-100 shadow-sm">
+                                                                        <Flag size={14} className={cn(colorClass, "fill-current")} />
+                                                                        <span className="text-[11px] font-bold uppercase tracking-tight text-gray-900">{groupName}</span>
+                                                                    </div>
+                                                                )
+                                                            })()}
+                                                        </div>
+                                                    ) : (
+                                                        <div className={cn(
+                                                            "flex items-center gap-1.5 px-2 py-1 rounded-md border",
+                                                            getStatusStyle(groupName)
+                                                        )}>
+                                                            <StatusIcon status={groupName} />
+                                                            <span className="text-[11px] font-bold uppercase tracking-tight">{groupName}</span>
+                                                        </div>
+                                                    )}
+                                                    <div className="flex items-center justify-center min-w-[20px] h-[20px] px-1 rounded-full bg-gray-50 text-[11px] font-bold text-gray-400 border border-gray-200">
+                                                        {groupRows.length}
+                                                    </div>
+                                                    <MoreHorizontal size={14} className="text-gray-300 ml-1 cursor-pointer hover:text-gray-500 transition-colors" />
+                                                    <Plus size={14} className="text-gray-300 cursor-pointer hover:text-gray-500 transition-colors" />
+                                                </div>
+                                            </div>
+
+                                            <Table style={{ width: Math.max(table.getTotalSize(), 1200), tableLayout: 'fixed' }} className="border-collapse" overflow={false}>
+                                                <TableBody>
+                                                    {groupRows.map((rowData) => {
+                                                        const row = table.getRowModel().rows.find(r => r.original.id === rowData.id)
+                                                        if (!row) return null
+
+                                                        return (
+                                                            <TableRow
+                                                                key={row.id}
+                                                                data-state={row.getIsSelected() && "selected"}
+                                                                className="group hover:bg-gray-50/50 border-b border-gray-50 last:border-b-0 relative"
+                                                                style={{
+                                                                    height: rowSizing[row.id] ? `${rowSizing[row.id]}px` : undefined,
+                                                                }}
+                                                            >
+                                                                {row.getVisibleCells().map((cell) => {
+                                                                    const pinningStyles = getCommonPinningStyles(cell.column)
+                                                                    const isPinned = cell.column.getIsPinned()
+                                                                    return (
+                                                                        <TableCell
+                                                                            key={cell.id}
+                                                                            className={`p-0 border-r border-gray-100 last:border-r-0 overflow-visible relative transition-colors whitespace-normal break-words ${cell.column.id === 'index' ? 'align-middle' : 'align-top'
+                                                                                } ${isPinned
+                                                                                    ? "bg-white group-hover:bg-gray-50"
+                                                                                    : "bg-white group-hover:bg-gray-50/50"
+                                                                                }`}
+                                                                            style={{
+                                                                                width: cell.column.getSize(),
+                                                                                minWidth: cell.column.getSize(),
+                                                                                maxWidth: cell.column.getSize(),
+                                                                                ...pinningStyles,
+                                                                            }}
+                                                                        >
+                                                                            {flexRender(
+                                                                                cell.column.columnDef.cell,
+                                                                                cell.getContext()
+                                                                            )}
+                                                                            {cell.column.id === 'index' && (
+                                                                                <div
+                                                                                    className="absolute bottom-0 left-0 w-full h-1.5 cursor-row-resize hover:bg-blue-400/50 transition-colors z-[100]"
+                                                                                    onMouseDown={(e) => handleRowResizeStart(e, row.id)}
+                                                                                    onTouchStart={(e) => handleRowResizeStart(e, row.id)}
+                                                                                />
+                                                                            )}
+                                                                        </TableCell>
+                                                                    )
+                                                                })}
+                                                            </TableRow>
+                                                        )
+                                                    })}
+
+                                                    {/* Group Footer */}
+                                                    <TableRow className="h-12 hover:bg-transparent border-t border-gray-50">
+                                                        <TableCell className="p-0 border-r border-gray-50 bg-white sticky left-0 z-30" style={{ width: table.getColumn('index')?.getSize() }} />
+                                                        <TableCell className="p-0 border-r border-gray-50 bg-white">
+                                                            <div className="flex items-center gap-2 px-4 py-2 text-[13px] font-medium text-gray-400 hover:text-gray-600 transition-colors cursor-pointer group/calc">
+                                                                <Plus className="w-3.5 h-3.5" />
+                                                                <span>Create Task</span>
+                                                            </div>
+                                                        </TableCell>
+                                                        {table.getVisibleFlatColumns().slice(2).map((column) => (
+                                                            <TableCell key={column.id} className="p-0 border-r border-gray-50 bg-white">
+                                                                <div className="flex items-center justify-center gap-1.5 px-3 py-2 text-[11px] font-medium text-gray-400 hover:text-gray-600 transition-colors cursor-pointer whitespace-nowrap group/calc">
+                                                                    <span>Calculate</span>
+                                                                    <ChevronDown size={12} className="opacity-0 group-hover/calc:opacity-100 transition-opacity" />
+                                                                </div>
+                                                            </TableCell>
+                                                        ))}
+                                                    </TableRow>
+                                                </TableBody>
+                                            </Table>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+
+                        <BulkActionsToolbar
+                            selectedCount={Object.keys(rowSelection).filter(id => rowSelection[id]).length}
+                            onClearSelection={handleClearSelection}
+                            onDelete={handleDelete}
+                            onUpdateStatus={(status) => handleBulkUpdate("status", status)}
+                            onUpdateAssignees={(assignees) => handleBulkUpdate("assignees", assignees)}
+                            onUpdateStartDate={(date) => handleBulkUpdate("startDate", date)}
+                            onUpdateDueDate={(date) => handleBulkUpdate("dueDate", date)}
+                            onUpdatePriority={(priority) => handleBulkUpdate("priority", priority)}
+                        />
+                    </div>
                 </div>
-            </div>
+            </DndContext>
 
             <AddColums
                 table={table}
