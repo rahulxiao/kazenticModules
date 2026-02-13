@@ -485,3 +485,114 @@ export const tableData: taskTable[] = [
         subtasks: []
     },
 ]
+
+export type ReviewRequestItem = {
+    id: string;
+    userName: string;
+    userAvatar: string;
+    dateRange: string;
+    duration: string;
+    limit: string;
+    payable: string;
+    overLimit: string;
+    status: 'to_review' | 'changes_required' | 'approved';
+}
+
+export type ReviewRequestGroup = {
+    title: string;
+    count: number;
+    status: 'to_review' | 'changes_required' | 'approved';
+    items: ReviewRequestItem[];
+}
+
+export const getReviewRequests = (): ReviewRequestGroup[] => {
+    return [
+        {
+            title: "To Review",
+            count: 4,
+            status: 'to_review',
+            items: [
+                { id: '1', userName: "Alif Hassan", userAvatar: "AH", dateRange: "Dec 07-Dec 13, 2025", duration: "9h 33m", limit: "9h", payable: "9h 33m", overLimit: "9h 33m", status: 'to_review' },
+                { id: '2', userName: "Alif Hassan", userAvatar: "AH", dateRange: "Dec 07-Dec 13, 2025", duration: "9h 33m", limit: "9h", payable: "9h 33m", overLimit: "9h 33m", status: 'to_review' },
+                { id: '3', userName: "Alif Hassan", userAvatar: "AH", dateRange: "Dec 07-Dec 13, 2025", duration: "9h 33m", limit: "9h", payable: "9h 33m", overLimit: "9h 33m", status: 'to_review' },
+                { id: '4', userName: "Alif Hassan", userAvatar: "AH", dateRange: "Dec 07-Dec 13, 2025", duration: "9h 33m", limit: "9h", payable: "9h 33m", overLimit: "9h 33m", status: 'to_review' },
+            ]
+        },
+        {
+            title: "Changes Required",
+            count: 4,
+            status: 'changes_required',
+            items: [
+                { id: '5', userName: "Alif Hassan", userAvatar: "AH", dateRange: "Dec 07-Dec 13, 2025", duration: "9h 33m", limit: "9h", payable: "9h 33m", overLimit: "9h 33m", status: 'changes_required' },
+                { id: '6', userName: "Alif Hassan", userAvatar: "AH", dateRange: "Dec 07-Dec 13, 2025", duration: "9h 33m", limit: "9h", payable: "9h 33m", overLimit: "9h 33m", status: 'changes_required' },
+                { id: '7', userName: "Alif Hassan", userAvatar: "AH", dateRange: "Dec 07-Dec 13, 2025", duration: "9h 33m", limit: "9h", payable: "9h 33m", overLimit: "9h 33m", status: 'changes_required' },
+                { id: '8', userName: "Alif Hassan", userAvatar: "AH", dateRange: "Dec 07-Dec 13, 2025", duration: "9h 33m", limit: "9h", payable: "9h 33m", overLimit: "9h 33m", status: 'changes_required' },
+            ]
+        },
+        {
+            title: "Approved",
+            count: 5,
+            status: 'approved',
+            items: [
+                { id: '9', userName: "Alif Hassan", userAvatar: "AH", dateRange: "Jan 07-Jan 13, 2025", duration: "9h 33m", limit: "9h", payable: "9h 33m", overLimit: "9h 33m", status: 'approved' },
+                { id: '10', userName: "Alif Hassan", userAvatar: "AH", dateRange: "Jan 07-Jan 13, 2025", duration: "9h 33m", limit: "9h", payable: "9h 33m", overLimit: "9h 33m", status: 'approved' },
+                { id: '11', userName: "Alif Hassan", userAvatar: "AH", dateRange: "Jan 07-Jan 13, 2025", duration: "9h 33m", limit: "9h", payable: "9h 33m", overLimit: "9h 33m", status: 'approved' },
+                { id: '12', userName: "Alif Hassan", userAvatar: "AH", dateRange: "Jan 07-Jan 13, 2025", duration: "9h 33m", limit: "9h", payable: "9h 33m", overLimit: "9h 33m", status: 'approved' },
+                { id: '13', userName: "Alif Hassan", userAvatar: "AH", dateRange: "Jan 07-Jan 13, 2025", duration: "9h 33m", limit: "9h", payable: "9h 33m", overLimit: "9h 33m", status: 'approved' },
+            ]
+        }
+    ]
+}
+
+export type ReviewDetailItem = {
+    id: string;
+    task: string;
+    description: string;
+    payable: boolean;
+    tags: string[];
+    signedIn: string;
+    signedOut: string;
+    duration: string;
+}
+
+export type ReviewDay = {
+    date: string;
+    totalHours: string;
+    limitHours: string;
+    tasks: ReviewDetailItem[];
+}
+
+export const getReviewDetails = (): ReviewDay[] => {
+    return [
+        {
+            date: "Mon, Jan 8",
+            totalHours: "9h",
+            limitHours: "8h",
+            tasks: Array(5).fill(null).map((_, i) => ({
+                id: `task-${i}`,
+                task: "[kzt-242] Create Pages using new design system.",
+                description: "-",
+                payable: i % 2 === 0,
+                tags: ["Kazentic"],
+                signedIn: "11:59 AM",
+                signedOut: "02:59 PM",
+                duration: "05H : 00M"
+            }))
+        },
+        {
+            date: "Tue, Jan 9",
+            totalHours: "9h",
+            limitHours: "8h",
+            tasks: Array(5).fill(null).map((_, i) => ({
+                id: `task-tue-${i}`,
+                task: "[kzt-242] Create Pages using new design system.",
+                description: "-",
+                payable: i % 2 === 0,
+                tags: ["Kazentic"],
+                signedIn: "11:59 AM",
+                signedOut: "02:59 PM",
+                duration: "05H : 00M"
+            }))
+        }
+    ]
+}
