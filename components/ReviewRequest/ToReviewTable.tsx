@@ -46,7 +46,7 @@ export default function ToReviewTable({ items, onReview }: ToReviewTableProps) {
                         <th className="px-4 py-3 w-[110px] text-center">Limit</th>
                         <th className="px-4 py-3 w-[110px] text-center">Payable</th>
                         <th className="px-4 py-3 w-[110px] text-center">Over Limit</th>
-                        <th className="px-4 py-3 w-[120px] text-center whitespace-nowrap">Action</th>
+                        <th className="px-4 py-3 w-[200px] text-center whitespace-nowrap">Action</th>
                     </tr>
                 </thead>
                 <tbody className="">

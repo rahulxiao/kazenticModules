@@ -44,7 +44,7 @@ export default function ApprovedTable({ items }: ApprovedTableProps) {
                         <th className="px-4 py-3 w-[110px] text-center">Limit</th>
                         <th className="px-4 py-3 w-[110px] text-center">Payable</th>
                         <th className="px-4 py-3 w-[110px] text-center">Over Limit</th>
-                        <th className="px-4 py-3 w-[140px] text-center">Status</th>
+                        <th className="px-4 py-3 w-[200px] text-center">Status</th>
                     </tr>
                 </thead>
                 <tbody className="">
