@@ -5,6 +5,8 @@ import { ChevronDown, ChevronRight, Calendar, CircleCheck, MoreHorizontal, Dolla
 import { cn } from '@/lib/utils'
 import { getReviewRequests, ReviewDetailItem, ReviewDay } from '@/data/requestReview'
 import { tableData, USERS } from '@/data/tableData'
+import RequestPopover from './RequestPopover'
+import ApprovePopover from './ApprovePopover'
 
 interface ReviewDetailViewProps {
     reviewingId: string;
@@ -96,7 +98,7 @@ export default function ReviewDetailView({ reviewingId, onBack, onStatusUpdate }
     const [expandedDays, setExpandedDays] = useState<string[]>(detailData.map(d => d.date));
     const [deletingId, setDeletingId] = useState<string | null>(null);
     const [showRequestModal, setShowRequestModal] = useState(false);
-    const [requestComment, setRequestComment] = useState("");
+    const [showApproveModal, setShowApproveModal] = useState(false);
 
     const toggleDay = (date: string) => {
         setExpandedDays(prev =>
@@ -104,11 +106,12 @@ export default function ReviewDetailView({ reviewingId, onBack, onStatusUpdate }
         );
     }
 
-    const handleApprove = () => {
+    const handleApproveSubmit = (comment: string) => {
         onStatusUpdate(reviewingId, 'approved');
+        setShowApproveModal(false);
     };
 
-    const handleRequestSubmit = () => {
+    const handleRequestSubmit = (comment: string) => {
         onStatusUpdate(reviewingId, 'changes_required');
         setShowRequestModal(false);
     };
@@ -186,14 +189,14 @@ export default function ReviewDetailView({ reviewingId, onBack, onStatusUpdate }
                     <div className="flex items-center gap-3">
                         <button
                             onClick={() => setShowRequestModal(true)}
-                            className="flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-200 text-[#191f38] text-[12px] font-semibold hover:bg-gray-50 transition-all"
+                            className="flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-200 text-[#191f38] text-[12px] font-semibold hover:bg-gray-50 transition-all active:scale-95"
                         >
                             <ArrowRight className="size-4 text-[#4157FE]" />
                             Request Change
                         </button>
                         <button
-                            onClick={handleApprove}
-                            className="flex items-center gap-2 px-4 py-2 rounded-lg border border-[#C4FFE2] bg-[#F2FFF9] text-[#00BA34] text-[12px] font-semibold hover:bg-[#e6fff2] transition-all"
+                            onClick={() => setShowApproveModal(true)}
+                            className="flex items-center gap-2 px-4 py-2 rounded-lg border border-[#C4FFE2] bg-[#F2FFF9] text-[#00BA34] text-[12px] font-semibold hover:bg-[#e6fff2] transition-all active:scale-95"
                         >
                             <CircleCheck className="size-4" />
                             Approve
@@ -396,65 +399,19 @@ export default function ReviewDetailView({ reviewingId, onBack, onStatusUpdate }
                 </div>
             </div>
 
-            {/* Request Changes Modal */}
-            {showRequestModal && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-                    <div
-                        className="absolute inset-0 bg-[#1e293b]/20 backdrop-blur-[2px]"
-                        onClick={() => setShowRequestModal(false)}
-                    />
-                    <div className="relative w-full max-w-[500px] bg-white rounded-[24px] shadow-[0_20px_50px_rgba(0,0,0,0.1)] overflow-hidden animate-in zoom-in-95 duration-200">
-                        {/* Modal Header */}
-                        <div className="px-8 pt-8 pb-4">
-                            <div className="flex items-center justify-between mb-6">
-                                <div className="size-12 rounded-2xl bg-[#FFF9F2] border border-[#FFE4B6] flex items-center justify-center">
-                                    <Pencil className="size-6 text-[#FF8A00]" />
-                                </div>
-                                <button
-                                    onClick={() => setShowRequestModal(false)}
-                                    className="size-8 flex items-center justify-center rounded-full bg-gray-50 text-gray-400 hover:text-gray-600 transition-colors"
-                                >
-                                    <X className="size-5" />
-                                </button>
-                            </div>
+            <RequestPopover
+                isOpen={showRequestModal}
+                onClose={() => setShowRequestModal(false)}
+                onSubmit={handleRequestSubmit}
+                userName={reviewingUser.name}
+            />
 
-                            <h3 className="text-[20px] font-bold text-[#191f38] mb-2">Request changes & unlock</h3>
-                            <p className="text-[13px] leading-[1.6] text-gray-500 font-medium">
-                                Time entries for this period will be unlocked, and <span className="text-[#191f38] font-bold">{reviewingUser.name}</span> will get notified to make and resubmit changes.
-                            </p>
-                        </div>
-
-                        {/* Modal Content */}
-                        <div className="px-8 pb-6">
-                            <label className="block text-[12px] font-bold text-gray-400 uppercase tracking-wider mb-2">
-                                Comments <span className="normal-case italic opacity-50">(optional)</span>
-                            </label>
-                            <textarea
-                                value={requestComment}
-                                onChange={(e) => setRequestComment(e.target.value)}
-                                className="w-full min-h-[140px] bg-[#f8fafc] border border-gray-100 rounded-2xl p-4 text-[13px] text-[#191f38] placeholder:text-gray-300 focus:outline-none focus:ring-2 focus:ring-[#4157FE]/10 focus:border-[#4157FE] transition-all resize-none"
-                                placeholder="Add instructions for the user..."
-                            />
-                        </div>
-
-                        {/* Modal Footer */}
-                        <div className="flex items-center gap-3 px-8 pb-8">
-                            <button
-                                onClick={() => setShowRequestModal(false)}
-                                className="flex-1 h-[48px] rounded-xl border border-gray-100 text-gray-500 text-[13px] font-bold hover:bg-gray-50 transition-all font-sans"
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                onClick={handleRequestSubmit}
-                                className="flex-2 px-8 h-[48px] rounded-xl bg-[#4157FE] text-white text-[13px] font-bold hover:bg-[#3b52e0] transition-all shadow-[0_4px_12px_rgba(65,87,254,0.3)] font-sans"
-                            >
-                                Request changes
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
+            <ApprovePopover
+                isOpen={showApproveModal}
+                onClose={() => setShowApproveModal(false)}
+                onApprove={handleApproveSubmit}
+                userName={reviewingUser.name}
+            />
         </div>
     )
 }

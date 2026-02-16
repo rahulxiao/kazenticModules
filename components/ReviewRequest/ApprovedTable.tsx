@@ -76,7 +76,7 @@ export default function ApprovedTable({ items, onReview }: ApprovedTableProps) {
                                             </span>
                                             <button
                                                 onClick={() => onReview(item.id)}
-                                                className="flex items-center gap-1 bg-[#4157fe] hover:bg-[#3b52e0] text-white text-[12px] font-semibold px-3 py-1 rounded-md transition-all shadow-sm"
+                                                className="flex items-center gap-1 bg-[#4157fe] hover:bg-[#3b52e0] text-white text-[12px] font-medium px-3 py-1 rounded-md transition-all shadow-sm"
                                             >
                                                 Review <ArrowRight className="size-3" />
                                             </button>
@@ -84,22 +84,22 @@ export default function ApprovedTable({ items, onReview }: ApprovedTableProps) {
                                     </div>
                                 </td>
                                 <td className="px-3 py-2.5 align-middle text-center">
-                                    <div className="inline-flex items-center justify-center w-[95px] h-[26px] rounded-lg bg-[#DBE9FF] text-[#191f38] text-[12px] font-semibold">
+                                    <div className="inline-flex items-center justify-center w-[95px] h-[26px] rounded-lg bg-[#DBE9FF] text-[#191f38] text-[12px] font-medium">
                                         {item.duration}
                                     </div>
                                 </td>
                                 <td className="px-3 py-2.5 align-middle text-center">
-                                    <div className="inline-flex items-center justify-center w-[95px] h-[26px] rounded-lg bg-[#ccfbe1] text-[#191f38] text-[12px] font-semibold">
+                                    <div className="inline-flex items-center justify-center w-[95px] h-[26px] rounded-lg bg-[#ccfbe1] text-[#191f38] text-[12px] font-medium">
                                         {item.limit}
                                     </div>
                                 </td>
                                 <td className="px-3 py-2.5 align-middle text-center">
-                                    <div className="inline-flex items-center justify-center w-[95px] h-[26px] rounded-lg bg-[#ffe9c1] text-[#191f38] text-[12px] font-semibold">
+                                    <div className="inline-flex items-center justify-center w-[95px] h-[26px] rounded-lg bg-[#ffe9c1] text-[#191f38] text-[12px] font-medium">
                                         {item.payable}
                                     </div>
                                 </td>
                                 <td className="px-3 py-2.5 align-middle text-center">
-                                    <div className="inline-flex items-center justify-center w-[95px] h-[26px] rounded-lg bg-[#ffdad8] text-[#191f38] text-[12px] font-semibold">
+                                    <div className="inline-flex items-center justify-center w-[95px] h-[26px] rounded-lg bg-[#ffdad8] text-[#191f38] text-[12px] font-medium">
                                         {item.overLimit}
                                     </div>
                                 </td>

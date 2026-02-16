@@ -108,7 +108,7 @@ export default function ReviewRequest() {
                         {/* Table Components */}
                         {expandedSections.includes(group.title) && (
                             <div className="overflow-x-auto pb-4 custom-scrollbar">
-                                {group.status === 'to_review' && <ToReviewTable items={group.items} onReview={setReviewingId} />}
+                                {group.status === 'to_review' && <ToReviewTable items={group.items} onReview={setReviewingId} onStatusUpdate={handleStatusUpdate} />}
                                 {group.status === 'changes_required' && <ChangesRequiredTable items={group.items} onReview={setReviewingId} />}
                                 {group.status === 'approved' && <ApprovedTable items={group.items} onReview={setReviewingId} />}
                             </div>
