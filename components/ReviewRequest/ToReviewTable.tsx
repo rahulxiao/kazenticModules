@@ -10,27 +10,25 @@ interface ToReviewTableProps {
     items: ReviewRequestItem[];
     onReview: (id: string) => void;
     onStatusUpdate: (id: string, status: 'approved' | 'changes_required') => void;
+    selectedIds: string[];
+    onToggleSelection: (id: string) => void;
+    onToggleAll: () => void;
 }
 
-export default function ToReviewTable({ items, onReview, onStatusUpdate }: ToReviewTableProps) {
-    const [selectedIds, setSelectedIds] = useState<string[]>([]);
+export default function ToReviewTable({
+    items,
+    onReview,
+    onStatusUpdate,
+    selectedIds,
+    onToggleSelection,
+    onToggleAll
+}: ToReviewTableProps) {
     const [requestModalItem, setRequestModalItem] = useState<ReviewRequestItem | null>(null);
     const [approveModalItem, setApproveModalItem] = useState<ReviewRequestItem | null>(null);
     const [requestComment, setRequestComment] = useState("");
 
-    const toggleAll = () => {
-        if (selectedIds.length === items.length) {
-            setSelectedIds([]);
-        } else {
-            setSelectedIds(items.map(item => item.id));
-        }
-    };
-
-    const toggleOne = (id: string) => {
-        setSelectedIds(prev =>
-            prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
-        );
-    };
+    const toggleAll = onToggleAll;
+    const toggleOne = onToggleSelection;
 
     const handleRequestSubmit = () => {
         if (requestModalItem) {
@@ -58,7 +56,7 @@ export default function ToReviewTable({ items, onReview, onStatusUpdate }: ToRev
                                     <input
                                         type="checkbox"
                                         className="size-4 rounded border-gray-300 bg-white accent-[#4157FE] cursor-pointer"
-                                        checked={items.length > 0 && selectedIds.length === items.length}
+                                        checked={items.length > 0 && items.every(item => selectedIds.includes(item.id))}
                                         onChange={toggleAll}
                                     />
                                 </th>
@@ -76,7 +74,7 @@ export default function ToReviewTable({ items, onReview, onStatusUpdate }: ToRev
                                     <td className="px-0.5 py-2.5 text-center align-middle">
                                         <input
                                             type="checkbox"
-                                            className={`size-4 rounded border-gray-300 bg-white accent-[#4157FE] cursor-pointer transition-opacity ${selectedIds.includes(item.id) ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}
+                                            className="size-4 rounded border-gray-300 bg-white accent-[#4157FE] cursor-pointer transition-all"
                                             checked={selectedIds.includes(item.id)}
                                             onChange={() => toggleOne(item.id)}
                                         />

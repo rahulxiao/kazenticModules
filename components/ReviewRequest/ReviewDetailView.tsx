@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState, useMemo } from 'react'
-import { ChevronDown, ChevronRight, Calendar, CircleCheck, MoreHorizontal, DollarSign, Trash2, Clock, Timer, Ban, LayoutGrid, FileText, ArrowRight, X, Pencil, ArrowLeft, ListTodo, LayoutPanelLeft, ListCheck } from 'lucide-react'
+import { ChevronDown, ChevronRight, Calendar, CircleCheck, MoreHorizontal, DollarSign, Trash2, Clock, Timer, Ban, LayoutGrid, FileText, ArrowRight, X, Pencil, ArrowLeft, ListTodo, LayoutPanelLeft, ListCheck, Settings } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { getReviewRequests, ReviewDetailItem, ReviewDay } from '@/data/requestReview'
 import { tableData, USERS } from '@/data/tableData'
@@ -161,28 +161,18 @@ export default function ReviewDetailView({ reviewingId, onBack, onStatusUpdate }
                             </div>
 
                             <div className={cn(
-                                "flex items-center gap-2 rounded-lg px-3 py-0.5 shadow-sm border",
+                                "flex items-center gap-2 rounded-lg px-4 py-1 shadow-sm border",
                                 reviewingUser.status === 'to_review' && "bg-[#FCE9CB] text-[#A4541A] border-[#A4541A80]",
-                                reviewingUser.status === 'changes_required' && "bg-[#FFF9F2] text-[#FF8A00] border-[#FFE4B6]",
-                                reviewingUser.status === 'approved' && "bg-[#F2FFF9] text-[#00BA34] border-[#C4FFE2]"
+                                reviewingUser.status === 'changes_required' && "bg-[#FCE9CB] text-[#A4541A] border-[#A4541A80]",
+                                reviewingUser.status === 'approved' && "bg-[#F2FFF9] text-[#00BA34] border-[#00BA3440]"
                             )}>
-                                {reviewingUser.status === 'to_review' ? (
-                                    <Clock className="size-4" />
-                                ) : (
-                                    <div className={cn(
-                                        "size-3.5 rounded-full border-2 flex items-center justify-center",
-                                        reviewingUser.status === 'changes_required' && "border-[#FF8A00]",
-                                        reviewingUser.status === 'approved' && "border-[#00BA34]"
-                                    )}>
-                                        <div className={cn(
-                                            "size-1 rounded-full",
-                                            reviewingUser.status === 'changes_required' && "bg-[#FF8A00]",
-                                            reviewingUser.status === 'approved' && "bg-[#00BA34]"
-                                        )} />
-                                    </div>
-                                )}
-                                <span className="text-[13px] font-medium capitalize">
-                                    {reviewingUser.status === 'to_review' ? 'Pending' : reviewingUser.status.replace('_', ' ')}
+                                {reviewingUser.status === 'to_review' && <Clock className="size-4" />}
+                                {reviewingUser.status === 'changes_required' && <Settings className="size-4" />}
+                                {reviewingUser.status === 'approved' && <CircleCheck className="size-4" />}
+                                <span className="text-[13px] font-semibold tracking-tight">
+                                    {reviewingUser.status === 'to_review' ? 'Pending' :
+                                        reviewingUser.status === 'changes_required' ? 'Changes required' :
+                                            'Approved'}
                                 </span>
                             </div>
                         </div>

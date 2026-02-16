@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from 'react'
+import React from 'react'
 import { ArrowRight, CircleCheck } from 'lucide-react'
 import { ReviewRequestItem } from '@/data/requestReview'
 import { Button } from '@/components/ui/button'
@@ -11,21 +11,7 @@ interface ApprovedTableProps {
 }
 
 export default function ApprovedTable({ items, onReview }: ApprovedTableProps) {
-    const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
-    const toggleAll = () => {
-        if (selectedIds.length === items.length) {
-            setSelectedIds([]);
-        } else {
-            setSelectedIds(items.map(item => item.id));
-        }
-    };
-
-    const toggleOne = (id: string) => {
-        setSelectedIds(prev =>
-            prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
-        );
-    };
 
     return (
         <div className="overflow-x-auto rounded-xl border border-gray-200 bg-white shadow-sm">
@@ -33,14 +19,7 @@ export default function ApprovedTable({ items, onReview }: ApprovedTableProps) {
                 <table className="w-full text-left border-collapse table-fixed">
                     <thead>
                         <tr className="bg-[#f2f9fe] text-[#191f38] text-[12px] font-semibold border-b border-gray-200">
-                            <th className="px-0.5 py-2.5 w-[45px] text-center">
-                                <input
-                                    type="checkbox"
-                                    className="size-4 rounded border-gray-300 bg-white accent-[#4157FE] cursor-pointer"
-                                    checked={items.length > 0 && selectedIds.length === items.length}
-                                    onChange={toggleAll}
-                                />
-                            </th>
+                            <th className="px-0.5 py-2.5 w-[45px]"></th>
                             <th className="px-1 py-2.5 min-w-[320px]">Details</th>
                             <th className="px-3 py-2.5 w-[110px] text-center">Duration</th>
                             <th className="px-3 py-2.5 w-[110px] text-center">Limit</th>
@@ -52,14 +31,7 @@ export default function ApprovedTable({ items, onReview }: ApprovedTableProps) {
                     <tbody className="">
                         {items.map((item) => (
                             <tr key={item.id} className="group border-b border-gray-200 last:border-0 hover:bg-gray-50/50 transition-colors">
-                                <td className="px-0.5 py-2.5 text-center align-middle">
-                                    <input
-                                        type="checkbox"
-                                        className={`size-4 rounded border-gray-300 bg-white accent-[#4157FE] cursor-pointer transition-opacity ${selectedIds.includes(item.id) ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}
-                                        checked={selectedIds.includes(item.id)}
-                                        onChange={() => toggleOne(item.id)}
-                                    />
-                                </td>
+                                <td className="px-0.5 py-2.5 w-[45px]"></td>
                                 <td className="px-1 py-2.5 align-middle">
                                     <div className="flex items-center w-full">
                                         <div className="flex items-center gap-3 flex-1 min-w-0">
