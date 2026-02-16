@@ -294,7 +294,7 @@ export default function ReviewDetailView({ reviewingId, onBack, onStatusUpdate }
                                     <div className="min-w-[1200px]">
                                         <table className="w-full text-left border-collapse table-fixed">
                                             <thead>
-                                                <tr className="bg-[#f8fafc] text-gray-500 text-[12px] font-semibold border-b border-gray-100">
+                                                <tr className="bg-[#f8fafc] text-gray-500 text-[11px] font-semibold border-b border-gray-100">
                                                     <th className="px-6 py-3.5 w-[32%]">Task</th>
                                                     <th className="px-4 py-3.5 w-[20%]">Description</th>
                                                     <th className="px-4 py-3.5 w-[100px] text-center">Payable</th>
@@ -344,17 +344,17 @@ export default function ReviewDetailView({ reviewingId, onBack, onStatusUpdate }
                                                                 </div>
                                                             </td>
                                                             <td className="px-4 py-3.5 align-middle text-center">
-                                                                <div className="inline-flex items-center justify-center w-[100px] h-[32px] rounded-lg bg-[#D3F9E8] text-[#087F5B] text-[12px] font-semibold">
+                                                                <div className="inline-flex items-center justify-center w-[100px] h-[30px] rounded-md bg-[#B9F5D8] text-[#191f38] text-[12px] font-medium">
                                                                     {task.signedIn}
                                                                 </div>
                                                             </td>
                                                             <td className="px-4 py-3.5 align-middle text-center">
-                                                                <div className="inline-flex items-center justify-center w-[100px] h-[32px] rounded-lg bg-[#FFE3E3] text-[#E03131] text-[12px] font-semibold">
+                                                                <div className="inline-flex items-center justify-center w-[100px] h-[30px] rounded-md bg-[#FFD8D8] text-[#191f38] text-[12px] font-medium">
                                                                     {task.signedOut}
                                                                 </div>
                                                             </td>
                                                             <td className="px-4 py-3.5 align-middle text-center">
-                                                                <div className="inline-flex items-center justify-center w-[100px] h-[32px] rounded-lg bg-[#E7F5FF] text-[#1C7ED6] text-[12px] font-semibold uppercase">
+                                                                <div className="inline-flex items-center justify-center w-[100px] h-[30px] rounded-md bg-[#DDEBFF] text-[#191f38] text-[12px] font-medium uppercase">
                                                                     {task.duration}
                                                                 </div>
                                                             </td>
