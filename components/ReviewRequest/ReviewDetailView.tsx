@@ -312,7 +312,7 @@ export default function ReviewDetailView({ reviewingId, onBack, onStatusUpdate }
                                                     const body = parts ? parts[2] : task.task;
 
                                                     return (
-                                                        <tr key={task.id} className="group border-b border-gray-50 last:border-0 hover:bg-gray-50/30 transition-colors">
+                                                        <tr key={task.id} className="group border-b border-gray-200 last:border-0 hover:bg-gray-50/30 transition-colors">
                                                             <td className="px-6 py-3.5 align-middle">
                                                                 <div className="text-[13px] text-[#191f38] leading-relaxed flex items-baseline gap-1.5">
                                                                     <span className="font-semibold text-[#191f38] shrink-0">{prefix}</span>

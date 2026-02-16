@@ -51,7 +51,7 @@ export default function ApprovedTable({ items, onReview }: ApprovedTableProps) {
                     </thead>
                     <tbody className="">
                         {items.map((item) => (
-                            <tr key={item.id} className="group border-b border-gray-100 last:border-0 hover:bg-gray-50/50 transition-colors">
+                            <tr key={item.id} className="group border-b border-gray-200 last:border-0 hover:bg-gray-50/50 transition-colors">
                                 <td className="px-0.5 py-2.5 text-center align-middle">
                                     <input
                                         type="checkbox"
@@ -84,22 +84,22 @@ export default function ApprovedTable({ items, onReview }: ApprovedTableProps) {
                                     </div>
                                 </td>
                                 <td className="px-3 py-2.5 align-middle text-center">
-                                    <div className="inline-flex items-center justify-center w-[95px] h-[26px] rounded-lg bg-[#DBE9FF] text-[#191f38] text-[12px] font-medium">
+                                    <div className="inline-flex items-center justify-center w-[95px] h-[26px] rounded-md bg-[#DDEBFF] text-[#191f38] text-[12px] font-medium">
                                         {item.duration}
                                     </div>
                                 </td>
                                 <td className="px-3 py-2.5 align-middle text-center">
-                                    <div className="inline-flex items-center justify-center w-[95px] h-[26px] rounded-lg bg-[#ccfbe1] text-[#191f38] text-[12px] font-medium">
+                                    <div className="inline-flex items-center justify-center w-[95px] h-[26px] rounded-md bg-[#B9F5D8] text-[#191f38] text-[12px] font-medium">
                                         {item.limit}
                                     </div>
                                 </td>
                                 <td className="px-3 py-2.5 align-middle text-center">
-                                    <div className="inline-flex items-center justify-center w-[95px] h-[26px] rounded-lg bg-[#ffe9c1] text-[#191f38] text-[12px] font-medium">
+                                    <div className="inline-flex items-center justify-center w-[95px] h-[26px] rounded-md bg-[#FFDFB5] text-[#191f38] text-[12px] font-medium">
                                         {item.payable}
                                     </div>
                                 </td>
                                 <td className="px-3 py-2.5 align-middle text-center">
-                                    <div className="inline-flex items-center justify-center w-[95px] h-[26px] rounded-lg bg-[#ffdad8] text-[#191f38] text-[12px] font-medium">
+                                    <div className="inline-flex items-center justify-center w-[95px] h-[26px] rounded-md bg-[#FFD8D8] text-[#191f38] text-[12px] font-medium">
                                         {item.overLimit}
                                     </div>
                                 </td>
