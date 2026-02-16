@@ -53,28 +53,28 @@ export default function ReviewDetailView() {
                             <table className="w-full text-left border-collapse table-fixed">
                                 <thead>
                                     <tr className="bg-[#f2f9fe]/50 text-[#191f38] text-[11px] font-semibold border-b border-gray-100">
-                                        <th className="px-6 py-3 w-[35%]">Task</th>
-                                        <th className="px-4 py-3">Description</th>
-                                        <th className="px-4 py-3 w-[80px] text-center">Payable</th>
-                                        <th className="px-4 py-3 w-[110px] text-center">Tags</th>
-                                        <th className="px-4 py-3 w-[130px] text-center">Signed In</th>
-                                        <th className="px-4 py-3 w-[130px] text-center">Signed Out</th>
-                                        <th className="px-4 py-3 w-[130px] text-center">Duration</th>
-                                        <th className="px-4 py-3 w-[100px] text-center">Action</th>
+                                        <th className="px-6 py-2.5 w-[35%]">Task</th>
+                                        <th className="px-4 py-2.5">Description</th>
+                                        <th className="px-4 py-2.5 w-[80px] text-center">Payable</th>
+                                        <th className="px-4 py-2.5 w-[110px] text-center">Tags</th>
+                                        <th className="px-4 py-2.5 w-[130px] text-center">Signed In</th>
+                                        <th className="px-4 py-2.5 w-[130px] text-center">Signed Out</th>
+                                        <th className="px-4 py-2.5 w-[130px] text-center">Duration</th>
+                                        <th className="px-4 py-2.5 w-[100px] text-center">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {day.tasks.map((task) => (
-                                        <tr key={task.id} className="border-b border-gray-50 last:border-0 hover:bg-gray-50/30 transition-colors h-[64px]">
-                                            <td className="px-6 py-2">
+                                        <tr key={task.id} className="border-b border-gray-50 last:border-0 hover:bg-gray-50/30 transition-colors">
+                                            <td className="px-6 py-2.5">
                                                 <span className="text-[12px] font-medium text-[#191f38] leading-tight block">
                                                     {task.task}
                                                 </span>
                                             </td>
-                                            <td className="px-4 py-2">
+                                            <td className="px-4 py-2.5">
                                                 <span className="text-[12px] text-gray-400">{task.description}</span>
                                             </td>
-                                            <td className="px-4 py-2 text-center">
+                                            <td className="px-4 py-2.5 text-center">
                                                 <div className="flex justify-center">
                                                     <div className={cn(
                                                         "size-8 rounded-lg border flex items-center justify-center transition-colors",
@@ -95,27 +95,27 @@ export default function ReviewDetailView() {
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td className="px-4 py-2 text-center">
+                                            <td className="px-4 py-2.5 text-center">
                                                 <div className="inline-flex items-center px-3 py-1.5 rounded-lg bg-[#F5F3FF] border border-[#DDD6FE] text-[#7C3AED] text-[10px] font-bold uppercase tracking-wider">
                                                     Kazentic
                                                 </div>
                                             </td>
-                                            <td className="px-4 py-2 text-center">
+                                            <td className="px-4 py-2.5 text-center">
                                                 <div className="inline-flex items-center justify-center w-[112px] h-[34px] rounded-lg bg-[#ccfbe1] text-[#191f38] text-[12px] font-bold">
                                                     {task.signedIn}
                                                 </div>
                                             </td>
-                                            <td className="px-4 py-2 text-center">
+                                            <td className="px-4 py-2.5 text-center">
                                                 <div className="inline-flex items-center justify-center w-[112px] h-[34px] rounded-lg bg-[#ffdad8] text-[#191f38] text-[12px] font-bold">
                                                     {task.signedOut}
                                                 </div>
                                             </td>
-                                            <td className="px-4 py-2 text-center">
+                                            <td className="px-4 py-2.5 text-center">
                                                 <div className="inline-flex items-center justify-center w-[112px] h-[34px] rounded-lg bg-[#DBE9FF] text-[#191f38] text-[12px] font-bold">
                                                     {task.duration}
                                                 </div>
                                             </td>
-                                            <td className="px-4 py-2 text-center">
+                                            <td className="px-4 py-2.5 text-center">
                                                 <div className="flex items-center justify-center gap-3">
                                                     <CircleCheck className="size-5 text-[#0ca678] cursor-pointer hover:scale-110 transition-transform" />
                                                     <div className="relative">
