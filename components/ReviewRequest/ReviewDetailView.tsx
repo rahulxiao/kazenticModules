@@ -96,22 +96,22 @@ export default function ReviewDetailView() {
                                                 </div>
                                             </td>
                                             <td className="px-4 py-2.5 text-center">
-                                                <div className="inline-flex items-center px-3 py-1.5 rounded-lg bg-[#F5F3FF] border border-[#DDD6FE] text-[#7C3AED] text-[10px] font-bold uppercase tracking-wider">
+                                                <div className="inline-flex items-center px-3 py-1.5 rounded-lg bg-[#F5F3FF] border border-[#DDD6FE] text-[#7C3AED] text-[10px] font-semibold uppercase tracking-wider">
                                                     Kazentic
                                                 </div>
                                             </td>
                                             <td className="px-4 py-2.5 text-center">
-                                                <div className="inline-flex items-center justify-center w-[112px] h-[34px] rounded-lg bg-[#ccfbe1] text-[#191f38] text-[12px] font-bold">
+                                                <div className="inline-flex items-center justify-center w-[112px] h-[34px] rounded-lg bg-[#ccfbe1] text-[#191f38] text-[12px] font-semibold">
                                                     {task.signedIn}
                                                 </div>
                                             </td>
                                             <td className="px-4 py-2.5 text-center">
-                                                <div className="inline-flex items-center justify-center w-[112px] h-[34px] rounded-lg bg-[#ffdad8] text-[#191f38] text-[12px] font-bold">
+                                                <div className="inline-flex items-center justify-center w-[112px] h-[34px] rounded-lg bg-[#ffdad8] text-[#191f38] text-[12px] font-semibold">
                                                     {task.signedOut}
                                                 </div>
                                             </td>
                                             <td className="px-4 py-2.5 text-center">
-                                                <div className="inline-flex items-center justify-center w-[112px] h-[34px] rounded-lg bg-[#DBE9FF] text-[#191f38] text-[12px] font-bold">
+                                                <div className="inline-flex items-center justify-center w-[112px] h-[34px] rounded-lg bg-[#DBE9FF] text-[#191f38] text-[12px] font-semibold">
                                                     {task.duration}
                                                 </div>
                                             </td>

@@ -1,0 +1,80 @@
+[
+  {
+    "id": "1",
+    "name": "Dashboard",
+    "icon": "/assets/dashboardIcon.svg",
+    "path": "/dashboard"
+  },
+  {
+    "id": "2",
+    "name": "Manage",
+    "icon": "/assets/manageIcon.svg",
+    "path": "/Manage"
+  },
+  {
+    "id": "3",
+    "name": "Time Tracker",
+    "icon": "/assets/timetrackerIcon.svg",
+    "path": "/time-tracker"
+  },
+  {
+    "id": "4",
+    "name": "Tasks",
+    "icon": "/assets/taskIcon.svg",
+    "path": "/tasks"
+  },
+  {
+    "id": "5",
+    "name": "Reports",
+    "icon": "/assets/reportIcon.svg",
+    "path": "/reports"
+  },
+  {
+    "id": "6",
+    "name": "Email",
+    "icon": "/assets/emailIcon.svg",
+    "path": "/email"
+  },
+  {
+    "id": "7",
+    "name": "Storage",
+    "icon": "/assets/storageIcon.svg",
+    "path": "/storage"
+  },
+  {
+    "id": "8",
+    "name": "Calendar",
+    "icon": "/assets/calendarIcon.svg",
+    "path": "/calendar"
+  },
+  {
+    "id": "9",
+    "name": "Notes",
+    "icon": "/assets/notesIcon.svg",
+    "path": "/notes"
+  },
+  {
+    "id": "10",
+    "name": "HRM",
+    "icon": "/assets/hrmIcon.svg",
+    "path": "/hrm"
+  },
+  {
+    "id": "11",
+    "name": "CRM",
+    "icon": "/assets/crmIcon.svg",
+    "path": "/crm"
+  },
+  {
+    "id": "12",
+    "name": "Chat",
+    "icon": "/assets/chatIcon.svg",
+    "path": "/chat"
+  },
+  {
+    "id": "13",
+    "name": "Forms",
+    "icon": "/assets/formsIcon.svg",
+    "path": "/forms"
+  }
+]

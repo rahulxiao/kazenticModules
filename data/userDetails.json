@@ -1,0 +1,19 @@
+{
+    "user": {
+        "name": "John Doe",
+        "email": "john@kazneitic.com",
+        "avatar": "/assets/profile.svg",
+        "badge": "Default"
+    },
+    "status": {
+        "current": "Online",
+        "label": "Set Your Status"
+    },
+    "notifications": {
+        "muteDuration": "For 30 Minutes",
+        "label": "Mute Notifications"
+    },
+    "preferences": {
+        "theme": "Light Mode"
+    }
+}
