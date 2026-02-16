@@ -169,7 +169,7 @@ export default function ReviewDetailView({ reviewingId, onBack, onStatusUpdate }
                                 {reviewingUser.status === 'to_review' && <Clock className="size-4" />}
                                 {reviewingUser.status === 'changes_required' && <Settings className="size-4" />}
                                 {reviewingUser.status === 'approved' && <CircleCheck className="size-4" />}
-                                <span className="text-[13px] font-semibold tracking-tight">
+                                <span className="text-[13px] font-medium tracking-tight">
                                     {reviewingUser.status === 'to_review' ? 'Pending' :
                                         reviewingUser.status === 'changes_required' ? 'Changes required' :
                                             'Approved'}
@@ -281,15 +281,15 @@ export default function ReviewDetailView({ reviewingId, onBack, onStatusUpdate }
                                     <div className="min-w-[1200px]">
                                         <table className="w-full text-left border-collapse table-fixed">
                                             <thead>
-                                                <tr className="bg-[#f2f9fe] text-[#191F38] text-[13px] font-medium border-b border-[#e6eef8]">
-                                                    <th className="px-6 py-3 w-[32%] text-[#191f38]">Task</th>
-                                                    <th className="px-4 py-3 w-[20%] text-[#191f38]">Description</th>
-                                                    <th className="px-4 py-3 w-[100px] text-center text-[#191f38]">Payable</th>
-                                                    <th className="px-4 py-3 w-[110px] text-center text-[#191f38]">Tags</th>
-                                                    <th className="px-4 py-3 w-[130px] text-center text-[#191f38]">Signed In</th>
-                                                    <th className="px-4 py-3 w-[130px] text-center text-[#191f38]">Signed Out</th>
-                                                    <th className="px-4 py-3 w-[130px] text-center text-[#191f38]">Duration</th>
-                                                    <th className="px-4 py-3 w-[110px] text-center text-[#191f38]"></th>
+                                                <tr className="bg-[#f2f9fe] text-gray-600 text-[12px] font-medium border-b border-[#e6eef8]">
+                                                    <th className="px-6 py-3 w-[32%] text-gray-600">Task</th>
+                                                    <th className="px-4 py-3 w-[20%] text-gray-600">Description</th>
+                                                    <th className="px-4 py-3 w-[100px] text-center text-gray-600">Payable</th>
+                                                    <th className="px-4 py-3 w-[110px] text-center text-gray-600">Tags</th>
+                                                    <th className="px-4 py-3 w-[125px] text-center text-gray-600">Signed In</th>
+                                                    <th className="px-4 py-3 w-[125px] text-center text-gray-600">Signed Out</th>
+                                                    <th className="px-4 py-3 w-[125px] text-center text-gray-600">Duration</th>
+                                                    <th className="px-4 py-3 w-[110px] text-center"></th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -330,18 +330,18 @@ export default function ReviewDetailView({ reviewingId, onBack, onStatusUpdate }
                                                                     ))}
                                                                 </div>
                                                             </td>
-                                                            <td className="px-2 py-1.5 align-middle text-center">
-                                                                <div className="inline-flex items-center justify-center w-[100px] h-[30px] rounded-lg bg-[#C6F6D5] text-[#2D3748] text-[13px] font-medium">
+                                                            <td className="px-3 py-1.5 align-middle text-center">
+                                                                <div className="inline-flex items-center justify-center px-5 h-[30px] rounded-lg bg-[#C6F6D5] text-[#2D3748] text-[13px] font-medium whitespace-nowrap">
                                                                     {task.signedIn}
                                                                 </div>
                                                             </td>
-                                                            <td className="px-2 py-1.5 align-middle text-center">
-                                                                <div className="inline-flex items-center justify-center w-[100px] h-[30px] rounded-lg bg-[#FED7D7] text-[#2D3748] text-[13px] font-medium">
+                                                            <td className="px-3 py-1.5 align-middle text-center">
+                                                                <div className="inline-flex items-center justify-center px-5 h-[30px] rounded-lg bg-[#FED7D7] text-[#2D3748] text-[13px] font-medium whitespace-nowrap">
                                                                     {task.signedOut}
                                                                 </div>
                                                             </td>
-                                                            <td className="px-2 py-1.5 align-middle text-center">
-                                                                <div className="inline-flex items-center justify-center w-[100px] h-[30px] rounded-lg bg-[#D1E9FF] text-[#2D3748] text-[13px] font-medium uppercase">
+                                                            <td className="px-3 py-1.5 align-middle text-center">
+                                                                <div className="inline-flex items-center justify-center px-5 h-[30px] rounded-lg bg-[#D1E9FF] text-[#2D3748] text-[13px] font-medium uppercase whitespace-nowrap">
                                                                     {task.duration}
                                                                 </div>
                                                             </td>

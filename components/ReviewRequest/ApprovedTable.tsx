@@ -18,7 +18,7 @@ export default function ApprovedTable({ items, onReview }: ApprovedTableProps) {
             <div className="min-w-[1000px]">
                 <table className="w-full text-left border-collapse table-fixed">
                     <thead>
-                        <tr className="bg-[#f2f9fe] text-[#191f38] text-[12px] font-semibold border-b border-gray-200">
+                        <tr className="bg-[#f2f9fe] text-gray-600 text-[12px] font-medium border-b border-gray-200">
                             <th className="px-0.5 py-2.5 w-[45px]"></th>
                             <th className="px-1 py-2.5 min-w-[320px]">Details</th>
                             <th className="px-3 py-2.5 w-[110px] text-center">Duration</th>

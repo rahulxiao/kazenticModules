@@ -51,7 +51,7 @@ export default function ToReviewTable({
                 <div className="min-w-[1000px]">
                     <table className="w-full text-left border-collapse table-fixed">
                         <thead>
-                            <tr className="bg-[#f2f9fe] text-[#191f38] text-[12px] font-semibold border-b border-gray-200">
+                            <tr className="bg-[#f2f9fe] text-gray-600 text-[12px] font-medium border-b border-gray-200">
                                 <th className="px-0.5 py-2.5 w-[45px] text-center">
                                     <input
                                         type="checkbox"
