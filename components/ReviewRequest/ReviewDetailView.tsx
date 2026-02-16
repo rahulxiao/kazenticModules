@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState, useMemo } from 'react'
-import { ChevronDown, ChevronRight, Calendar, CircleCheck, MoreHorizontal, DollarSign, Trash2, Clock, Timer, Ban, LayoutGrid, FileText, ArrowRight, X, Pencil } from 'lucide-react'
+import { ChevronDown, ChevronRight, Calendar, CircleCheck, MoreHorizontal, DollarSign, Trash2, Clock, Timer, Ban, LayoutGrid, FileText, ArrowRight, X, Pencil, ArrowLeft, ListTodo, LayoutPanelLeft, ListCheck } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { getReviewRequests, ReviewDetailItem, ReviewDay } from '@/data/requestReview'
 import { tableData, USERS } from '@/data/tableData'
@@ -144,42 +144,44 @@ export default function ReviewDetailView({ reviewingId, onBack, onStatusUpdate }
                             onClick={onBack}
                             className="size-9 flex items-center justify-center rounded-full bg-gray-50 text-gray-400 hover:bg-gray-100 transition-colors"
                         >
-                            <ChevronRight className="size-5 rotate-180" />
+                            <ArrowLeft className="size-5" />
                         </button>
 
                         <div className="flex items-center gap-2">
-                            <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-lg px-3 py-1.5 shadow-sm">
-                                <div className="size-6 rounded-md bg-[#4157FE] text-white flex items-center justify-center text-[10px] font-semibold">
+                            <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-lg px-3 py-0.5 shadow-sm">
+                                <div className="size-6 rounded-full bg-[#4157FE] text-white flex items-center justify-center text-[8px] font-semibold">
                                     {reviewingUser.avatar || 'AH'}
                                 </div>
                                 <span className="text-[12px] font-medium text-[#191f38]">{reviewingUser.name}</span>
                             </div>
 
-                            <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-lg px-3 py-1.5 shadow-sm">
+                            <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-lg px-3 py-1 shadow-sm">
                                 <Calendar className="size-4 text-gray-400" />
                                 <span className="text-[12px] font-medium text-gray-500">{reviewingUser.dateRange}</span>
                             </div>
 
                             <div className={cn(
-                                "flex items-center gap-2 rounded-lg px-3 py-1.5 shadow-sm border",
-                                reviewingUser.status === 'to_review' && "bg-[#F2F9FE] text-[#4157FE] border-[#DBE9FF]",
+                                "flex items-center gap-2 rounded-lg px-3 py-0.5 shadow-sm border",
+                                reviewingUser.status === 'to_review' && "bg-[#FCE9CB] text-[#A4541A] border-[#A4541A80]",
                                 reviewingUser.status === 'changes_required' && "bg-[#FFF9F2] text-[#FF8A00] border-[#FFE4B6]",
                                 reviewingUser.status === 'approved' && "bg-[#F2FFF9] text-[#00BA34] border-[#C4FFE2]"
                             )}>
-                                <div className={cn(
-                                    "size-4 rounded-full border-2 flex items-center justify-center",
-                                    reviewingUser.status === 'to_review' && "border-[#4157FE]",
-                                    reviewingUser.status === 'changes_required' && "border-[#FF8A00]",
-                                    reviewingUser.status === 'approved' && "border-[#00BA34]"
-                                )}>
+                                {reviewingUser.status === 'to_review' ? (
+                                    <Clock className="size-4" />
+                                ) : (
                                     <div className={cn(
-                                        "size-1.5 rounded-full",
-                                        reviewingUser.status === 'to_review' && "bg-[#4157FE]",
-                                        reviewingUser.status === 'changes_required' && "bg-[#FF8A00]",
-                                        reviewingUser.status === 'approved' && "bg-[#00BA34]"
-                                    )} />
-                                </div>
-                                <span className="text-[11px] font-semibold uppercase tracking-wide">
+                                        "size-3.5 rounded-full border-2 flex items-center justify-center",
+                                        reviewingUser.status === 'changes_required' && "border-[#FF8A00]",
+                                        reviewingUser.status === 'approved' && "border-[#00BA34]"
+                                    )}>
+                                        <div className={cn(
+                                            "size-1 rounded-full",
+                                            reviewingUser.status === 'changes_required' && "bg-[#FF8A00]",
+                                            reviewingUser.status === 'approved' && "bg-[#00BA34]"
+                                        )} />
+                                    </div>
+                                )}
+                                <span className="text-[13px] font-medium capitalize">
                                     {reviewingUser.status === 'to_review' ? 'Pending' : reviewingUser.status.replace('_', ' ')}
                                 </span>
                             </div>
@@ -189,14 +191,14 @@ export default function ReviewDetailView({ reviewingId, onBack, onStatusUpdate }
                     <div className="flex items-center gap-3">
                         <button
                             onClick={() => setShowRequestModal(true)}
-                            className="flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-200 text-[#191f38] text-[12px] font-semibold hover:bg-gray-50 transition-all active:scale-95"
+                            className="flex items-center gap-2 px-4 py-1 rounded-lg border border-gray-200 text-[#191f38] text-[12px] font-medium hover:bg-gray-50 transition-all active:scale-95"
                         >
                             <ArrowRight className="size-4 text-[#4157FE]" />
                             Request Change
                         </button>
                         <button
                             onClick={() => setShowApproveModal(true)}
-                            className="flex items-center gap-2 px-4 py-2 rounded-lg border border-[#C4FFE2] bg-[#F2FFF9] text-[#00BA34] text-[12px] font-semibold hover:bg-[#e6fff2] transition-all active:scale-95"
+                            className="flex items-center gap-2 px-4 py-1 rounded-lg border border-[#C4FFE2] bg-[#F2FFF9] text-[#00BA34] text-[12px] font-medium hover:bg-[#e6fff2] transition-all active:scale-95"
                         >
                             <CircleCheck className="size-4" />
                             Approve
@@ -234,24 +236,19 @@ export default function ReviewDetailView({ reviewingId, onBack, onStatusUpdate }
                         Payable
                     </button>
 
-                    <div className="flex items-center bg-gray-100/50 p-0.5 rounded-lg border border-gray-100">
-                        {[
-                            { label: 'Time Entries', icon: LayoutGrid, active: true },
-                            { label: 'Time Sheet', icon: FileText, active: false },
-                        ].map((tab, i) => (
-                            <button
-                                key={i}
-                                className={cn(
-                                    "flex items-center gap-2 text-[12px] font-semibold px-3 py-1.5 rounded-md transition-all",
-                                    tab.active
-                                        ? "bg-white border border-gray-200 text-[#4157FE] shadow-sm"
-                                        : "text-gray-400 hover:text-gray-600"
-                                )}
-                            >
-                                <tab.icon className={cn("size-3.5", tab.active ? "text-[#4157FE]" : "text-gray-400")} />
-                                {tab.label}
-                            </button>
-                        ))}
+                    <div className="flex items-center rounded-lg border border-gray-100 overflow-hidden h-8 bg-white shadow-sm">
+                        <button className="flex items-center gap-2 px-3 h-full bg-[#f2f9fe] text-[#4157fe] border-r border-gray-100 group transition-all">
+                            <span className="text-[12px] font-medium">Time Entries</span>
+                            <div className="size-5 rounded-md bg-[#4157fe] flex items-center justify-center">
+                                <ListCheck className="size-3 text-white" />
+                            </div>
+                        </button>
+                        <button className="flex items-center gap-2 px-3 h-full text-gray-400 hover:text-gray-600 transition-all hover:bg-gray-50">
+                            <span className="text-[12px] font-medium">Time Sheet</span>
+                            <div className="size-5 rounded-md border border-gray-200 flex items-center justify-center">
+                                <LayoutPanelLeft className="size-3 text-gray-400" />
+                            </div>
+                        </button>
                     </div>
                 </div>
 
@@ -294,15 +291,15 @@ export default function ReviewDetailView({ reviewingId, onBack, onStatusUpdate }
                                     <div className="min-w-[1200px]">
                                         <table className="w-full text-left border-collapse table-fixed">
                                             <thead>
-                                                <tr className="bg-[#f8fafc] text-gray-500 text-[11px] font-semibold border-b border-gray-100">
-                                                    <th className="px-6 py-3.5 w-[32%]">Task</th>
-                                                    <th className="px-4 py-3.5 w-[20%]">Description</th>
-                                                    <th className="px-4 py-3.5 w-[100px] text-center">Payable</th>
-                                                    <th className="px-4 py-3.5 w-[110px] text-center">Tags</th>
-                                                    <th className="px-4 py-3.5 w-[130px] text-center">Signed In</th>
-                                                    <th className="px-4 py-3.5 w-[130px] text-center">Signed Out</th>
-                                                    <th className="px-4 py-3.5 w-[130px] text-center">Duration</th>
-                                                    <th className="px-4 py-3.5 w-[110px] text-center"></th>
+                                                <tr className="bg-[#f2f9fe] text-[#191F38] text-[13px] font-medium border-b border-[#e6eef8]">
+                                                    <th className="px-6 py-3 w-[32%] text-[#191f38]">Task</th>
+                                                    <th className="px-4 py-3 w-[20%] text-[#191f38]">Description</th>
+                                                    <th className="px-4 py-3 w-[100px] text-center text-[#191f38]">Payable</th>
+                                                    <th className="px-4 py-3 w-[110px] text-center text-[#191f38]">Tags</th>
+                                                    <th className="px-4 py-3 w-[130px] text-center text-[#191f38]">Signed In</th>
+                                                    <th className="px-4 py-3 w-[130px] text-center text-[#191f38]">Signed Out</th>
+                                                    <th className="px-4 py-3 w-[130px] text-center text-[#191f38]">Duration</th>
+                                                    <th className="px-4 py-3 w-[110px] text-center text-[#191f38]"></th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -313,54 +310,54 @@ export default function ReviewDetailView({ reviewingId, onBack, onStatusUpdate }
 
                                                     return (
                                                         <tr key={task.id} className="group border-b border-gray-200 last:border-0 hover:bg-gray-50/30 transition-colors">
-                                                            <td className="px-6 py-3.5 align-middle">
-                                                                <div className="text-[13px] text-[#191f38] leading-relaxed flex items-baseline gap-1.5">
-                                                                    <span className="font-semibold text-[#191f38] shrink-0">{prefix}</span>
-                                                                    <span className="font-medium text-[#191f38]/80 truncate">{body}</span>
+                                                            <td className="px-6 py-1.5 align-middle">
+                                                                <div className="text-[12px] text-[#191f38] leading-relaxed flex items-baseline gap-1.5 py-1">
+                                                                    <span className="font-medium text-[#191f38] shrink-0">{prefix}</span>
+                                                                    <span className="font-medium text-[#191f38] break-words">{body}</span>
                                                                 </div>
                                                             </td>
-                                                            <td className="px-4 py-3.5 align-middle">
-                                                                <span className="text-[13px] text-gray-400 font-medium">-</span>
+                                                            <td className="px-4 py-1.5 align-middle">
+                                                                <span className="text-[12px] text-gray-400 font-medium">-</span>
                                                             </td>
-                                                            <td className="px-4 py-3.5 align-middle text-center">
+                                                            <td className="px-4 py-1.5 align-middle text-center">
                                                                 <div className="flex justify-center">
                                                                     <div className={cn(
-                                                                        "size-8 rounded-lg border flex items-center justify-center transition-all",
+                                                                        "size-7 rounded-md border flex items-center justify-center transition-all",
                                                                         task.payable
-                                                                            ? "bg-white border-[#C2F3E3] text-[#087f5b]"
-                                                                            : "bg-white border-gray-100 text-[#D1D5DB]"
+                                                                            ? "bg-white border-[#C2F3E3] text-[#00BA34]"
+                                                                            : "bg-white border-gray-100 text-[#CBD5E0]"
                                                                     )}>
-                                                                        <DollarSign className="size-4" />
+                                                                        <DollarSign className="size-3.5" />
                                                                     </div>
                                                                 </div>
                                                             </td>
-                                                            <td className="px-4 py-3.5 align-middle text-center">
+                                                            <td className="px-4 py-1.5 align-middle text-center">
                                                                 <div className="flex justify-center gap-1">
                                                                     {task.tags.map((tag, idx) => (
-                                                                        <div key={idx} className="inline-flex items-center px-2.5 py-1 rounded-md bg-[#F3F0FF] text-[#7E57C2] text-[10px] font-semibold uppercase tracking-wide">
+                                                                        <div key={idx} className="inline-flex items-center px-3 py-0.5 rounded-md bg-[#F3F0FF] border border-[#7E57C280] text-[#722BCC] text-[12px] font-medium capitalize">
                                                                             {tag}
                                                                         </div>
                                                                     ))}
                                                                 </div>
                                                             </td>
-                                                            <td className="px-4 py-3.5 align-middle text-center">
-                                                                <div className="inline-flex items-center justify-center w-[100px] h-[30px] rounded-md bg-[#B9F5D8] text-[#191f38] text-[12px] font-medium">
+                                                            <td className="px-2 py-1.5 align-middle text-center">
+                                                                <div className="inline-flex items-center justify-center w-[100px] h-[30px] rounded-lg bg-[#C6F6D5] text-[#2D3748] text-[13px] font-medium">
                                                                     {task.signedIn}
                                                                 </div>
                                                             </td>
-                                                            <td className="px-4 py-3.5 align-middle text-center">
-                                                                <div className="inline-flex items-center justify-center w-[100px] h-[30px] rounded-md bg-[#FFD8D8] text-[#191f38] text-[12px] font-medium">
+                                                            <td className="px-2 py-1.5 align-middle text-center">
+                                                                <div className="inline-flex items-center justify-center w-[100px] h-[30px] rounded-lg bg-[#FED7D7] text-[#2D3748] text-[13px] font-medium">
                                                                     {task.signedOut}
                                                                 </div>
                                                             </td>
-                                                            <td className="px-4 py-3.5 align-middle text-center">
-                                                                <div className="inline-flex items-center justify-center w-[100px] h-[30px] rounded-md bg-[#DDEBFF] text-[#191f38] text-[12px] font-medium uppercase">
+                                                            <td className="px-2 py-1.5 align-middle text-center">
+                                                                <div className="inline-flex items-center justify-center w-[100px] h-[30px] rounded-lg bg-[#D1E9FF] text-[#2D3748] text-[13px] font-medium uppercase">
                                                                     {task.duration}
                                                                 </div>
                                                             </td>
-                                                            <td className="px-4 py-3.5 align-middle text-center">
+                                                            <td className="px-2 py-1.5 align-middle text-center">
                                                                 <div className="flex items-center justify-center gap-4">
-                                                                    <CircleCheck className="size-5 text-[#087f5b] cursor-pointer opacity-80" />
+                                                                    <CircleCheck className="size-5 text-[#00BA34] cursor-pointer opacity-80 hover:opacity-100 transition-opacity" />
                                                                     <div className="relative">
                                                                         <MoreHorizontal
                                                                             className="size-5 text-gray-300 cursor-pointer hover:text-gray-400 transition-colors"
@@ -412,6 +409,6 @@ export default function ReviewDetailView({ reviewingId, onBack, onStatusUpdate }
                 onApprove={handleApproveSubmit}
                 userName={reviewingUser.name}
             />
-        </div>
+        </div >
     )
 }

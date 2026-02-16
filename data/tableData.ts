@@ -64,7 +64,7 @@ export const tableData: taskTable[] = [
         "timeTracker": "1h 17m",
         "createdBy": "Alif Hassan",
         "comments": "3",
-        "taskID": "86ewq17dq",
+        "taskID": "G-123",
         "custom": "Phase 1",
         "addNewColumn": "",
 
@@ -399,12 +399,12 @@ export const tableData: taskTable[] = [
         startDate: "",
         dueDate: "2026-02-07",
         priority: "Low",
-        taskID: "86ewq17eq",
+        taskID: "k-98",
         timeTracker: "Add time",
         timeEstimate: "3h",
         addNewColumn: "",
         dateCreated: "2026-02-03",
-        tags: ["backend", "frontend"],
+        tags: ["backend"],
         status: "To Do",
         taskType: "Development",
         sprints: "",
@@ -423,7 +423,7 @@ export const tableData: taskTable[] = [
         taskID: "KZT-501",
         timeTracker: "6h 20m",
         dateCreated: "Feb 02, 2026",
-        tags: ["Internal", "API"],
+        tags: ["API"],
         status: "DONE",
         createdBy: "Tonmoy Asif",
         subtasks: []
@@ -449,7 +449,7 @@ export const tableData: taskTable[] = [
         taskID: "KZT-503",
         timeTracker: "4h 30m",
         dateCreated: "Feb 09, 2026",
-        tags: ["Frontend", "UI"],
+        tags: ["Frontend"],
         status: "DONE",
         createdBy: "Jane Smith",
         subtasks: []
@@ -462,7 +462,7 @@ export const tableData: taskTable[] = [
         taskID: "KZT-504",
         timeTracker: "7h 15m",
         dateCreated: "Feb 10, 2026",
-        tags: ["Frontend", "Mobile"],
+        tags: ["Frontend"],
         status: "DONE",
         createdBy: "Jane Smith",
         subtasks: []
@@ -501,7 +501,7 @@ export const tableData: taskTable[] = [
         taskID: "KZT-507",
         timeTracker: "8h 30m",
         dateCreated: "Jan 27, 2026",
-        tags: ["Security", "Audit"],
+        tags: ["Security"],
         status: "DONE",
         createdBy: "Bob Williams",
         subtasks: []
@@ -631,7 +631,7 @@ export const tableData: taskTable[] = [
         taskID: "KZT-517",
         timeTracker: "7h 40m",
         dateCreated: "Feb 06, 2026",
-        tags: ["Backend", "Security"],
+        tags: ["Backend"],
         status: "DONE",
         createdBy: "Alice Johnson",
         subtasks: []

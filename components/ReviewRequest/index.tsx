@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState } from 'react'
-import { ChevronDown, ChevronRight, RotateCcw, CircleCheck, ListTodo } from 'lucide-react'
+import { ChevronDown, ChevronRight, Settings, CircleCheck, Search } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { getReviewRequests } from '@/data/requestReview'
 import ToReviewTable from './ToReviewTable'
@@ -52,7 +52,7 @@ export default function ReviewRequest() {
             }
             return nextData;
         });
-        setReviewingId(null); // Go back after update
+        setReviewingId(null);
     };
 
     if (reviewingId) {
@@ -85,21 +85,21 @@ export default function ReviewRequest() {
                             </div>
 
                             <div className={cn(
-                                "flex items-center gap-2 px-3 py-1 rounded-lg border text-[12px] font-medium capitalize shadow-sm transition-all",
-                                group.status === 'to_review' && "bg-[#F2F9FE] text-[#4157FE] border-[#DBE9FF]",
-                                group.status === 'changes_required' && "bg-[#FFF9F2] text-[#FF8A00] border-[#FFE4B6]",
-                                group.status === 'approved' && "bg-[#F2FFF9] text-[#00BA34] border-[#C4FFE2]"
+                                "flex items-center gap-2 px-4 py-1 rounded-lg border text-[13px] font-medium transition-all shadow-sm",
+                                group.status === 'to_review' && "bg-[#F2F9FE] text-[#4157FE] border-[#4157FE80]",
+                                group.status === 'changes_required' && "bg-[#FCE9CB] text-[#A4541A] border-[#A4541A80]",
+                                group.status === 'approved' && "bg-[#F2FFF9] text-[#00BA34] border-[#00BA3480]"
                             )}>
-                                {group.status === 'to_review' && <ListTodo className="size-3.5" />}
-                                {group.status === 'changes_required' && <RotateCcw className="size-3.5" />}
-                                {group.status === 'approved' && <CircleCheck className="size-3.5" />}
+                                {group.status === 'to_review' && <Search className="size-4" />}
+                                {group.status === 'changes_required' && <Settings className="size-4" />}
+                                {group.status === 'approved' && <CircleCheck className="size-4" />}
                                 {group.title}
                             </div>
                             <span className={cn(
-                                "text-[12px] w-5 h-5 flex items-center justify-center rounded-md font-semibold border shadow-sm",
-                                group.status === 'to_review' && "bg-[#F2F9FE] text-[#4157FE] border-[#DBE9FF]",
-                                group.status === 'changes_required' && "bg-[#FFF9F2] text-[#FF8A00] border-[#FFE4B6]",
-                                group.status === 'approved' && "bg-[#F2FFF9] text-[#00BA34] border-[#C4FFE2]"
+                                "text-[12px] size-6 flex items-center justify-center rounded-lg font-bold border shadow-sm",
+                                group.status === 'to_review' && "bg-[#F2F9FE] text-[#4157FE] border-[#4157FE80]",
+                                group.status === 'changes_required' && "bg-[#FCE9CB] text-[#A4541A] border-[#A4541A80]",
+                                group.status === 'approved' && "bg-[#F2FFF9] text-[#00BA34] border-[#00BA3480]"
                             )}>
                                 {group.count}
                             </span>

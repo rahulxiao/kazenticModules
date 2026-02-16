@@ -104,7 +104,7 @@ export default function ApprovedTable({ items, onReview }: ApprovedTableProps) {
                                     </div>
                                 </td>
                                 <td className="px-3 py-2.5 align-middle text-center">
-                                    <div className="inline-flex items-center px-2.5 py-1.5 rounded-lg border border-[#c3fae8] bg-[#F2FFF9] text-[#00BA34] text-[10px] font-bold gap-2 uppercase tracking-wider">
+                                    <div className="inline-flex items-center px-2.5 py-1 rounded-md border border-[#00BA3480] bg-[#F2FFF9] text-[#00BA34] text-[11px] font-medium gap-1.5 whitespace-nowrap">
                                         <CircleCheck className="size-3.5" />
                                         Approved
                                     </div>

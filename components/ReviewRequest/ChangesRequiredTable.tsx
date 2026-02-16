@@ -104,8 +104,8 @@ export default function ChangesRequiredTable({ items, onReview }: ChangesRequire
                                     </div>
                                 </td>
                                 <td className="px-3 py-2.5 align-middle text-center">
-                                    <div className="inline-flex items-center px-2.5 py-1.5 rounded-lg border border-[#fee6c8] bg-[#FFF9F2] text-[#FF8A00] text-[10px] font-bold gap-2 uppercase tracking-wider whitespace-nowrap">
-                                        <Settings className="size-3" />
+                                    <div className="inline-flex items-center px-2.5 py-1 rounded-md border border-[#A4541A80] bg-[#FCE9CB] text-[#A4541A] text-[11px] font-medium gap-1.5 whitespace-nowrap">
+                                        <Settings className="size-3.5" />
                                         Changes required
                                     </div>
                                 </td>
