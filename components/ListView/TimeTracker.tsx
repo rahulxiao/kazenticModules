@@ -51,7 +51,6 @@ export function TimeTracker({ value, onToggle, onChange }: TimeTrackerProps) {
                 setSeconds((prev) => {
                     const newSeconds = prev + 1
                     // Optionally notify parent periodically or on stop
-                    // For now, i just keep it local
                     return newSeconds
                 })
             }, 1000)

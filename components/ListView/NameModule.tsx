@@ -5,6 +5,7 @@ import { GripVertical, ChevronRight, ChevronDown, Circle, Plus, Tag, Edit2, Link
 import { cn } from "@/lib/utils"
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
 import { Checkbox } from "@/components/ui/checkbox"
+import { Popover, PopoverContent, PopoverTrigger, PopoverAnchor } from "../ui/popover"
 
 export interface NameModuleProps {
     name: string
@@ -23,6 +24,7 @@ export interface NameModuleProps {
     isSelected?: boolean
     onToggleSelect?: (value: boolean) => void
     variant?: "list" | "table"
+    taskID?: string
 }
 
 export function NameModule({
@@ -41,7 +43,8 @@ export function NameModule({
     dragHandleProps,
     isSelected,
     onToggleSelect,
-    variant = "list"
+    variant = "list",
+    taskID
 }: NameModuleProps) {
     const [isHovered, setIsHovered] = React.useState(false)
 
@@ -114,34 +117,51 @@ export function NameModule({
 
             {/* Task Name, Tags & Count */}
             <div className="flex flex-col gap-1.5 flex-1 min-w-0">
-                <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-[12px] font-medium text-[#1a1c1e] leading-snug break-words">
-                        {name}
-                    </span>
-
-                    {/* Tags */}
-                    {tags && tags.length > 0 && (
-                        <div className="flex flex-wrap gap-1">
-                            {tags.map((tag, idx) => (
-                                <span
-                                    key={idx}
-                                    className="px-2 py-0.5 rounded-[4px] bg-[#8a7344] text-white text-[10px] font-bold uppercase tracking-wider"
-                                >
-                                    {tag}
-                                </span>
-                            ))}
-                        </div>
+                <div className="flex items-start gap-1.5 shrink-0 min-w-0">
+                    {taskID && (
+                        <span className="text-[12px] text-gray-400 font-medium shrink-0 mt-[2px]">
+                            [{taskID}]
+                        </span>
                     )}
-
-                    {subtaskCount > 0 && (
-                        <div className="flex items-center gap-1 text-gray-400">
-                            <Link2 size={13} className="rotate-45" />
-                            <span className="text-[11px] font-medium">{subtaskCount}</span>
-                        </div>
-                    )}
-
-                    <div className="h-[2px] w-2 bg-gray-300 rounded-full opactiy-50 shrink-0" />
+                    <Popover open={isHovered}>
+                        <PopoverAnchor asChild>
+                            <span className="text-[12px] font-medium text-[#1a1c1e] leading-snug truncate whitespace-nowrap cursor-default">
+                                {name}
+                            </span>
+                        </PopoverAnchor>
+                        <PopoverContent
+                            side="top"
+                            align="center"
+                            sideOffset={8}
+                            className="z-[110] p-0 w-auto border-none bg-transparent shadow-none pointer-events-none"
+                        >
+                            <div className="bg-white border border-gray-100 shadow-[0_10px_30px_rgba(0,0,0,0.15)] rounded-lg p-3 min-w-[200px] max-w-[350px] relative animate-in fade-in zoom-in duration-200">
+                                <p className="text-[13px] font-medium text-gray-900 leading-relaxed text-center">
+                                    {name}
+                                </p>
+                                {/* Arrow */}
+                                <div className="absolute top-full left-1/2 -translate-x-1/2 -translate-y-[1px] border-[6px] border-transparent border-t-white drop-shadow-sm" />
+                            </div>
+                        </PopoverContent>
+                    </Popover>
                 </div>
+
+                {/* Subtask Stats Badge */}
+                {subtaskCount > 0 && (
+                    <div className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-gray-50 border border-gray-100 text-gray-400 shrink-0 self-start">
+                        <span className="text-[10px] font-medium">1</span>
+                        <div className="w-3 h-3 flex items-center justify-center">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <line x1="8" y1="6" x2="21" y2="6" />
+                                <line x1="8" y1="12" x2="21" y2="12" />
+                                <line x1="8" y1="18" x2="21" y2="18" />
+                                <line x1="3" y1="6" x2="3.01" y2="6" />
+                                <line x1="3" y1="12" x2="3.01" y2="12" />
+                                <line x1="3" y1="18" x2="3.01" y2="18" />
+                            </svg>
+                        </div>
+                    </div>
+                )}
             </div>
 
             {/* Right Action Icons (Only on hover) */}

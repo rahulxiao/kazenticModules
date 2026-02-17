@@ -51,7 +51,7 @@ export function PriorityPopOver({
                         {priority ? (
                             <>
                                 <selectedPriority.icon size={16} className={cn(selectedPriority.color, "fill-current")} />
-                                <span className="text-[12px] font-bold text-[#1a1c1e]">{priority}</span>
+                                <span className="text-[12px] font-medium text-[#1a1c1e]">{priority}</span>
                             </>
                         ) : (
                             <Flag size={16} className="text-gray-300 group-hover:text-gray-400" />

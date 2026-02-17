@@ -102,11 +102,17 @@ export function CalculateModule({
                 onClear={onClear}
                 currentMethod={currentMethod}
             >
-                <button className="flex items-center justify-center gap-1.5 px-3 py-2 text-[11px] font-medium text-gray-400 hover:text-gray-600 transition-colors cursor-pointer whitespace-nowrap group/calc min-h-[40px] w-full">
+                <button className="flex items-center justify-center gap-1.5 px-3 py-2 text-[12px] font-medium transition-colors cursor-pointer whitespace-nowrap group/calc min-h-[40px] w-full">
                     {value !== null ? (
-                        <span className="text-gray-900 font-semibold">{value}</span>
+                        <div className="flex flex-col items-center">
+                            <span className="text-gray-900 font-medium">{value}</span>
+                            <div className="flex items-center gap-1 opacity-0 group-hover/calc:opacity-100 transition-opacity duration-200">
+                                <span className="text-[10px] text-gray-400">Calculate</span>
+                                <ChevronDown size={10} className="text-gray-400" />
+                            </div>
+                        </div>
                     ) : (
-                        <div className="flex items-center gap-1 opacity-0 group-hover/calc:opacity-100 transition-opacity duration-200">
+                        <div className="flex items-center gap-1 text-gray-400 hover:text-gray-600">
                             <span>Calculate</span>
                             <ChevronDown size={12} className="text-gray-400" />
                         </div>

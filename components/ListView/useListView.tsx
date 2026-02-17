@@ -9,6 +9,7 @@ import {
     ExpandedState,
     SortingState,
     RowSelectionState,
+    VisibilityState,
 } from "@tanstack/react-table"
 import { columns } from "@/components/ListView/columns"
 import { taskTable, tableData } from "@/data/tableData"
@@ -26,7 +27,11 @@ export function useListView() {
     const [data, setData] = React.useState<taskTable[]>(tableData)
     const [addingSubtaskTo, setAddingSubtaskTo] = React.useState<string | null>(null)
     const [expanded, setExpanded] = React.useState<ExpandedState>({ "0": true, "0.0": true, "0.0.1": true })
-    const [columnVisibility, setColumnVisibility] = React.useState({})
+    const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({
+        custom: false,
+        createdBy: false,
+        taskID: false
+    })
     const [isAddColumnsOpen, setIsAddColumnsOpen] = React.useState(false)
     const [sorting, setSorting] = React.useState<SortingState>([])
     const [rowSelection, setRowSelection] = React.useState({})
@@ -37,6 +42,7 @@ export function useListView() {
     })
     const [columnCalculationMethods, setColumnCalculationMethods] = React.useState<Record<string, string>>({})
     const [calculateOpenColId, setCalculateOpenColId] = React.useState<string | null>(null)
+
     const [isCreatingTask, setIsCreatingTask] = React.useState(false)
 
     const sensors = useSensors(

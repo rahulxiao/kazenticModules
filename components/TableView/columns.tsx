@@ -87,6 +87,7 @@ const modifiedListViewColumns = listViewColumns.map((col: any) => {
                     name={name}
                     avatar={avatar}
                     tags={tags}
+                    taskID={row.original.taskID}
                     dragHandleProps={dragHandleProps}
                     isAddingSubtask={isAddingSubtask}
                     isExpanded={isExpanded}

@@ -29,7 +29,7 @@ const formatDueDate = (dateStr: string) => {
 
 const getDueDateStyle = (dateStr: string) => {
     if (!dateStr) return "text-gray-400"
-    return "text-[#1a1c1e] font-bold"
+    return "text-[#1a1c1e] font-medium"
 }
 
 
@@ -69,6 +69,7 @@ export const columns: ColumnDef<taskTable>[] = [
                 name={name}
                 avatar={avatar}
                 tags={tags}
+                taskID={(row.original as any).taskID}
                 dragHandleProps={dragHandleProps}
                 isAddingSubtask={isAddingSubtask}
                 isExpanded={isExpanded}

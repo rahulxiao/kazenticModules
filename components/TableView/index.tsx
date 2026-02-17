@@ -10,6 +10,7 @@ import {
     useReactTable,
     RowSelectionState,
     ColumnPinningState,
+    VisibilityState,
 } from "@tanstack/react-table"
 import { columns } from "./columns"
 import { taskTable, tableData } from "@/data/tableData"
@@ -75,10 +76,15 @@ export default function TaskTable() {
     const [addingSubtaskTo, setAddingSubtaskTo] = React.useState<string | null>(null)
     const [isAddColumnsOpen, setIsAddColumnsOpen] = React.useState(false)
     const [rowSizing, setRowSizing] = React.useState<Record<string, number>>({})
-    const [selectedGroup, setSelectedGroup] = React.useState<string>("")
+    const [selectedGroup, setSelectedGroup] = React.useState<string>("status")
     const [creatingInGroup, setCreatingInGroup] = React.useState<string | null>(null)
     const [columnCalculationMethods, setColumnCalculationMethods] = React.useState<Record<string, string>>({})
     const [calculateOpenColId, setCalculateOpenColId] = React.useState<string | null>(null)
+    const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({
+        custom: false,
+        createdBy: false,
+        taskID: false
+    })
 
     const [columnOrder, setColumnOrder] = React.useState<string[]>(() =>
         columns.map((c: any) => c.accessorKey || c.id || "")
@@ -132,20 +138,58 @@ export default function TaskTable() {
             }
             groups[groupValue].push(item)
         })
+
+        // Sort groups if grouping by status
+        if (selectedGroup === "status") {
+            const statusOrder = ["ACTIVE", "DONE", "IN PROGRESS", "IN REVIEW", "HALF PROCESS", "TO DO", "UNCATEGORIZED"]
+            const sortedGroups: Record<string, taskTable[]> = {}
+
+            statusOrder.forEach(status => {
+                const matchingKey = Object.keys(groups).find(k => k.toUpperCase() === status)
+                if (matchingKey) {
+                    sortedGroups[matchingKey] = groups[matchingKey]
+                }
+            })
+
+            // Add any remaining groups
+            Object.keys(groups).forEach(key => {
+                if (!statusOrder.includes(key.toUpperCase())) {
+                    sortedGroups[key] = groups[key]
+                }
+            })
+
+            return sortedGroups
+        }
+
         return groups
     }, [data, selectedGroup])
 
     const getStatusStyle = (status: string) => {
         const normalized = status.toUpperCase()
         if (normalized === "DONE" || normalized === "ACTIVE")
-            return "bg-[#ecfdf5] text-[#059669] border-[#10b981]/20"
+            return {
+                badge: "bg-[#ecfdf5] text-[#059669] border-[#10b981]/20",
+                count: "bg-[#ecfdf5] text-[#059669] border-[#10b981]/20"
+            }
         if (normalized === "IN PROGRESS")
-            return "bg-[#f5f3ff] text-[#7c3aed] border-[#8b5cf6]/20"
+            return {
+                badge: "bg-[#f5f3ff] text-[#7c3aed] border-[#8b5cf6]/20",
+                count: "bg-[#f5f3ff] text-[#7c3aed] border-[#8b5cf6]/20"
+            }
         if (normalized === "HALF PROCESS" || normalized === "IN REVIEW")
-            return "bg-[#eff6ff] text-[#2563eb] border-[#3b82f6]/20"
+            return {
+                badge: "bg-[#eff6ff] text-[#2563eb] border-[#3b82f6]/20",
+                count: "bg-[#eff6ff] text-[#2563eb] border-[#3b82f6]/20"
+            }
         if (normalized === "TO DO" || normalized === "UNCATEGORIZED")
-            return "bg-[#f8fafc] text-[#64748b] border-[#cbd5e1]/30"
-        return "bg-gray-100 text-gray-700 border-gray-200"
+            return {
+                badge: "bg-[#f8fafc] text-[#64748b] border-[#cbd5e1]/30",
+                count: "bg-[#f8fafc] text-[#64748b] border-[#cbd5e1]/30"
+            }
+        return {
+            badge: "bg-gray-100 text-gray-700 border-gray-200",
+            count: "bg-gray-100 text-gray-700 border-gray-200"
+        }
     }
 
     const StatusIcon = ({ status }: { status: string }) => {
@@ -327,12 +371,14 @@ export default function TaskTable() {
             rowSelection,
             columnPinning,
             columnOrder,
+            columnVisibility,
         },
         enableRowSelection: true,
         onRowSelectionChange: setRowSelection,
         onSortingChange: setSorting,
         onColumnPinningChange: setColumnPinning,
         onColumnOrderChange: setColumnOrder,
+        onColumnVisibilityChange: setColumnVisibility,
         getRowId: (row) => row.id || row.taskID || "",
         getCoreRowModel: getCoreRowModel(),
         getSortedRowModel: getSortedRowModel(),
@@ -406,9 +452,9 @@ export default function TaskTable() {
                                     {Object.entries(groupedData).map(([groupName, groupRows]) => (
                                         <div key={groupName} className="border-b border-gray-100 last:border-b-0">
                                             {/* Group Header Bar */}
-                                            <div className="flex items-center justify-between px-4 py-3 bg-[#f8fafc]/50 border-b border-gray-50">
-                                                <div className="flex items-center gap-3">
-                                                    <ChevronDown size={14} className="text-gray-400 cursor-pointer" />
+                                            <div className="flex items-center justify-between px-4 py-2 bg-white border-b border-gray-100 group/header">
+                                                <div className="flex items-center gap-2">
+                                                    <ChevronDown size={14} className="text-gray-400 cursor-pointer hover:text-gray-600 transition-colors" />
                                                     {selectedGroup === 'assignees' ? (
                                                         <div className="flex items-center gap-2">
                                                             <div className="flex items-center -space-x-1.5 px-0.5">
@@ -436,21 +482,24 @@ export default function TaskTable() {
                                                                 return (
                                                                     <div className="flex items-center gap-2 px-2 py-1 rounded-md bg-white border border-gray-100 shadow-sm">
                                                                         <Flag size={14} className={cn(colorClass, "fill-current")} />
-                                                                        <span className="text-[11px] font-bold uppercase tracking-tight text-gray-900">{groupName}</span>
+                                                                        <span className="text-[11px] font-medium uppercase tracking-tight text-gray-900 text-[10px]">{groupName}</span>
                                                                     </div>
                                                                 )
                                                             })()}
                                                         </div>
                                                     ) : (
                                                         <div className={cn(
-                                                            "flex items-center gap-1.5 px-2 py-1 rounded-md border",
-                                                            getStatusStyle(groupName)
+                                                            "flex items-center gap-1.5 px-2 py-0.5 rounded-md border",
+                                                            getStatusStyle(groupName).badge
                                                         )}>
                                                             <StatusIcon status={groupName} />
-                                                            <span className="text-[11px] font-bold uppercase tracking-tight">{groupName}</span>
+                                                            <span className="text-[10px] font-medium uppercase tracking-tight">{groupName}</span>
                                                         </div>
                                                     )}
-                                                    <div className="flex items-center justify-center min-w-[20px] h-[20px] px-1 rounded-full bg-gray-50 text-[11px] font-bold text-gray-400 border border-gray-200">
+                                                    <div className={cn(
+                                                        "flex items-center justify-center min-w-[20px] h-[20px] px-1.5 rounded-md text-[10px] font-medium border ml-[-4px]",
+                                                        getStatusStyle(groupName).count
+                                                    )}>
                                                         {groupRows.length}
                                                     </div>
                                                     <MoreHorizontal size={14} className="text-gray-300 ml-1 cursor-pointer hover:text-gray-500 transition-colors" />
