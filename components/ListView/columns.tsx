@@ -195,7 +195,7 @@ export const columns: ColumnDef<taskTable>[] = [
                     }}
                 >
                     <div className={cn(
-                        "cursor-pointer hover:bg-black/5 px-2 py-1 rounded transition-colors text-[13px] font-medium inline-block flex items-center gap-1.5 w-full",
+                        "cursor-pointer hover:bg-black/5 px-2 py-1 rounded transition-colors text-[12px] font-medium inline-block flex items-center gap-1.5 w-full",
                         // Dynamic color based on smart date
                         getDueDateStyle(date || "")
                     )}>
@@ -240,7 +240,7 @@ export const columns: ColumnDef<taskTable>[] = [
                     }}
                 >
                     <div className={cn(
-                        "cursor-pointer hover:bg-black/5 px-2 py-1 rounded transition-colors text-[13px] font-medium inline-block flex items-center gap-1.5 w-full",
+                        "cursor-pointer hover:bg-black/5 px-2 py-1 rounded transition-colors text-[12px] font-medium inline-block flex items-center gap-1.5 w-full",
                         // Dynamic color based on smart date
                         getDueDateStyle(date || "")
                     )}>
@@ -330,7 +330,7 @@ export const columns: ColumnDef<taskTable>[] = [
         cell: ({ getValue }) => {
             const date = getValue() as string
             return (
-                <div className="text-gray-700 text-[13px] font-medium px-2">
+                <div className="text-gray-700 text-[12px] font-medium px-2">
                     {date ? moment(date).format("MMM D") : "-"}
                 </div>
             )

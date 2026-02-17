@@ -233,7 +233,7 @@ export function DatePicker({
                     >
                         <CalendarIcon size={16} className={startDate ? "text-gray-500" : "text-gray-300"} />
                         <div className="flex-1 flex items-center justify-between gap-2 overflow-hidden">
-                            <span className={cn("text-[13px] font-semibold whitespace-nowrap", startDate ? "text-gray-900" : "text-gray-400")}>
+                            <span className={cn("text-[12px] font-semibold whitespace-nowrap", startDate ? "text-gray-900" : "text-gray-400")}>
                                 {startDate ? formatDateInput(startDate) : "Start date"}
                             </span>
 
@@ -250,7 +250,7 @@ export function DatePicker({
                                         <div
                                             onClick={(e) => { e.stopPropagation(); setActiveField('start'); setTimeOpen(true); }}
                                             className={cn(
-                                                "text-[13px] font-bold px-1.5 py-0.5 rounded hover:bg-black/5 transition-colors whitespace-nowrap",
+                                                "text-[12px] font-bold px-1.5 py-0.5 rounded hover:bg-black/5 transition-colors whitespace-nowrap",
                                                 startDate && startDate.includes(' ') ? "text-blue-600" : "text-gray-400"
                                             )}
                                         >
@@ -262,7 +262,7 @@ export function DatePicker({
                                             <div
                                                 key={idx}
                                                 onClick={() => handleSelectTime(time)}
-                                                className="px-4 py-2 text-[13px] text-gray-700 hover:bg-blue-50 hover:text-blue-600 cursor-pointer transition-colors"
+                                                className="px-4 py-2 text-[12px] text-gray-700 hover:bg-blue-50 hover:text-blue-600 cursor-pointer transition-colors"
                                             >
                                                 {time}
                                             </div>
@@ -283,7 +283,7 @@ export function DatePicker({
                     >
                         <CalendarIcon size={16} className={dueDate ? "text-gray-500" : "text-gray-300"} />
                         <div className="flex-1 flex items-center justify-between gap-2 overflow-hidden">
-                            <span className={cn("text-[13px] font-semibold whitespace-nowrap", dueDate ? "text-gray-900" : "text-gray-400")}>
+                            <span className={cn("text-[12px] font-semibold whitespace-nowrap", dueDate ? "text-gray-900" : "text-gray-400")}>
                                 {dueDate ? formatDateInput(dueDate) : "Due date"}
                             </span>
 
@@ -300,7 +300,7 @@ export function DatePicker({
                                         <div
                                             onClick={(e) => { e.stopPropagation(); setActiveField('due'); setTimeOpen(true); }}
                                             className={cn(
-                                                "text-[13px] font-bold px-1.5 py-0.5 rounded hover:bg-black/5 transition-colors whitespace-nowrap",
+                                                "text-[12px] font-bold px-1.5 py-0.5 rounded hover:bg-black/5 transition-colors whitespace-nowrap",
                                                 dueDate && dueDate.includes(' ') ? "text-blue-600" : "text-gray-400"
                                             )}
                                         >
@@ -312,7 +312,7 @@ export function DatePicker({
                                             <div
                                                 key={idx}
                                                 onClick={() => handleSelectTime(time)}
-                                                className="px-4 py-2 text-[13px] text-gray-700 hover:bg-blue-50 hover:text-blue-600 cursor-pointer transition-colors"
+                                                className="px-4 py-2 text-[12px] text-gray-700 hover:bg-blue-50 hover:text-blue-600 cursor-pointer transition-colors"
                                             >
                                                 {time}
                                             </div>

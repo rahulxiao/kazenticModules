@@ -58,7 +58,7 @@ export function CustomFieldSidebar({ isOpen, onClose, onCreateField }: CustomFie
                 <div className="flex-1 overflow-y-auto p-6 space-y-6">
                     {/* Field Name */}
                     <div className="space-y-2">
-                        <label className="text-sm font-medium text-gray-700">
+                        <label className="text-[12px] font-medium text-gray-700">
                             Field name <span className="text-red-500">*</span>
                         </label>
                         <div className="relative">
@@ -67,7 +67,7 @@ export function CustomFieldSidebar({ isOpen, onClose, onCreateField }: CustomFie
                                 placeholder="Enter name..."
                                 value={fieldName}
                                 onChange={(e) => setFieldName(e.target.value)}
-                                className="w-full px-3 py-2.5 bg-white border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-gray-400"
+                                className="w-full px-3 py-2.5 bg-white border border-gray-300 rounded-lg text-[12px] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-gray-400"
                                 autoFocus
                             />
                             <Sparkles className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -76,14 +76,14 @@ export function CustomFieldSidebar({ isOpen, onClose, onCreateField }: CustomFie
 
                     {/* Fill Method */}
                     <div className="space-y-2">
-                        <label className="text-sm font-medium text-gray-700">
+                        <label className="text-[12px] font-medium text-gray-700">
                             Fill method
                         </label>
                         <div className="flex gap-2">
                             <button
                                 onClick={() => setFillMethod("manual")}
                                 className={cn(
-                                    "flex-1 px-4 py-2.5 rounded-lg text-sm font-medium transition-all",
+                                    "flex-1 px-4 py-2.5 rounded-lg text-[12px] font-medium transition-all",
                                     fillMethod === "manual"
                                         ? "bg-gray-900 text-white"
                                         : "bg-gray-100 text-gray-700 hover:bg-gray-200"
@@ -94,7 +94,7 @@ export function CustomFieldSidebar({ isOpen, onClose, onCreateField }: CustomFie
                             <button
                                 onClick={() => setFillMethod("ai")}
                                 className={cn(
-                                    "flex-1 px-4 py-2.5 rounded-lg text-sm font-medium transition-all flex items-center justify-center gap-2",
+                                    "flex-1 px-4 py-2.5 rounded-lg text-[12px] font-medium transition-all flex items-center justify-center gap-2",
                                     fillMethod === "ai"
                                         ? "bg-purple-600 text-white"
                                         : "bg-purple-50 text-purple-600 hover:bg-purple-100"
@@ -108,7 +108,7 @@ export function CustomFieldSidebar({ isOpen, onClose, onCreateField }: CustomFie
 
                     {/* More Settings */}
                     <button className="w-full flex items-center justify-between px-4 py-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors group">
-                        <span className="text-sm font-medium text-gray-700">
+                        <span className="text-[12px] font-medium text-gray-700">
                             More settings and permissions
                         </span>
                         <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors" />
@@ -119,7 +119,7 @@ export function CustomFieldSidebar({ isOpen, onClose, onCreateField }: CustomFie
                 <div className="p-4 border-t border-gray-100 flex items-center justify-end gap-3">
                     <button
                         onClick={handleCancel}
-                        className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                        className="px-4 py-2 text-[12px] font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
                     >
                         Cancel
                     </button>
@@ -127,7 +127,7 @@ export function CustomFieldSidebar({ isOpen, onClose, onCreateField }: CustomFie
                         onClick={handleCreate}
                         disabled={!fieldName.trim()}
                         className={cn(
-                            "px-4 py-2 text-sm font-medium rounded-lg transition-colors",
+                            "px-4 py-2 text-[12px] font-medium rounded-lg transition-colors",
                             fieldName.trim()
                                 ? "bg-gray-800 text-white hover:bg-gray-900"
                                 : "bg-gray-300 text-gray-500 cursor-not-allowed"

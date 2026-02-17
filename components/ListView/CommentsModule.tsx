@@ -36,7 +36,7 @@ export function CommentsModule({ count }: CommentsModuleProps) {
                         numCount > 0 ? "text-blue-500 fill-blue-50" : "text-gray-300 group-hover:text-gray-400"
                     )} />
                     {numCount > 0 && (
-                        <span className="text-[13px] font-semibold text-gray-700">
+                        <span className="text-[12px] font-semibold text-gray-700">
                             {numCount}
                         </span>
                     )}
@@ -46,7 +46,7 @@ export function CommentsModule({ count }: CommentsModuleProps) {
                 <div className="border border-gray-100 rounded-xl bg-gray-50/10 p-4 transition-all focus-within:border-gray-200 focus-within:bg-white focus-within:shadow-sm">
                     {/* Input Area */}
                     <textarea
-                        className="w-full bg-transparent border-none outline-none text-[14px] text-gray-700 placeholder:text-gray-400 resize-none min-h-[40px] leading-relaxed"
+                        className="w-full bg-transparent border-none outline-none text-[12px] text-gray-700 placeholder:text-gray-400 resize-none min-h-[40px] leading-relaxed"
                         placeholder={mode === "Comment" ? "Write your comment here..." : "Send an email..."}
                         value={comment}
                         onChange={(e) => setComment(e.target.value)}
@@ -72,7 +72,7 @@ export function CommentsModule({ count }: CommentsModuleProps) {
                                         className="flex items-center justify-between px-3 py-2 hover:bg-gray-50 rounded-lg cursor-pointer transition-colors group"
                                     >
                                         <span className={cn(
-                                            "text-[13px] transition-colors",
+                                            "text-[12px] transition-colors",
                                             mode === "Comment" ? "font-semibold text-gray-700" : "font-medium text-gray-600"
                                         )}>Comment</span>
                                         {mode === "Comment" && <Check size={14} className="text-gray-900 stroke-[3]" />}
@@ -82,7 +82,7 @@ export function CommentsModule({ count }: CommentsModuleProps) {
                                         className="flex items-center justify-between px-3 py-2 hover:bg-gray-50 rounded-lg cursor-pointer transition-colors group"
                                     >
                                         <span className={cn(
-                                            "text-[13px] transition-colors",
+                                            "text-[12px] transition-colors",
                                             mode === "Email" ? "font-semibold text-gray-700" : "font-medium text-gray-600"
                                         )}>Email</span>
                                         {mode === "Email" && <Check size={14} className="text-gray-900 stroke-[3]" />}

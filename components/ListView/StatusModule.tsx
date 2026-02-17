@@ -50,7 +50,7 @@ export function StatusModule({ status, onStatusChange }: StatusModuleProps) {
             <PopoverTrigger asChild>
                 <div className="inline-flex items-center gap-2 px-2 py-1.5 rounded cursor-pointer hover:bg-gray-100/50 transition-all group">
                     <SelectedIcon size={14} className={cn(selectedStatus.color)} />
-                    <span className="text-[13px] font-bold text-[#1a1c1e]">{normalizedStatus}</span>
+                    <span className="text-[12px] font-medium text-[#1a1c1e]">{normalizedStatus}</span>
                     <ChevronDown size={14} className="text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity" />
                 </div>
             </PopoverTrigger>
@@ -91,7 +91,7 @@ export function StatusModule({ status, onStatusChange }: StatusModuleProps) {
                                     <div className="flex items-center gap-3.5">
                                         <Icon size={18} className={cn(opt.color)} />
                                         <span className={cn(
-                                            "text-[13px] font-bold tracking-tight transition-colors",
+                                            "text-[12px] font-semibold tracking-tight transition-colors",
                                             isSelected ? "text-blue-600" : "text-gray-700"
                                         )}>
                                             {opt.label}

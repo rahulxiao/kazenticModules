@@ -55,7 +55,7 @@ export function AddSubtaskModule({ onSave, onCancel, depth = 1 }: AddSubtaskModu
                     onChange={(e) => setName(e.target.value)}
                     onKeyDown={handleKeyDown}
                     placeholder="Task Name"
-                    className="w-full bg-transparent border-none text-[14px] text-gray-800 placeholder:text-gray-400 focus:outline-none py-1"
+                    className="w-full bg-transparent border-none text-[12px] text-gray-800 placeholder:text-gray-400 focus:outline-none py-1"
                 />
             </div>
 

@@ -30,10 +30,10 @@ export function TimeEstimation({ value, onChange }: TimeEstimationProps) {
             <PopoverTrigger asChild>
                 <div className="flex items-center gap-2 cursor-pointer group hover:bg-gray-50 p-1 px-2 rounded transition-colors w-full h-full">
                     <Hourglass size={14} className="text-gray-400 group-hover:text-gray-600 shrink-0" />
-                    <span className="text-[13px] text-gray-700 font-medium truncate">
+                    <span className="text-[12px] text-gray-700 font-medium truncate">
                         {value || ""}
                     </span>
-                    {!value && <span className="text-[13px] text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">Add estimate</span>}
+                    {!value && <span className="text-[12px] text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">Add estimate</span>}
                 </div>
             </PopoverTrigger>
             <PopoverContent className="w-[340px] p-4 bg-white border border-gray-250 rounded-xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.1)] text-gray-900 outline-none" align="start">
@@ -51,7 +51,7 @@ export function TimeEstimation({ value, onChange }: TimeEstimationProps) {
                                     if (e.key === 'Enter') handleSave()
                                 }}
                                 placeholder="Type in time"
-                                className="bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 h-9 text-[13px] rounded-md focus-visible:ring-1 focus-visible:ring-blue-500 focus-visible:border-blue-500 shadow-sm"
+                                className="bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 h-9 text-[12px] rounded-md focus-visible:ring-1 focus-visible:ring-blue-500 focus-visible:border-blue-500 shadow-sm"
                             />
                         </div>
                     </div>

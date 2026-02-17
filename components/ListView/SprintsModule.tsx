@@ -20,7 +20,7 @@ export function SprintsModule({ sprint, onSprintChange }: SprintsModuleProps) {
             <Popover open={open} onOpenChange={setOpen}>
                 <PopoverTrigger asChild>
                     <div className="inline-flex items-center gap-1 px-1.5 py-1 rounded cursor-pointer hover:bg-gray-100/50 transition-colors">
-                        <span className="text-[13px] font-medium text-blue-600 hover:underline">
+                        <span className="text-[12px] font-medium text-blue-600 hover:underline">
                             {sprint ? (
                                 <>
                                     {sprint} {selectedSprint?.range}
@@ -47,7 +47,7 @@ export function SprintsModule({ sprint, onSprintChange }: SprintsModuleProps) {
                                 >
                                     <div className="flex flex-col">
                                         <span className={cn(
-                                            "text-[13px] font-medium transition-colors",
+                                            "text-[12px] font-medium transition-colors",
                                             isSelected ? "text-gray-900" : "text-gray-600 group-hover:text-gray-900"
                                         )}>
                                             {opt.label}

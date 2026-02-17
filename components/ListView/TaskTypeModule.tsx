@@ -38,7 +38,7 @@ export function TaskTypeModule({ type, onTypeChange }: TaskTypeModuleProps) {
             <PopoverTrigger asChild>
                 <div className="inline-flex items-center gap-2 px-2.5 py-1.5 rounded-lg border border-transparent hover:border-gray-200 hover:bg-gray-50/50 transition-all cursor-pointer group">
                     <Icon size={14} className="text-gray-500" />
-                    <span className="text-[13px] font-medium text-gray-700">{normalizedType}</span>
+                    <span className="text-[12px] font-medium text-gray-700">{normalizedType}</span>
                     <ChevronDown size={14} className="text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity" />
                 </div>
             </PopoverTrigger>
@@ -47,10 +47,10 @@ export function TaskTypeModule({ type, onTypeChange }: TaskTypeModuleProps) {
                     {/* Header */}
                     <div className="flex items-center justify-between mb-4 px-1">
                         <div className="flex items-center gap-1.5">
-                            <span className="text-[13px] font-bold text-gray-400">Task Types</span>
+                            <span className="text-[12px] font-bold text-gray-400">Task Types</span>
                             <HelpCircle size={14} className="text-gray-300 cursor-help" />
                         </div>
-                        <button className="text-[13px] font-bold text-gray-900 hover:opacity-70 transition-opacity">Edit</button>
+                        <button className="text-[12px] font-bold text-gray-900 hover:opacity-70 transition-opacity">Edit</button>
                     </div>
 
                     {/* Options */}
@@ -74,13 +74,13 @@ export function TaskTypeModule({ type, onTypeChange }: TaskTypeModuleProps) {
                                         <OptIcon size={16} className="text-gray-500" />
                                         <div className="flex items-center gap-1.5">
                                             <span className={cn(
-                                                "text-[14px] font-bold transition-colors",
+                                                "text-[12px] font-bold transition-colors",
                                                 isSelected ? "text-gray-900" : "text-gray-700"
                                             )}>
                                                 {opt.label}
                                             </span>
                                             {opt.isDefault && (
-                                                <span className="text-[13px] text-gray-400 font-medium">(default)</span>
+                                                <span className="text-[12px] text-gray-400 font-medium">(default)</span>
                                             )}
                                         </div>
                                     </div>

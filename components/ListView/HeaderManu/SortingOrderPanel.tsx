@@ -72,7 +72,7 @@ function SortableItem({ item, onRemove, index }: { item: SortItem; onRemove: () 
                     <span className="flex items-center justify-center w-5 h-5 rounded-full bg-blue-600 text-white text-xs font-bold">
                         {index + 1}
                     </span>
-                    <span className="text-sm font-medium text-foreground">{item.label}</span>
+                    <span className="text-[12px] font-medium text-foreground">{item.label}</span>
                 </div>
             </div>
             <div className="flex items-center gap-1.5">
@@ -222,7 +222,7 @@ export function SortingOrderPanel({ table }: SortingOrderPanelProps) {
                                     <span className="flex items-center justify-center w-5 h-5 rounded-full bg-blue-600 text-white text-xs font-bold">
                                         {activeIndex + 1}
                                     </span>
-                                    <span className="text-sm font-medium text-foreground">{activeItem.label}</span>
+                                    <span className="text-[12px] font-medium text-foreground">{activeItem.label}</span>
                                 </div>
                             </div>
                             <div className="flex items-center gap-1.5">

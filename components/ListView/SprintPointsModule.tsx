@@ -37,7 +37,7 @@ export function SprintPointsModule({ points, onPointsChange }: SprintPointsModul
             {isEditing ? (
                 <input
                     autoFocus
-                    className="w-10 text-[13px] font-medium bg-transparent outline-none"
+                    className="w-10 text-[12px] font-medium bg-transparent outline-none"
                     value={value}
                     onChange={(e) => setValue(e.target.value)}
                     onBlur={handleBlur}
@@ -45,7 +45,7 @@ export function SprintPointsModule({ points, onPointsChange }: SprintPointsModul
                 />
             ) : (
                 <span className={cn(
-                    "text-[13px] font-medium",
+                    "text-[12px] font-medium",
                     points ? "text-[#1a1c1e]" : "text-gray-300"
                 )}>
                     {points || "0"}

@@ -32,7 +32,7 @@ export function UserProfileCard({ user }: UserProfileCardProps) {
                     </AvatarFallback>
                 </Avatar>
                 <div className="flex-1 min-w-0">
-                    <h3 className="text-[14px] font-bold text-[#1a1c1e] truncate leading-tight mb-0.5">
+                    <h3 className="text-[12px] font-bold text-[#1a1c1e] truncate leading-tight mb-0.5">
                         {user.email}
                     </h3>
                 </div>

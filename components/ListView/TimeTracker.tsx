@@ -86,7 +86,7 @@ export function TimeTracker({ value, onToggle, onChange }: TimeTrackerProps) {
                     <div className="h-5 w-5 rounded-full border border-gray-200 flex items-center justify-center opacity-0 group-hover/time:opacity-100 transition-opacity shrink-0">
                         <Plus size={10} className="text-gray-400" />
                     </div>
-                    <span className="text-gray-300 text-[13px] truncate">{displayValue}</span>
+                    <span className="text-gray-300 text-[12px] truncate">{displayValue}</span>
                 </>
             ) : (
                 <>
@@ -97,7 +97,7 @@ export function TimeTracker({ value, onToggle, onChange }: TimeTrackerProps) {
                             <Play size={10} fill="currentColor" className="ml-0.5" strokeWidth={0} />
                         )}
                     </div>
-                    <span className={`text-[13px] font-medium truncate tabular-nums ${isRunning ? 'text-blue-600' : 'text-gray-700'}`}>
+                    <span className={`text-[12px] font-medium truncate tabular-nums ${isRunning ? 'text-blue-600' : 'text-gray-700'}`}>
                         {displayValue}
                     </span>
                 </>

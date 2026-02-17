@@ -51,7 +51,7 @@ export function PriorityPopOver({
                         {priority ? (
                             <>
                                 <selectedPriority.icon size={16} className={cn(selectedPriority.color, "fill-current")} />
-                                <span className="text-[13px] font-bold text-[#1a1c1e]">{priority}</span>
+                                <span className="text-[12px] font-bold text-[#1a1c1e]">{priority}</span>
                             </>
                         ) : (
                             <Flag size={16} className="text-gray-300 group-hover:text-gray-400" />
@@ -84,7 +84,7 @@ export function PriorityPopOver({
                                 <div className="flex items-center gap-3">
                                     <Icon size={16} className={cn(opt.color, "fill-current")} />
                                     <span className={cn(
-                                        "text-[14px] font-medium transition-colors",
+                                        "text-[12px] font-medium transition-colors",
                                         isSelected ? "text-gray-900" : "text-gray-600 group-hover:text-gray-900"
                                     )}>
                                         {opt.label}

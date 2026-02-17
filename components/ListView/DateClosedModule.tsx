@@ -20,7 +20,7 @@ export function DateClosedModule({ date, onDateChange }: DateClosedModuleProps) 
         >
             <div className="flex items-center gap-1.5 px-2 py-1 cursor-pointer hover:bg-black/5 rounded group transition-all min-h-[30px] w-full">
                 {smartDate ? (
-                    <span className={`text-[13px] font-medium transition-colors ${smartDate.color}`}>
+                    <span className={`text-[12px] font-medium transition-colors ${smartDate.color}`}>
                         {smartDate.text}
                     </span>
                 ) : (

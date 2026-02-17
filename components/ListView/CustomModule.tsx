@@ -21,7 +21,7 @@ export function CustomModule({ value, onValueChange }: CustomModuleProps) {
         return (
             <input
                 autoFocus
-                className="w-full h-7 px-2 text-[13px] font-medium border border-blue-200 rounded outline-none bg-blue-50/20"
+                className="w-full h-7 px-2 text-[12px] font-medium border border-blue-200 rounded outline-none bg-blue-50/20"
                 value={localValue}
                 onChange={(e) => setLocalValue(e.target.value)}
                 onBlur={handleBlur}
@@ -36,7 +36,7 @@ export function CustomModule({ value, onValueChange }: CustomModuleProps) {
             onClick={() => setIsEditing(true)}
         >
             {value ? (
-                <span className="text-[13px] font-medium text-gray-700">{value}</span>
+                <span className="text-[12px] font-medium text-gray-700">{value}</span>
             ) : (
                 <Plus size={14} className="text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity" />
             )}

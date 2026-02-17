@@ -36,7 +36,7 @@ export function CreateTaskModule({ onSave, onOpenChange }: CreateTaskModuleProps
             className="flex items-center gap-2 text-gray-400 hover:text-gray-700 transition-colors pl-2 h-7"
         >
             <Plus className="h-4 w-4" />
-            <span className="text-[13px] font-medium transition-colors">Create Task</span>
+            <span className="text-[12px] font-medium transition-colors">Create Task</span>
         </button>
     )
 }

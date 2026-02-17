@@ -115,7 +115,7 @@ export function NameModule({
             {/* Task Name, Tags & Count */}
             <div className="flex flex-col gap-1.5 flex-1 min-w-0">
                 <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-[14px] font-bold text-[#1a1c1e] leading-snug break-words">
+                    <span className="text-[12px] font-medium text-[#1a1c1e] leading-snug break-words">
                         {name}
                     </span>
 

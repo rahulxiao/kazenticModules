@@ -520,7 +520,7 @@ export function HeaderMenu({
             <Popover open={open} onOpenChange={setOpen}>
                 <div className="flex items-center justify-between gap-2 w-full group">
                     <PopoverTrigger asChild>
-                        <button className="flex items-center gap-1.5 text-left font-normal text-muted-foreground px-2 py-1 hover:bg-black/5 dark:hover:bg-white/10 rounded-md transition-colors flex-1">
+                        <button className="flex items-center gap-1.5 text-left font-medium text-gray-600 px-2 py-1 hover:bg-black/5 dark:hover:bg-white/10 rounded-md transition-colors flex-1">
                             {title}
                             {currentPinned && (
                                 <Pin className="h-3 w-3 text-blue-600 rotate-45" />
@@ -564,7 +564,7 @@ export function HeaderMenu({
                     className="w-[280px] max-h-[600px] p-0 shadow-xl border-border/50 overflow-hidden"
                 >
                     {table && <SortingOrderPanel table={table} />}
-                    <div className="flex flex-col text-sm py-1 overflow-y-auto max-h-[500px]">
+                    <div className="flex flex-col text-[12px] py-1 overflow-y-auto max-h-[500px]">
                         {/* Dynamic "Clear sort" option */}
                         {currentSort && (
                             <div className="p-1 border-b border-border/50">

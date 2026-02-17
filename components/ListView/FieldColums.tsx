@@ -116,7 +116,7 @@ function SortableItem({ item, table, onCustomToggle }: SortableItemProps) {
                     <GripVertical className="w-4 h-4" />
                 </div>
                 <item.icon className="w-4 h-4 text-gray-500" />
-                <span className="text-sm font-medium text-gray-700">
+                <span className="text-[12px] font-medium text-gray-700">
                     {item.label}
                 </span>
             </div>
@@ -251,7 +251,7 @@ export function AddColums<TData>({ table, isOpen, onClose }: AddColumsProps<TDat
                             placeholder="Search"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                            className="w-full pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-[12px] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                         />
                     </div>
                 </div>

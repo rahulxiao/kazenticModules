@@ -15,8 +15,7 @@ interface DraggableHeaderProps {
 
 export function DraggableHeader({ header, index }: DraggableHeaderProps) {
     const viewType = (header.getContext().table.options.meta as any)?.viewType
-    const isPinned = ["index", "addNewColumn", "select"].includes(header.column.id) ||
-        (viewType === 'list' && header.column.id === 'name')
+    const isPinned = ["index", "addNewColumn", "select"].includes(header.column.id)
     const isSticky = header.column.getIsPinned() === "left" || ["select", "index"].includes(header.column.id) ||
         (viewType === 'list' && header.column.id === 'name')
 
@@ -44,10 +43,10 @@ export function DraggableHeader({ header, index }: DraggableHeaderProps) {
 
     const style: React.CSSProperties = {
         transform: CSS.Translate.toString(transform),
-        transition: isDragging ? transition : undefined,
+        transition,
         width: header.getSize(),
-        zIndex: isDragging ? 100 : (isSticky ? 20 : undefined),
-        opacity: isDragging ? 0.8 : 1,
+        zIndex: isDragging ? 100 : (isSticky ? 30 : undefined),
+        opacity: isDragging ? 0.3 : 1,
         cursor: isPinned ? "default" : undefined,
         left: getLeft(),
         position: isSticky ? "sticky" : "relative"
@@ -58,9 +57,10 @@ export function DraggableHeader({ header, index }: DraggableHeaderProps) {
             ref={setNodeRef}
             style={style}
             className={cn(
-                "relative py-4 px-4 text-left text-[13px] font-semibold text-gray-500 bg-white border-r border-gray-100 last:border-r-0 select-none transition-all",
-                isSticky && "z-20 bg-white border-r border-gray-200 shadow-[2px_0_5px_rgba(0,0,0,0.02)]",
-                isDragging && "bg-gray-50/80 cursor-grabbing shadow-lg",
+                "relative py-3 px-4 text-left text-[12px] font-medium text-gray-600 bg-white border-r border-gray-100 last:border-r-0 select-none",
+                isSticky && "z-30 bg-white border-r border-gray-200",
+                !isPinned && "hover:bg-gray-50/80 transition-colors duration-200",
+                isDragging && "z-50 ring-2 ring-blue-400 ring-inset bg-blue-50/50",
                 header.column.getIsResizing() && "bg-gray-50/50 z-20"
             )}
         >

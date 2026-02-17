@@ -84,7 +84,7 @@ export function AssigneePopOver({ assignees = [], onAssigneesChange, children, o
                         placeholder="Search users..."
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
-                        className="w-full bg-[#f4f4f5]/60 border-none rounded-lg pl-10 pr-4 py-2.5 text-[14px] focus:outline-none placeholder:text-gray-400 transition-colors focus:bg-[#f4f4f5]"
+                        className="w-full bg-[#f4f4f5]/60 border-none rounded-lg pl-10 pr-4 py-2.5 text-[12px] focus:outline-none placeholder:text-gray-400 transition-colors focus:bg-[#f4f4f5]"
                     />
                 </div>
 
@@ -128,7 +128,7 @@ export function AssigneePopOver({ assignees = [], onAssigneesChange, children, o
                                             </AvatarFallback>
                                         </Avatar>
                                         <span className={cn(
-                                            "text-[14px] font-medium transition-colors",
+                                            "text-[12px] font-medium transition-colors",
                                             isSelected ? "text-blue-600" : "text-gray-600 group-hover:text-gray-900"
                                         )}>
                                             {user.name}
@@ -141,7 +141,7 @@ export function AssigneePopOver({ assignees = [], onAssigneesChange, children, o
                             )
                         })
                     ) : (
-                        <div className="px-3 py-4 text-center text-gray-400 text-[13px]">
+                        <div className="px-3 py-4 text-center text-gray-400 text-[12px]">
                             No users found
                         </div>
                     )}

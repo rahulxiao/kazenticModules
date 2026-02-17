@@ -108,7 +108,7 @@ export function CalculatePopover({ open, onOpenChange, onCalculate, children, cu
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <button
-                                className="w-full flex items-center justify-between bg-white hover:bg-zinc-50 border border-zinc-200 rounded-md px-3 py-2 text-sm text-zinc-900 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                                className="w-full flex items-center justify-between bg-white hover:bg-zinc-50 border border-zinc-200 rounded-md px-3 py-2 text-[12px] text-zinc-900 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                             >
                                 <span className="font-medium">{methodLabels[selectedMethod] || "Select method"}</span>
                                 <ChevronDown className="h-4 w-4 text-zinc-400" />
@@ -185,7 +185,7 @@ export function CalculatePopover({ open, onOpenChange, onCalculate, children, cu
 
                     <Button
                         onClick={handleCalculate}
-                        className="w-full bg-white text-black hover:bg-gray-100 transition-colors font-medium text-sm h-9 shadow-sm border"
+                        className="w-full bg-white text-black hover:bg-gray-100 transition-colors font-medium text-[12px] h-9 shadow-sm border"
                     >
                         Calculate
                     </Button>

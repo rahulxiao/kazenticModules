@@ -28,7 +28,7 @@ export function DraggableRow({ row }: DraggableRowProps) {
         transform: CSS.Translate.toString(transform),
         transition,
         zIndex: isDragging ? 100 : undefined,
-        opacity: isDragging ? 0.8 : 1,
+        opacity: isDragging ? 0.3 : 1,
         position: "relative",
     }
 
@@ -37,7 +37,7 @@ export function DraggableRow({ row }: DraggableRowProps) {
             ref={setNodeRef}
             style={style}
             className={cn(
-                "group hover:bg-[#F9FAFB] border-b border-gray-50 transition-colors",
+                "group hover:bg-[#F9FAFB] border-b border-gray-100 transition-colors",
                 isDragging && "bg-blue-50/50 shadow-md z-50 border-blue-200"
             )}
         >
@@ -70,8 +70,8 @@ export function DraggableRow({ row }: DraggableRowProps) {
                             backgroundColor: isSticky ? "white" : undefined
                         }}
                         className={cn(
-                            "py-1 px-3 border-r border-gray-50 last:border-r-0 relative group/cell transition-colors",
-                            isSticky && "group-hover:bg-[#F9FAFB] border-r border-gray-100 shadow-[2px_0_5px_rgba(0,0,0,0.02)] whitespace-normal align-top",
+                            "py-1 px-3 border-r border-gray-100 last:border-r-0 relative group/cell transition-colors",
+                            isSticky && "group-hover:bg-[#F9FAFB] border-r border-gray-100 shadow-[4px_0_10px_rgba(0,0,0,0.05)] whitespace-normal align-top",
                             isDragging && isSticky && "bg-blue-50"
                         )}
                     >

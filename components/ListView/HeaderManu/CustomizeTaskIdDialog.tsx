@@ -40,7 +40,7 @@ export function CustomizeTaskIdDialog({ open, onOpenChange }: CustomizeTaskIdDia
             <DialogContent className="sm:max-w-[500px] bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800">
                 <DialogHeader>
                     <DialogTitle className="text-lg font-semibold">Edit custom task ID</DialogTitle>
-                    <DialogDescription className="text-sm text-muted-foreground">
+                    <DialogDescription className="text-[12px] text-muted-foreground">
                         Create unique, easy-to-read task IDs (like PROJ-123) for this Space.{" "}
                         <a href="#" className="text-blue-600 hover:underline">
                             Learn more
@@ -51,7 +51,7 @@ export function CustomizeTaskIdDialog({ open, onOpenChange }: CustomizeTaskIdDia
                 <div className="space-y-4 py-4">
                     {/* Prefix Input */}
                     <div className="space-y-2">
-                        <Label htmlFor="prefix" className="text-sm font-medium">
+                        <Label htmlFor="prefix" className="text-[12px] font-medium">
                             Prefix (eg. SALES, DEV, DESIGN)
                         </Label>
                         <div className="flex gap-2">
@@ -75,7 +75,7 @@ export function CustomizeTaskIdDialog({ open, onOpenChange }: CustomizeTaskIdDia
                     {/* Start Index Input */}
                     <div className="space-y-2">
                         <div className="flex items-center gap-2">
-                            <Label htmlFor="startIndex" className="text-sm font-medium">
+                            <Label htmlFor="startIndex" className="text-[12px] font-medium">
                                 Start index from
                             </Label>
                             <Info className="h-3.5 w-3.5 text-muted-foreground" />
@@ -100,7 +100,7 @@ export function CustomizeTaskIdDialog({ open, onOpenChange }: CustomizeTaskIdDia
                         />
                         <Label
                             htmlFor="showInTaskView"
-                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                            className="text-[12px] font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                         >
                             Show task ID in task view
                         </Label>

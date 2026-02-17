@@ -20,7 +20,7 @@ export function CreatedByModule({ user }: CreatedByModuleProps) {
                     {initials}
                 </AvatarFallback>
             </Avatar>
-            <span className="text-gray-600 text-[13px] font-medium truncate max-w-[120px]">
+            <span className="text-gray-600 text-[12px] font-medium truncate max-w-[120px]">
                 {user || "Unknown"}
             </span>
         </div>
